@@ -1,3 +1,4 @@
 #Ignore following files
 *.so
 *.class
+.idea/*
