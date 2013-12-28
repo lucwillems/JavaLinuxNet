@@ -1,8 +1,11 @@
 package org.it4y.net.tproxy;
 
 import org.it4y.jni.JNILoader;
+import org.it4y.jni.linuxutils;
 import org.it4y.jni.tproxy;
 import org.it4y.net.SocketUtils;
+import org.it4y.net.linux.*;
+import org.it4y.net.linux.SocketOptions;
 import org.it4y.net.tproxy.TProxyClientSocket;
 
 import java.io.File;
@@ -23,8 +26,6 @@ public class TProxyServerSocket extends ServerSocket {
     /*
      * This fields are manipulated by native c code so don't change it !!!
      */
-    private tproxy proxy=null;
-
     public TProxyServerSocket() throws IOException {
         super();
     }
@@ -41,14 +42,16 @@ public class TProxyServerSocket extends ServerSocket {
         return SocketUtils.getFd(this);
     }
 
-    public void initTProxy(InetAddress address,int port) throws SocketException,IOException,UnknownHostException {
-        SocketImpl impl=getImplementation();
+    public void setIPTransparentOption() {
         int fd=getFd();
-        proxy=new tproxy();
-        int res=proxy.setIPTransparant(fd);
-        if (res !=0 ) {
-            System.out.println("oeps... IPtrans failed:"+res);
-        }
+        int rc=linuxutils.setbooleanSockOption(fd, SocketOptions.SOL_IP,SocketOptions.IP_TRANSPARENT,true);
+        System.out.println("IP transparent: "+rc);
+        System.out.println(linuxutils.getbooleanSockOption(fd,SocketOptions.SOL_IP,SocketOptions.IP_TRANSPARENT));
+    }
+
+
+    public void initTProxy(InetAddress address,int port) throws SocketException,IOException,UnknownHostException {
+        setIPTransparentOption();
         setReuseAddress(true);
         //bind to localhost interface
         InetSocketAddress local=new InetSocketAddress(address,port);
@@ -59,6 +62,7 @@ public class TProxyServerSocket extends ServerSocket {
      * This method is not thread save, so only 1 thread please !!!
      */
     public TProxyClientSocket accepProxy() throws IOException {
+        tproxy proxy=new tproxy();
         Socket c=accept();
         //get original destination address
         if (proxy.getOriginalDestination(SocketUtils.getFd(c)) != 0) {

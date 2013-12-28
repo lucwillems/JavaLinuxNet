@@ -9,14 +9,16 @@ public class linuxutils {
         JNILoader.loadLibrary("liblinuxutils.so");
     }
 
-    public native int setbooleanSockOption(int fd, int level, int option, byte booleanValue);
-    public native int setuint16SockOption(int fd, int level, int option, int u16value);
-    public native int setuint32SockOption(int fd, int level, int option, int u32value);
-    public native int setstringSockOption(int fd, int level, int option, String s);
+    public static native int setbooleanSockOption(int fd, int level, int option, boolean booleanValue);
+    public static native int setuint16SockOption(int fd, int level, int option, int u16value);
+    public static native int setuint32SockOption(int fd, int level, int option, int u32value);
+    public static native int setstringSockOption(int fd, int level, int option, String s);
 
-    public native byte getbooleanSockOption(int fd, int level, int option);
-    public native int getuint16SockOption(int fd, int level, int option);
-    public native int getuint32SockOption(int fd, int level, int option);
-    public native String getstringSockOption(int fd, int level, int option);
+    public static native boolean getbooleanSockOption(int fd, int level, int option);
+    public static native int getuint16SockOption(int fd, int level, int option);
+    public static native int getuint32SockOption(int fd, int level, int option);
+    public static native String getstringSockOption(int fd, int level, int option);
+
+    public static native int getsockname(int fd);
 
 }

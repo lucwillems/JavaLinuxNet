@@ -14,5 +14,5 @@ gcc -I$JAVA_HOME/include/linux -I$JAVA_HOME/include \
     -shared -o liblinuxutils.so org_it4y_jni_linuxutils.c
 
 
-cp libtproxy.so libtuntap.so ../../nlib
+cp libtproxy.so libtuntap.so liblinuxutils.so ../../nlib
 
