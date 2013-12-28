@@ -1,5 +1,8 @@
 package org.it4y.jni;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+
 /**
  * Created by luc on 12/28/13.
  */
@@ -21,4 +24,5 @@ public class linuxutils {
 
     public static native int getsockname(int fd);
 
+    public static native InetSocketAddress getLocalHost();
 }
