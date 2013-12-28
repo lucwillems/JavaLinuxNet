@@ -8,7 +8,7 @@
 #include <linux/if_tun.h>
 #include <errno.h>
 #include <jni.h>
-#include "org_it4y_net_tuntap_TunTapLinux.h"
+#include "org_it4y_jni_tuntap.h"
 
 /*
  * Store filediscriptor and device name
@@ -48,7 +48,7 @@ int getFd(JNIEnv *env, jobject this) {
 /*
  *  Open tunnel device, let kernel decide on name.
  */
-JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_openTun(JNIEnv *env, jobject this) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_openTun(JNIEnv *env, jobject this) {
     struct ifreq ifr;
     int fd;
     
@@ -73,7 +73,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_openTun(JNIEnv *env,
 /*
  *  Open tunnel device using our own name, device must already be created.
  */
-JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_openTunDevice(JNIEnv *env, jobject this, jstring jdev) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_openTunDevice(JNIEnv *env, jobject this, jstring jdev) {
     struct ifreq ifr;
     int fd;
     const char *dev;
@@ -105,7 +105,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_openTunDevice(JNIEnv
 /*
  * Close tunnel device
  */
-JNIEXPORT void JNICALL Java_org_it4y_net_tuntap_TunTapLinux_close(JNIEnv *env, jobject this) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_TunTapLinux_close(JNIEnv *env, jobject this) {
     jfieldID jfd;
     jclass jclass;
 
@@ -121,7 +121,7 @@ JNIEXPORT void JNICALL Java_org_it4y_net_tuntap_TunTapLinux_close(JNIEnv *env, j
 /*
  * write byte array to tunnel device
  */
-JNIEXPORT void JNICALL Java_org_it4y_net_tuntap_TunTapLinux_write(JNIEnv *env, jobject this, jbyteArray jb, jint len) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_tuntap_write(JNIEnv *env, jobject this, jbyteArray jb, jint len) {
     int fd;
     jbyte *b;
     
@@ -138,7 +138,7 @@ JNIEXPORT void JNICALL Java_org_it4y_net_tuntap_TunTapLinux_write(JNIEnv *env, j
  * Method:    write
  * Signature: ([BI)V
  */
-JNIEXPORT void JNICALL Java_org_it4y_net_tuntap_TunTapLinux_writeByteBuffer(JNIEnv *env, jobject this, jobject buffer, jint len) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_tuntap_writeByteBuffer(JNIEnv *env, jobject this, jobject buffer, jint len) {
     int fd;
 
     char* b = (char *)(*env)->GetDirectBufferAddress(env,(jobject)buffer);
@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_org_it4y_net_tuntap_TunTapLinux_writeByteBuffer(JNIE
  * Method:    read
  * Signature: ([B)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_read(JNIEnv *env, jobject this, jbyteArray jb) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_read(JNIEnv *env, jobject this, jbyteArray jb) {
     int fd;
     jbyte *b;
     int len;
@@ -170,7 +170,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_read(JNIEnv *env, jo
  * Method:    write
  * Signature: ([BI)V
  */
-JNIEXPORT jint JNICALL Java_org_it4y_net_tuntap_TunTapLinux_readByteBuffer(JNIEnv *env, jobject this, jobject buffer) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_readByteBuffer(JNIEnv *env, jobject this, jobject buffer) {
 
     char* b = (char *)(*env)->GetDirectBufferAddress(env,(jobject)buffer);
     jlong capacity = (*env)->GetDirectBufferCapacity(env,buffer);

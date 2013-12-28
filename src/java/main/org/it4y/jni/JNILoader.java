@@ -8,6 +8,8 @@ import java.io.File;
  *
  */
 public class JNILoader {
+    static String[] libpath = new String[] { "nlib","/usr/lib" };
+
     /**
      * Load a libary from well known locations
      */
@@ -15,8 +17,14 @@ public class JNILoader {
         Throwable e=null;
         for(String lib : libs) {
             try {
-                System.load(new File(lib).getCanonicalPath());
-                break;
+                for (String path : libpath) {
+                    File f=new File(path+"/"+lib);
+                    if (f.exists()) {
+                        System.load(f.getCanonicalPath());
+                        System.err.println("loaded "+f);
+                        return;
+                    }
+                }
             } catch (Throwable eio) {e = eio;}
         }
         if (e!=null)

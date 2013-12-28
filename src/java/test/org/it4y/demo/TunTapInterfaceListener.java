@@ -1,4 +1,4 @@
-package org.it4y.net.tuntap;
+package org.it4y.demo;
 
 import org.it4y.net.protocols.IP.UDPPacket;
 import org.it4y.net.protocols.ICMPPacket;
@@ -6,34 +6,41 @@ import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.net.protocols.IP.TCPOption;
 import org.it4y.net.protocols.IP.TCPPacket;
-import org.it4y.net.tuntap.TunTapLinux;
+import org.it4y.net.tuntap.TunTapDevice;
+import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
 
 /**
  * Created by luc on 12/27/13.
  */
-public class TunTapInterfaceListener extends Thread {
+public class TunTapInterfaceListener extends TestRunner {
     private String dev=null;
     private int mtu=0;
     private ByteBuffer bbuffer;
-    private TunTapLinux tundev;
-    private boolean running=false;
+    private TunTapDevice tundev;
     private static long last=0;
     private static long cnt=0;
     private static long bits=0;
-
+    private boolean debug=false;
 
     public TunTapInterfaceListener(String name, int mtu) {
-        super("InterfaceListener-"+name);
+        super("tuntapListener-"+name);
         this.dev=name;
         this.mtu=mtu;
-        tundev=new TunTapLinux(name);
+        tundev=new TunTapDevice(name);
         bbuffer=ByteBuffer.allocateDirect(mtu);
     }
 
-    public void halt() {
-      running=false;
+    public void hexDumpIn(ByteBuffer buffer,int size) {
+        if (debug) {
+            System.out.println(System.currentTimeMillis()+" ("+size+") >"+ Hexdump.bytesToHex(buffer, size));
+        }
+    }
+    public void hexDumpOut(ByteBuffer buffer,int size) {
+        if (debug) {
+            System.out.println(System.currentTimeMillis()+" ("+size+") <"+Hexdump.bytesToHex(buffer, size));
+        }
     }
 
     public void run() {
@@ -49,6 +56,7 @@ public class TunTapInterfaceListener extends Thread {
                 //we must clear else we get issues
                 bbuffer.clear();
                 int size=tundev.readByteBuffer(bbuffer); //this will block until a packet is available
+                hexDumpIn(bbuffer,size);
                 IpPacket ip= IPFactory.processRawPacket(bbuffer, size);
                 if (ip != null) {
                     bits=bits+size;
@@ -61,6 +69,7 @@ public class TunTapInterfaceListener extends Thread {
                             ((ICMPPacket)ip).convertToEchoReply();
                             //write raw packet back to network
                             tundev.writeByteBuffer(ip.getRawPacket(),ip.getRawSize());
+                            hexDumpOut(ip.getRawPacket(), ip.getRawSize());
                         }
                     }
                     else if (ip.getProtocol() == ip.UDP) {
@@ -71,6 +80,7 @@ public class TunTapInterfaceListener extends Thread {
                         ip.updateChecksum();
                         ((UDPPacket)ip).swapSourceDestinationPort();
                         tundev.writeByteBuffer(ip.getRawPacket(),ip.getRawSize());
+                        hexDumpOut(ip.getRawPacket(), ip.getRawSize());
                     }
                     else if (ip.getProtocol() == ip.TCP) {
                         //we must reset Buffer before manipulating it !!

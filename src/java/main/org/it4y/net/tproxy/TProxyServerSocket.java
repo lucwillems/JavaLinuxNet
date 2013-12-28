@@ -1,5 +1,7 @@
 package org.it4y.net.tproxy;
 
+import org.it4y.jni.JNILoader;
+import org.it4y.jni.tproxy;
 import org.it4y.net.SocketUtils;
 import org.it4y.net.tproxy.TProxyClientSocket;
 
@@ -17,36 +19,11 @@ import java.net.*;
  * Note: after upgrade/changing this file you need to repeat this
  */
 public class TProxyServerSocket extends ServerSocket {
-    /**
-     * Load a libary (*.so or *.dll).
-     * @param libs the libary names
-     * @throws java.io.IOException
-     */
-    static void loadLib(String... libs) throws Throwable {
-        Throwable e=null;
-        for(String lib : libs) {
-            try {
-                System.load(new File(lib).getCanonicalPath());
-                break;
-            } catch (Throwable eio) {e = eio;}
-        }
-        if (e!=null) throw e;
-    }
-
-    //Load our native JNI lib
-    static {
-        try {
-            loadLib("clib/libtproxy.so");
-        } catch (Throwable e) {
-            System.out.println("Could not load libTunTapLinux.so" + e.getMessage());
-        }
-    }
 
     /*
      * This fields are manipulated by native c code so don't change it !!!
      */
-    private int remoteIp;
-    private int remotePort;
+    private tproxy proxy=null;
 
     public TProxyServerSocket() throws IOException {
         super();
@@ -64,22 +41,18 @@ public class TProxyServerSocket extends ServerSocket {
         return SocketUtils.getFd(this);
     }
 
-    private native int setIPTransparant(int fd);
-    private native int getOriginalDestination(int fd);
-
-    public void initTProxy() throws SocketException,IOException,UnknownHostException {
+    public void initTProxy(InetAddress address,int port) throws SocketException,IOException,UnknownHostException {
         SocketImpl impl=getImplementation();
         int fd=getFd();
-        System.out.println("TPROXY server socket fd: "+fd);
-        int res=setIPTransparant(fd);
+        proxy=new tproxy();
+        int res=proxy.setIPTransparant(fd);
         if (res !=0 ) {
             System.out.println("oeps... IPtrans failed:"+res);
         }
         setReuseAddress(true);
         //bind to localhost interface
-        InetSocketAddress local=new InetSocketAddress(InetAddress.getByName("127.0.0.1"),1800);
+        InetSocketAddress local=new InetSocketAddress(address,port);
         bind(local,500);
-
     }
 
     /*
@@ -88,10 +61,10 @@ public class TProxyServerSocket extends ServerSocket {
     public TProxyClientSocket accepProxy() throws IOException {
         Socket c=accept();
         //get original destination address
-        if (getOriginalDestination(SocketUtils.getFd(c)) !=0) {
+        if (proxy.getOriginalDestination(SocketUtils.getFd(c)) != 0) {
             throw new RuntimeException("could not get original dst ip");
         }
-        return new TProxyClientSocket(c,remoteIp,remotePort);
+        return new TProxyClientSocket(c,proxy.remoteIp,proxy.remotePort);
     }
 
 }

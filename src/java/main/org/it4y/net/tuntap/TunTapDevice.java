@@ -19,48 +19,27 @@
 
 package org.it4y.net.tuntap;
 
-import org.it4y.jni.JNILoader;
+import org.it4y.jni.tuntap;
 
-import java.nio.ByteBuffer;
+public class TunTapDevice extends tuntap {
 
-public class TunTapLinux {
-    /* Load libtuntap.so */
-    static {
-    	JNILoader.loadLibrary("libtuntap.so");
-    }
-
-    private int fd;
-    private String device;
-
-    public TunTapLinux(String device)  {
+    public TunTapDevice(String device)  {
+        super();
         this.device=device;
-        this.fd=-1;
     }
 
     public void open() throws Exception {
         int errno;
         //open on name or let kernel chouse
-        if (device != null) {
-            errno=openTunDevice(device);
-        } else {
-            errno=openTun();
-        }
+        if (device != null) { errno=openTunDevice(device);
+        } else { errno=openTun(); }
         if (errno != 0) {
-          throw new Exception("Could not open '/dev/net/tun!'\n" +
-                "errno="+errno);
+          throw new Exception("Could not open '/dev/net/tun!'\n" + "errno="+errno);
         }
     }
 
     public String getDevice() {
         return device;
     }
-
-    private native int openTunDevice(String device);
-    private native int openTun();
-    public  native void close();
-    public native void write(byte[] b, int len);
-    public native void writeByteBuffer(ByteBuffer buffer,int len);
-    public native int read(byte[] b);
-    public native int readByteBuffer(ByteBuffer buffer);
 
 }
