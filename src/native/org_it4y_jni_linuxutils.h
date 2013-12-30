@@ -65,6 +65,14 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname
 
 /*
  * Class:     org_it4y_jni_linuxutils
+ * Method:    gettcpinfo
+ * Signature: (ILorg/it4y/jni/libc/tcp_info;)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_gettcpinfo
+  (JNIEnv *, jclass, jint, jobject);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
  * Method:    getLocalHost
  * Signature: ()Ljava/net/InetSocketAddress;
  */

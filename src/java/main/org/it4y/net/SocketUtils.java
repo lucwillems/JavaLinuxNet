@@ -74,7 +74,9 @@ public class SocketUtils {
 
     public static int getFd(Socket socket) {
         FileDescriptor fd=getFileDescriptor(socket);
-        if (fd==null) { throw new RuntimeException("No FD found..");}
+        if (fd==null) {
+            return -1;
+        }
         //Get FD field value
         try {
             Field privateFd = FileDescriptor.class.getDeclaredField("fd");

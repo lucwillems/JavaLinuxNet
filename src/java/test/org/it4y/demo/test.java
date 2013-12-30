@@ -32,9 +32,11 @@ public class test {
         //InetSocketAddress y=linuxutils.getLocalHost();
         //System.out.println(y);
         System.out.println(linuxutils.getsockname(tproxy.getFd()).toInetSocketAddress());
+
         while(true) {
             Thread.sleep(1000);
-            tundev.dumpSpeed();
+            //tundev.dumpSpeed();
+            //tproxy.dumpTCPInfo();
         }
     }
 }

@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <jni.h>
 #include <string.h>
+#include <linux/tcp.h>
 
 #include "org_it4y_jni_linuxutils.h"
  /* Amount of characters in the error message buffer */
@@ -152,7 +153,10 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname(JNIEnv *env, 
 
     struct sockaddr_in orig_dst;
     socklen_t addrlen = sizeof(orig_dst);
+    struct tcp_info info;
+    int tcpinfolen=sizeof(info);
 
+    fprintf(stderr,"tcp_info: %d",tcpinfolen);
     memset(&orig_dst, 0, addrlen);
     //get socket bound address/port
     if(getsockname(fd, (struct sockaddr*) &orig_dst, &addrlen) < 0){
@@ -190,6 +194,68 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname(JNIEnv *env, 
     return 0;
 }
 
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    gettcpinfo
+ * Signature: (ILorg/it4y/jni/libc/tcp_info;)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_gettcpinfo (JNIEnv *env, jclass this, jint fd, jobject tcpInfo_Obj) {
+
+   struct tcp_info value;
+   socklen_t len = sizeof(value);
+
+  //get socket string option
+  if (getsockopt(fd,IPPROTO_TCP,TCP_INFO, &value,&len) != 0) {
+     perror("getsockopt tcp_info");
+     throwErrnoExceptionfError(env,errno);
+     return 0;
+  }
+  //fprintf(stderr,"retrieved tcp_info from %d size %d",fd,len);
+  //we need to push data to tcp_info java class. we have 1 big setdata method with 32 parameters (if i counted correctly)
+  jclass ctcp_inf = (*env)->FindClass(env,"org/it4y/jni/libc$tcp_info");
+  if((*env)->ExceptionOccurred(env)) { return;}
+  jmethodID tcp_info_setdataID = (*env)->GetMethodID(env, ctcp_inf, "setdata","(BBBBBBBBIIIIIIIIIIIIIIIIIIIIIIII)V");
+  if((*env)->ExceptionOccurred(env)) { return;}
+  //callback
+  if (len==104) {
+       (*env)->CallVoidMethod(env, tcpInfo_Obj,tcp_info_setdataID,
+       value.tcpi_state,
+       value.tcpi_ca_state,
+       value.tcpi_retransmits,
+       value.tcpi_probes,
+       value.tcpi_backoff,
+       value.tcpi_options,
+       value.tcpi_snd_wscale,
+       value.tcpi_rcv_wscale,
+       value.tcpi_rto,
+       value.tcpi_ato,
+       value.tcpi_snd_mss,
+       value.tcpi_rcv_mss,
+       value.tcpi_unacked,
+       value.tcpi_sacked,
+       value.tcpi_lost,
+       value.tcpi_retrans,
+       value.tcpi_fackets,
+       value.tcpi_last_data_sent,
+       value.tcpi_last_ack_sent,
+       value.tcpi_last_data_recv,
+       value.tcpi_last_ack_recv,
+       value.tcpi_pmtu,
+       value.tcpi_rcv_ssthresh,
+       value.tcpi_rtt,
+       value.tcpi_rttvar,
+       value.tcpi_snd_ssthresh,
+       value.tcpi_snd_cwnd,
+       value.tcpi_advmss,
+       value.tcpi_reordering,
+       value.tcpi_rcv_rtt,
+       value.tcpi_rcv_space,
+       value.tcpi_total_retrans
+       );
+  }
+  return len;
+}
 
 /*
  * Class:     org_it4y_jni_linuxutils
@@ -236,6 +302,7 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getLocalHost  (JNIEnv *en
   if((*env)->ExceptionOccurred(env)) { return;}
   jobject isa = (*env)->NewObject(env, isa_class, isa_ctorID, iaObj, port);
   if((*env)->ExceptionOccurred(env)) { return;}
+
 
   return isa;
   //return null

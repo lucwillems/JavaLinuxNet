@@ -153,8 +153,8 @@ public final class libc {
             this.tcpi_options = tcpi_options;
             this.tcpi_snd_wscale = tcpi_snd_wscale;
             this.tcpi_rcv_wscale = tcpi_rcv_wscale;
-            this.tcpi_rto = tcpi_rto;
-            this.tcpi_ato = tcpi_ato;
+            this.tcpi_rto = tcpi_rto;         //usec
+            this.tcpi_ato = tcpi_ato;         //usec ack timeout
             this.tcpi_snd_mss = tcpi_snd_mss;
             this.tcpi_rcv_mss = tcpi_rcv_mss;
             this.tcpi_unacked = tcpi_unacked;
@@ -162,21 +162,21 @@ public final class libc {
             this.tcpi_lost = tcpi_lost;
             this.tcpi_retrans = tcpi_retrans;
             this.tcpi_fackets = tcpi_fackets;
-            this.tcpi_last_data_sent = tcpi_last_data_sent;
-            this.tcpi_last_ack_sent = tcpi_last_ack_sent;
-            this.tcpi_last_data_recv = tcpi_last_data_recv;
-            this.tcpi_last_ack_recv = tcpi_last_ack_recv;
+            this.tcpi_last_data_sent = tcpi_last_data_sent;   //msec since start
+            this.tcpi_last_ack_sent = tcpi_last_ack_sent;     //
+            this.tcpi_last_data_recv = tcpi_last_data_recv;   //msec
+            this.tcpi_last_ack_recv = tcpi_last_ack_recv;     //msec
             this.tcpi_pmtu = tcpi_pmtu;
             this.tcpi_rcv_ssthresh = tcpi_rcv_ssthresh;
-            this.tcpi_rtt = tcpi_rtt;
-            this.tcpi_rttvar = tcpi_rttvar;
+            this.tcpi_rtt = tcpi_rtt;    //usec
+            this.tcpi_rttvar = tcpi_rttvar;    //usec
             this.tcpi_snd_ssthresh = tcpi_snd_ssthresh;
             this.tcpi_snd_cwnd = tcpi_snd_cwnd;
             this.tcpi_advmss = tcpi_advmss;
             this.tcpi_reordering = tcpi_reordering;
-            this.tcpi_rcv_rtt = tcpi_rcv_rtt;
+            this.tcpi_rcv_rtt = tcpi_rcv_rtt;       //usec
             this.tcpi_rcv_space = tcpi_rcv_space;
-            this.tcpi_total_retrans = tcpi_total_retrans;
+            this.tcpi_total_retrans = tcpi_total_retrans;  //total retransmits
 
         }
 
