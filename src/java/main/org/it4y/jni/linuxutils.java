@@ -130,5 +130,23 @@ public class linuxutils {
     }
 
 
+    public static native int gettcpinfo(int fd,libc.tcp_info info) throws libc.ErrnoException;
+    public static int gettcpinfo(Socket s,libc.tcp_info info) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        return gettcpinfo(fd,info);
+    }
+    public static  int gettcpinfo(ServerSocket s,libc.tcp_info info) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        return gettcpinfo(fd,info);
+    }
+    public static  int gettcpinfo(ServerSocketChannel sc,libc.tcp_info info) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(sc.socket());
+        return gettcpinfo(fd,info);
+    }
+    public static  int gettcpinfo(SocketChannel sc,libc.tcp_info info) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(sc.socket());
+        return gettcpinfo(fd,info);
+    }
+
     public static native InetSocketAddress getLocalHost();
 }
