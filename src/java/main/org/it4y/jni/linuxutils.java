@@ -36,14 +36,80 @@ public class linuxutils {
         setbooleanSockOption(fd,level,option,booleanValue);
     }
 
-    public static native void setuint16SockOption(int fd, int level, int option, int u16value) throws libc.ErrnoException;
-    public static native void setuint32SockOption(int fd, int level, int option, int u32value) throws libc.ErrnoException;
+    /* note: int=4 bytes !!! */
+    public static native void setintSockOption(int fd, int level, int option, int int32value) throws libc.ErrnoException;
+    public static void setintSockOption(Socket s, int level, int option, int intvalue) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        setintSockOption(fd,level,option,intvalue);
+    }
+    public static void setintSockOption(ServerSocket s, int level, int option, int intvalue) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        setintSockOption(fd,level,option,intvalue);
+    }
+    public static void setintSockOption(SocketChannel sc, int level, int option, int intvalue) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(sc.socket());
+        setintSockOption(fd,level,option,intvalue);
+    }
+    public static void setintSockOption(ServerSocketChannel sc, int level, int option, int intvalue) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(sc.socket());
+        setintSockOption(fd,level,option,intvalue);
+    }
+
     public static native void setstringSockOption(int fd, int level, int option, String s) throws libc.ErrnoException;
+    public static void setstringSockOption(Socket s, int level, int option, String x) throws libc.ErrnoException {
+        int fd=SocketUtils.getFd(s);
+        setstringSockOption(fd,level,option,x);
+    }
+    public static void setstringSockOption(ServerSocket s, int level, int option, String x) throws libc.ErrnoException {
+        int fd=SocketUtils.getFd(s);
+        setstringSockOption(fd,level,option,x);
+    }
+    public static void setstringSockOption(SocketChannel sc, int level, int option, String x) throws libc.ErrnoException {
+        int fd=SocketUtils.getFd(sc.socket());
+        setstringSockOption(fd,level,option,x);
+    }
+    public static void setstringSockOption(ServerSocketChannel sc, int level, int option, String x) throws libc.ErrnoException {
+        int fd=SocketUtils.getFd(sc.socket());
+        setstringSockOption(fd,level,option,x);
+    }
+
 
     public static native boolean getbooleanSockOption(int fd, int level, int option) throws libc.ErrnoException;
-    public static native int getuint16SockOption(int fd, int level, int option) throws libc.ErrnoException;
-    public static native int getuint32SockOption(int fd, int level, int option)  throws libc.ErrnoException;
+    public static native int getintSockOption(int fd, int level, int option) throws libc.ErrnoException;
+    public static int getintSockOption(Socket s,int level,int option) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        return getintSockOption(fd,level,option);
+    }
+    public static int getintSockOption(ServerSocket s,int level,int option) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        return getintSockOption(fd,level,option);
+    }
+    public static int getintSockOption(SocketChannel sc,int level,int option) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(sc.socket());
+        return getintSockOption(fd,level,option);
+    }
+    public static int getintSockOption(ServerSocketChannel sc,int level,int option) throws libc.ErrnoException {
+        int fd=SocketUtils.getFd(sc.socket());
+        return getintSockOption(fd,level,option);
+    }
+
     public static native String getstringSockOption(int fd, int level, int option)  throws libc.ErrnoException;
+    public static String getstringSockOption(Socket s,int level,int option) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        return getstringSockOption(fd,level,option);
+    }
+    public static String getstringSockOption(ServerSocket s,int level,int option) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(s);
+        return getstringSockOption(fd,level,option);
+    }
+    public static String getstringSockOption(SocketChannel sc,int level,int option) throws libc.ErrnoException {
+        int fd= SocketUtils.getFd(sc.socket());
+        return getstringSockOption(fd,level,option);
+    }
+    public static String getstringSockOption(ServerSocketChannel sc,int level,int option) throws libc.ErrnoException {
+        int fd=SocketUtils.getFd(sc.socket());
+        return getstringSockOption(fd,level,option);
+    }
 
     public static native libc.sockaddr_in getsockname(int fd) throws libc.ErrnoException;
     public static libc.sockaddr_in getsockname(Socket s) throws libc.ErrnoException {

@@ -41,7 +41,7 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv 
  if (x) { value = 1;}
  //set socket boolean option
  if (setsockopt(fd, level,option, &value, sizeof(value)) != 0) {
-     perror("setsockopt");
+     perror("setsockopt_boolean");
      throwErrnoExceptionfError(env,errno);
  }
 }
@@ -52,17 +52,14 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv 
  * Method:    setuint16SockOption
  * Signature: (IIII)I
  */
-JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option, jint x) {
-  fprintf(stderr,"setuint16SockOption %d %d %d %d\n",fd,level,option,x);
-}
-
-/*
- * Class:     org_it4y_jni_linuxutils
- * Method:    setuint32SockOption
- * Signature: (IIII)I
- */
-JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption(JNIEnv *env , jclass this , jint fd, jint level , jint option, jint x) {
-  fprintf(stderr,"setuint32SockOption %d %d %d %d\n",fd,level,option,x);
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setintSockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option, jint x) {
+   int value=x;
+   fprintf(stderr,"setuint16SockOption %d %d %d %d\n",fd,level,option,value);
+   //set socket int option
+   if (setsockopt(fd, level,option, &value, sizeof(value)) != 0) {
+      perror("setsockopt_uint16");
+      throwErrnoExceptionfError(env,errno);
+   }
 }
 
 /*
@@ -71,7 +68,21 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption(JNIEnv *
  * Signature: (IIILjava/lang/String;)I
  */
 JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption(JNIEnv *env, jclass this, jint fd, jint level,jint option , jstring s) {
-  fprintf(stderr,"setStringSockOption %d %d %d\n",fd,level,option);
+
+  const char *value = (*env)->GetStringUTFChars(env, s, 0);
+
+
+   // use your string
+  fprintf(stderr,"setStringSockOption %d %d %d [%s]\n",fd,level,option,value);
+
+   //set socket int option
+   if (setsockopt(fd, level,option, value, sizeof(value)+1) != 0) {
+      perror("setsockopt_string");
+      throwErrnoExceptionfError(env,errno);
+   }
+  //must always be done !!!
+  (*env)->ReleaseStringUTFChars(env, s, value);
+
 }
 
 /*
@@ -87,7 +98,7 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption(JNI
 
   //get socket boolean option
   if (getsockopt(fd, level,option, &value,&len) != 0) {
-     perror("getsockopt");
+     perror("getsockopt boolean");
      throwErrnoExceptionfError(env,errno);
      return 0;
  }
@@ -99,19 +110,18 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption(JNI
  * Method:    getuint16SockOption
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getuint16SockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getintSockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option) {
   fprintf(stderr,"getuint16SockOption %d %d %d\n",fd,level,option);
-  return 0;
-}
+  int value=0;
+  socklen_t len=sizeof(value);
 
-/*
- * Class:     org_it4y_jni_linuxutils
- * Method:    getuint32SockOption
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getuint32SockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option) {
-  fprintf(stderr,"getuint32SockOption %d %d %d\n",fd,level,option);
-  return 0;
+  //get socket boolean option
+  if (getsockopt(fd, level,option, &value,&len) != 0) {
+     perror("getsockopt int");
+     throwErrnoExceptionfError(env,errno);
+     return 0;
+  }
+  return value;
 }
 
 /*
@@ -121,7 +131,16 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getuint32SockOption(JNIEnv *
  */
 JNIEXPORT jstring JNICALL Java_org_it4y_jni_linuxutils_getstringSockOption (JNIEnv *env, jclass this, jint fd, jint level , jint option) {
   fprintf(stderr,"getstringSockOption %d %d %d\n",fd,level,option);
-  return  (*env)->NewGlobalRef(env, NULL);
+  //we should limit buffer size here so we stick to 255 for now
+  char value[255];
+  socklen_t len=sizeof(value)+1;
+  //get socket string option
+  if (getsockopt(fd,level,option, &value,&len) != 0) {
+     perror("getsockopt string");
+     throwErrnoExceptionfError(env,errno);
+     return 0;
+  }
+  return (*env)->NewStringUTF(env,value);
 }
 
 /*

@@ -17,18 +17,10 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption
 
 /*
  * Class:     org_it4y_jni_linuxutils
- * Method:    setuint16SockOption
+ * Method:    setintSockOption
  * Signature: (IIII)V
  */
-JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption
-  (JNIEnv *, jclass, jint, jint, jint, jint);
-
-/*
- * Class:     org_it4y_jni_linuxutils
- * Method:    setuint32SockOption
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setintSockOption
   (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
@@ -49,18 +41,10 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption
 
 /*
  * Class:     org_it4y_jni_linuxutils
- * Method:    getuint16SockOption
+ * Method:    getintSockOption
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getuint16SockOption
-  (JNIEnv *, jclass, jint, jint, jint);
-
-/*
- * Class:     org_it4y_jni_linuxutils
- * Method:    getuint32SockOption
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getuint32SockOption
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getintSockOption
   (JNIEnv *, jclass, jint, jint, jint);
 
 /*
