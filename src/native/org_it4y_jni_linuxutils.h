@@ -10,33 +10,33 @@ extern "C" {
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    setbooleanSockOption
- * Signature: (IIIZ)I
+ * Signature: (IIIZ)V
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption
   (JNIEnv *, jclass, jint, jint, jint, jboolean);
 
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    setuint16SockOption
- * Signature: (IIII)I
+ * Signature: (IIII)V
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption
   (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    setuint32SockOption
- * Signature: (IIII)I
+ * Signature: (IIII)V
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption
   (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    setstringSockOption
- * Signature: (IIILjava/lang/String;)I
+ * Signature: (IIILjava/lang/String;)V
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption
   (JNIEnv *, jclass, jint, jint, jint, jstring);
 
 /*
@@ -74,9 +74,9 @@ JNIEXPORT jstring JNICALL Java_org_it4y_jni_linuxutils_getstringSockOption
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    getsockname
- * Signature: (I)I
+ * Signature: (I)Lorg/it4y/jni/libc/sockaddr_in;
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getsockname
+JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname
   (JNIEnv *, jclass, jint);
 
 /*

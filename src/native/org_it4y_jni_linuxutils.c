@@ -5,13 +5,36 @@
 #include <string.h>
 
 #include "org_it4y_jni_linuxutils.h"
+ /* Amount of characters in the error message buffer */
+#define ERROR_SIZE 254
+
+
+
+/*
+ * This will create a ErrnoException based on returned errno
+ *
+ */
+jint throwErrnoExceptionfError(JNIEnv *env, int error) {
+
+   jclass errnoexception_class = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
+   if((*env)->ExceptionOccurred(env)) { return;}
+   jmethodID errnoexception_ctorID  = (*env)->GetMethodID(env, errnoexception_class, "<init>","(Ljava/lang/String;I)V");
+   if((*env)->ExceptionOccurred(env)) { return;}
+   jstring jmessage = (*env)->NewStringUTF(env,strerror(error));
+   if((*env)->ExceptionOccurred(env)) { return;}
+   jobject errnoexception_obj = (*env)->NewObject(env, errnoexception_class, errnoexception_ctorID,jmessage,error);
+   if((*env)->ExceptionOccurred(env)) { return;}
+
+   //yes it did ;-)
+   (*env)->Throw( env, errnoexception_obj );
+}
 
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    setbooleanSockOption
  * Signature: (IIIB)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv *env, jclass this, jint fd, jint level , jint option , jboolean x) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv *env, jclass this, jint fd, jint level , jint option , jboolean x) {
 
  //fprintf(stderr,"setbooleanSockOption %d %d %d %d\n",fd,level,option,x);
  int value=0;
@@ -19,9 +42,8 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv 
  //set socket boolean option
  if (setsockopt(fd, level,option, &value, sizeof(value)) != 0) {
      perror("setsockopt");
-     return errno;
+     throwErrnoExceptionfError(env,errno);
  }
- return 0;
 }
 
 
@@ -30,7 +52,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv 
  * Method:    setuint16SockOption
  * Signature: (IIII)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option, jint x) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option, jint x) {
   fprintf(stderr,"setuint16SockOption %d %d %d %d\n",fd,level,option,x);
 }
 
@@ -39,7 +61,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setuint16SockOption(JNIEnv *
  * Method:    setuint32SockOption
  * Signature: (IIII)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption(JNIEnv *env , jclass this , jint fd, jint level , jint option, jint x) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption(JNIEnv *env , jclass this , jint fd, jint level , jint option, jint x) {
   fprintf(stderr,"setuint32SockOption %d %d %d %d\n",fd,level,option,x);
 }
 
@@ -48,7 +70,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setuint32SockOption(JNIEnv *
  * Method:    setstringSockOption
  * Signature: (IIILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption(JNIEnv *env, jclass this, jint fd, jint level,jint option , jstring s) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption(JNIEnv *env, jclass this, jint fd, jint level,jint option , jstring s) {
   fprintf(stderr,"setStringSockOption %d %d %d\n",fd,level,option);
 }
 
@@ -66,7 +88,8 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption(JNI
   //get socket boolean option
   if (getsockopt(fd, level,option, &value,&len) != 0) {
      perror("getsockopt");
-     return errno;
+     throwErrnoExceptionfError(env,errno);
+     return 0;
  }
  return value;
 }
@@ -106,9 +129,47 @@ JNIEXPORT jstring JNICALL Java_org_it4y_jni_linuxutils_getstringSockOption (JNIE
  * Method:    getsockname
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getsockname(JNIEnv *env, jclass this, jint fd) {
-}
+JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname(JNIEnv *env, jclass this, jint fd) {
 
+    struct sockaddr_in orig_dst;
+    socklen_t addrlen = sizeof(orig_dst);
+
+    memset(&orig_dst, 0, addrlen);
+    //get socket bound address/port
+    if(getsockname(fd, (struct sockaddr*) &orig_dst, &addrlen) < 0){
+        perror("getsockname: ");
+        throwErrnoExceptionfError(env,errno);
+        return 0;
+    } else {
+        if(orig_dst.sin_family == AF_INET) {
+           /* TODO : use cached ID's */
+          jclass csockaddr_in = (*env)->FindClass(env,"org/it4y/jni/libc$sockaddr_in");
+          if((*env)->ExceptionOccurred(env)) { return;}
+          jfieldID sockaddr_in_addressID = (*env)->GetFieldID(env, csockaddr_in, "address", "I");
+          if((*env)->ExceptionOccurred(env)) { return;}
+          jfieldID sockaddr_in_familyID  = (*env)->GetFieldID(env, csockaddr_in, "family", "I");
+          if((*env)->ExceptionOccurred(env)) { return;}
+          jfieldID sockaddr_in_portID   = (*env)->GetFieldID(env, csockaddr_in, "port", "I");
+          if((*env)->ExceptionOccurred(env)) { return;}
+          jmethodID sockaddr_in_ctorID  = (*env)->GetMethodID(env, csockaddr_in, "<init>","()V");
+          if((*env)->ExceptionOccurred(env)) { return;}
+
+          /* create instance of sockaddr_in and fillup */
+         jobject jsockaddr_in_Obj = (*env)->NewObject(env, csockaddr_in, sockaddr_in_ctorID);
+         if((*env)->ExceptionOccurred(env)) { return;}
+         (*env)->SetIntField(env, jsockaddr_in_Obj, sockaddr_in_addressID ,(jint)ntohl(orig_dst.sin_addr.s_addr));
+         if((*env)->ExceptionOccurred(env)) { return;}
+         (*env)->SetIntField(env, jsockaddr_in_Obj, sockaddr_in_portID ,(jint)ntohs(orig_dst.sin_port));
+         if((*env)->ExceptionOccurred(env)) { return;}
+         (*env)->SetIntField(env, jsockaddr_in_Obj, sockaddr_in_familyID ,orig_dst.sin_family);
+         if((*env)->ExceptionOccurred(env)) { return;}
+         return jsockaddr_in_Obj;
+       } else {
+         fprintf(stderr," IPv6 not supported!!!\n");
+       }
+    }
+    return 0;
+}
 
 
 /*

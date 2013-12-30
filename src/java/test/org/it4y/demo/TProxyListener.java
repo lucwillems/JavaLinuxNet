@@ -1,9 +1,11 @@
 package org.it4y.demo;
 
+import org.it4y.jni.linuxutils;
 import org.it4y.net.tproxy.TProxyClientSocket;
 import org.it4y.net.tproxy.TProxyServerSocket;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Created by luc on 12/28/13.
@@ -22,12 +24,17 @@ public class TProxyListener extends TestRunner {
         } catch (Throwable ignore) {}
     }
 
+    public int getFd() {
+        return server.getFd();
+    }
+
     public void run() {
         try {
          server=new TProxyServerSocket();
          server.initTProxy(listenIp,listenPort);
          while(true) {
             TProxyClientSocket client=server.accepProxy();
+            InetSocketAddress x= linuxutils.getsockname(client.getSocket()).toInetSocketAddress();
             System.out.println(System.currentTimeMillis()+": "+client);
          }
         } catch (Throwable t) {

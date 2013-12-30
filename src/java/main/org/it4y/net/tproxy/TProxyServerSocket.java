@@ -1,6 +1,7 @@
 package org.it4y.net.tproxy;
 
 import org.it4y.jni.JNILoader;
+import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.jni.tproxy;
 import org.it4y.net.SocketUtils;
@@ -42,15 +43,12 @@ public class TProxyServerSocket extends ServerSocket {
         return SocketUtils.getFd(this);
     }
 
-    public void setIPTransparentOption() {
-        int fd=getFd();
-        int rc=linuxutils.setbooleanSockOption(fd, SocketOptions.SOL_IP,SocketOptions.IP_TRANSPARENT,true);
-        System.out.println("IP transparent: "+rc);
-        System.out.println(linuxutils.getbooleanSockOption(fd,SocketOptions.SOL_IP,SocketOptions.IP_TRANSPARENT));
+    public void setIPTransparentOption() throws libc.ErrnoException {
+        linuxutils.setbooleanSockOption(this, SocketOptions.SOL_IP,SocketOptions.IP_TRANSPARENT,true);
     }
 
 
-    public void initTProxy(InetAddress address,int port) throws SocketException,IOException,UnknownHostException {
+    public void initTProxy(InetAddress address,int port) throws Exception {
         setIPTransparentOption();
         setReuseAddress(true);
         //bind to localhost interface
@@ -58,17 +56,16 @@ public class TProxyServerSocket extends ServerSocket {
         bind(local,500);
     }
 
-    /*
-     * This method is not thread save, so only 1 thread please !!!
-     */
     public TProxyClientSocket accepProxy() throws IOException {
         tproxy proxy=new tproxy();
         Socket c=accept();
-        //get original destination address
-        if (proxy.getOriginalDestination(SocketUtils.getFd(c)) != 0) {
-            throw new RuntimeException("could not get original dst ip");
+        //get original destination address stored in client socket structure
+        try {
+          libc.sockaddr_in remote=linuxutils.getsockname(c);
+          return new TProxyClientSocket(c,remote);
+        } catch (libc.ErrnoException errno) {
+            throw new IOException("libc error",errno);
         }
-        return new TProxyClientSocket(c,proxy.remoteIp,proxy.remotePort);
     }
 
 }

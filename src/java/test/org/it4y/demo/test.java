@@ -25,11 +25,13 @@ public class test {
         System.out.println("tun interface listener running");
         TProxyListener tproxy=new TProxyListener();
         tproxy.start();
+        Thread.sleep(100);
         System.out.println("tproxy server running");
-        InetAddress x=InetAddress.getByName("localhost");
-        System.out.println(x);
-        InetSocketAddress y=linuxutils.getLocalHost();
-        System.out.println(y);
+        //InetAddress x=InetAddress.getByName("localhost");
+        //System.out.println(x);
+        //InetSocketAddress y=linuxutils.getLocalHost();
+        //System.out.println(y);
+        System.out.println(linuxutils.getsockname(tproxy.getFd()).toInetSocketAddress());
         while(true) {
             Thread.sleep(1000);
             tundev.dumpSpeed();
