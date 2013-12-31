@@ -89,6 +89,14 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open
 
 /*
  * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_close
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close
+  (JNIEnv *, jclass, jbyteArray);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
  * Method:    rtnl_wilddump_request
  * Signature: ([BII)I
  */

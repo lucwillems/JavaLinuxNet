@@ -153,7 +153,18 @@ public class linuxutils {
     public static native InetSocketAddress getLocalHost();
 
     //libnet routing stuff
-    public static native int rtnl_open(byte[] handle,int subscriptions);
+    private static native int rtnl_open(byte[] handle,int subscriptions);
+
+    public static int rtnl_open(libnetlink.rtnl_handle handler, int subscriptions) {
+        return rtnl_open(handler.handle,subscriptions);
+    }
+    //TODO : no rtnl_close ????
+    private static native int rtnl_close(byte[] handle);
+    public static int rtnl_close(libnetlink.rtnl_handle handler) {
+        return rtnl_close(handler.handle);
+    }
+
+
     public static native int rtnl_wilddump_request(byte[] handle,int family, int type);
     public static native int rtnl_send(byte[] handle, ByteBuffer buf, int len);
     public static native int rtnl_dump_request(byte[] handle, int type, ByteBuffer req, int len);

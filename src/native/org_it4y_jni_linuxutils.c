@@ -321,15 +321,32 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
   struct rtnl_handle *rth;
   jbyte *b;
 
-  //int len=sizeof(rth);
-  //fprintf(stderr,"rtnl_handle: %d",len);
-
   //get pointer to handler byte[] structure
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open(rth,subscriptions);
   fprintf(stderr,"rtnl_handle: %d",rth->fd);
+  //release it before it leaks ...
+  (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+  return result;
+}
 
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_close
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jclass this , jbyteArray handle) {
+
+  struct rtnl_handle *rth;
+  jbyte *b;
+
+  //get pointer to handler byte[] structure
+  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  rth = (struct rtnl_handle *)b;
+  int result=close(rth->fd);
+  rth->fd=-1;
+  //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
   return result;
 }

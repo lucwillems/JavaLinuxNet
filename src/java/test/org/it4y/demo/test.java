@@ -5,9 +5,6 @@ import org.it4y.jni.linuxutils;
 import org.it4y.util.Hexdump;
 
 import java.lang.Exception;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 /**
  * Created by luc on 12/25/13.
@@ -35,9 +32,10 @@ public class test {
         //System.out.println(y);
         System.out.println(linuxutils.getsockname(tproxy.getFd()).toInetSocketAddress());
         libnetlink.rtnl_handle handle=new libnetlink.rtnl_handle();
-        linuxutils.rtnl_open(handle.handle,0);
+        linuxutils.rtnl_open(handle, 0);
         System.out.println(Hexdump.bytesToHex(handle.handle,4));
-
+        linuxutils.rtnl_close(handle);
+        System.out.println(Hexdump.bytesToHex(handle.handle,4));
         while(true) {
             Thread.sleep(1000);
             //tundev.dumpSpeed();
