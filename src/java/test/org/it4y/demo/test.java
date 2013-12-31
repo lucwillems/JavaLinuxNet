@@ -1,6 +1,8 @@
 package org.it4y.demo;
 
+import org.it4y.jni.libnetlink;
 import org.it4y.jni.linuxutils;
+import org.it4y.util.Hexdump;
 
 import java.lang.Exception;
 import java.net.Inet4Address;
@@ -32,6 +34,9 @@ public class test {
         //InetSocketAddress y=linuxutils.getLocalHost();
         //System.out.println(y);
         System.out.println(linuxutils.getsockname(tproxy.getFd()).toInetSocketAddress());
+        libnetlink.rtnl_handle handle=new libnetlink.rtnl_handle();
+        linuxutils.rtnl_open(handle.handle,0);
+        System.out.println(Hexdump.bytesToHex(handle.handle,4));
 
         while(true) {
             Thread.sleep(1000);

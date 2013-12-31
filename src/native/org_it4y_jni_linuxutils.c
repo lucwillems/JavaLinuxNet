@@ -4,6 +4,8 @@
 #include <jni.h>
 #include <string.h>
 #include <linux/tcp.h>
+//libnet
+#include <libnetlink.h>
 
 #include "org_it4y_jni_linuxutils.h"
  /* Amount of characters in the error message buffer */
@@ -156,7 +158,7 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname(JNIEnv *env, 
     struct tcp_info info;
     int tcpinfolen=sizeof(info);
 
-    fprintf(stderr,"tcp_info: %d",tcpinfolen);
+    //fprintf(stderr,"tcp_info: %d",tcpinfolen);
     memset(&orig_dst, 0, addrlen);
     //get socket bound address/port
     if(getsockname(fd, (struct sockaddr*) &orig_dst, &addrlen) < 0){
@@ -307,4 +309,63 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getLocalHost  (JNIEnv *en
   return isa;
   //return null
   //return (*env)->NewGlobalRef(env,NULL);
+}
+
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_open
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jclass this, jbyteArray handle, jint subscriptions) {
+  struct rtnl_handle *rth;
+  jbyte *b;
+
+  //int len=sizeof(rth);
+  //fprintf(stderr,"rtnl_handle: %d",len);
+
+  //get pointer to handler byte[] structure
+  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  rth = (struct rtnl_handle *)b;
+  int result=rtnl_open(rth,subscriptions);
+  fprintf(stderr,"rtnl_handle: %d",rth->fd);
+
+  (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+  return result;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_wilddump_request
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_wilddump_request(JNIEnv *env, jclass this, jint family , jint type) {
+  return -1;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_send
+ * Signature: (Ljava/nio/ByteBuffer;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_send(JNIEnv *env, jclass this, jobject bytebuffer, jint len) {
+  return -1;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_dump_request
+ * Signature: (ILjava/nio/ByteBuffer;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_dump_request(JNIEnv *env, jclass this , jint type , jobject req , jint len) {
+  return -1;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_listen
+ * Signature: (Ljava/nio/ByteBuffer;)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_listen(JNIEnv *env, jclass this , jobject bytebuffer) {
+   return -1;
 }

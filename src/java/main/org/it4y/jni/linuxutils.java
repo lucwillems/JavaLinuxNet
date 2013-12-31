@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
@@ -15,6 +16,7 @@ import java.nio.channels.SocketChannel;
 public class linuxutils {
     //Load our native JNI lib
     static {
+        JNILoader.loadLibrary("libnl-3.so");
         JNILoader.loadLibrary("liblinuxutils.so");
     }
 
@@ -149,4 +151,31 @@ public class linuxutils {
     }
 
     public static native InetSocketAddress getLocalHost();
+
+    //libnet routing stuff
+    public static native int rtnl_open(byte[] handle,int subscriptions);
+    public static native int rtnl_wilddump_request(byte[] handle,int family, int type);
+    public static native int rtnl_send(byte[] handle, ByteBuffer buf, int len);
+    public static native int rtnl_dump_request(byte[] handle, int type, ByteBuffer req, int len);
+    public static native int rtnl_listen(byte[] handle, ByteBuffer buf);
+
+/*
+    public static static int rtnl_dump_filter(struct rtnl_handle *rth,
+                      int (*filter)(struct sockaddr_nl *, struct nlmsghdr *n, void *),
+                      void *arg1,
+                      int (*junk)(struct sockaddr_nl *,struct nlmsghdr *n, void *),
+                      void *arg2)
+
+       int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
+                  unsigned groups, struct nlmsghdr *answer,
+                  int (*junk)(struct sockaddr_nl *,struct nlmsghdr *n, void *),
+                  void *jarg)
+
+       int rtnl_listen(struct rtnl_handle *rtnl,
+                  int (*handler)(struct sockaddr_nl *,struct nlmsghdr *n, void *),
+                  void *jarg)
+*/
+
+
+
 }

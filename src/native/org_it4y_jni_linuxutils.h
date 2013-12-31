@@ -79,6 +79,46 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_gettcpinfo
 JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getLocalHost
   (JNIEnv *, jclass);
 
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_open
+ * Signature: ([BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open
+  (JNIEnv *, jclass, jbyteArray, jint);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_wilddump_request
+ * Signature: ([BII)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1wilddump_1request
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_send
+ * Signature: ([BLjava/nio/ByteBuffer;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1send
+  (JNIEnv *, jclass, jbyteArray, jobject, jint);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_dump_request
+ * Signature: ([BILjava/nio/ByteBuffer;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1dump_1request
+  (JNIEnv *, jclass, jbyteArray, jint, jobject, jint);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_listen
+ * Signature: ([BLjava/nio/ByteBuffer;)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1listen
+  (JNIEnv *, jclass, jbyteArray, jobject);
+
 #ifdef __cplusplus
 }
 #endif
