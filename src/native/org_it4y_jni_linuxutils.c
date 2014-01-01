@@ -325,7 +325,26 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open(rth,subscriptions);
-  fprintf(stderr,"rtnl_handle: %d",rth->fd);
+  fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
+  //release it before it leaks ...
+  (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+  return result;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_open_byproto
+ * Signature: ([BII)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open_1byproto(JNIEnv *env, jclass this , jbyteArray handle , jint subscriptions , jint protocol) {
+  struct rtnl_handle *rth;
+  jbyte *b;
+
+  //get pointer to handler byte[] structure
+  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  rth = (struct rtnl_handle *)b;
+  int result=rtnl_open_byproto(rth,subscriptions,protocol);
+  fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
   return result;
@@ -336,7 +355,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
  * Method:    rtnl_close
  * Signature: ([B)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jclass this , jbyteArray handle) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jclass this , jbyteArray handle) {
 
   struct rtnl_handle *rth;
   jbyte *b;
@@ -344,11 +363,9 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jc
   //get pointer to handler byte[] structure
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
-  int result=close(rth->fd);
-  rth->fd=-1;
+  rtnl_close(rth);
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
-  return result;
 }
 
 /*
@@ -378,11 +395,56 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_dump_request(JNIEnv *en
   return -1;
 }
 
+
+struct listen_jni_callback
+{
+    JNIEnv *        env;
+    jclass          this;
+	jobject         messageBuffer; //ByteBuffer
+    jobject         listener;      //rtnl_listen_interface
+};
+
+/*
+ * callback function for listen
+ */
+static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *arg) {
+
+   //get access to jni environment to implement callback to java
+   struct listen_jni_callback* jni=(struct listen_jni_callback*)arg;
+   fprintf(stderr,"accept_msg: %d %d\n",who->nl_pid,who->nl_groups);
+   fprintf(stderr,"jni: %x %x %x %x\n",jni->env,jni->this,jni->messageBuffer,jni->listener);
+
+}
+
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    rtnl_listen
  * Signature: (Ljava/nio/ByteBuffer;)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_listen(JNIEnv *env, jclass this , jobject bytebuffer) {
-   return -1;
+ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1listen(JNIEnv *env, jclass this, jbyteArray handle, jobject messageBuffer, jobject listener) {
+   struct rtnl_handle *rth;
+   struct listen_jni_callback callback;
+
+   jbyte *b;
+
+   //get pointer to handler byte[] structure
+   b = (*env)->GetByteArrayElements(env, handle, NULL);
+   rth = (struct rtnl_handle *)b;
+
+
+   fprintf(stderr,"rtnl_listen: %d\n",rth->fd);
+
+   //java listener callback stuff
+   callback.env=env;
+   callback.this=this;
+   callback.messageBuffer=messageBuffer;
+   callback.listener=listener;
+   //this method blocks until something really bad happens
+   int result=rtnl_listen(rth, accept_msg, &callback);
+   fprintf(stderr,"rtnl_listen done: %d.\n",result);
+
+   //release it before it leaks ...
+   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+   return result;
 }
+

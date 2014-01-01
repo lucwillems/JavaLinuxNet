@@ -89,10 +89,18 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open
 
 /*
  * Class:     org_it4y_jni_linuxutils
- * Method:    rtnl_close
- * Signature: ([B)I
+ * Method:    rtnl_open_byproto
+ * Signature: ([BII)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open_1byproto
+  (JNIEnv *, jclass, jbyteArray, jint, jint);
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    rtnl_close
+ * Signature: ([B)V
+ */
+JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close
   (JNIEnv *, jclass, jbyteArray);
 
 /*
@@ -122,10 +130,10 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1dump_1request
 /*
  * Class:     org_it4y_jni_linuxutils
  * Method:    rtnl_listen
- * Signature: ([BLjava/nio/ByteBuffer;)I
+ * Signature: ([BLjava/nio/ByteBuffer;Lorg/it4y/jni/libnetlink/rtnl_accept;)I
  */
 JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1listen
-  (JNIEnv *, jclass, jbyteArray, jobject);
+  (JNIEnv *, jclass, jbyteArray, jobject, jobject);
 
 #ifdef __cplusplus
 }

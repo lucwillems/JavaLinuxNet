@@ -26,20 +26,12 @@ public class test {
         tproxy.start();
         Thread.sleep(100);
         System.out.println("tproxy server running");
-        //InetAddress x=InetAddress.getByName("localhost");
-        //System.out.println(x);
-        //InetSocketAddress y=linuxutils.getLocalHost();
-        //System.out.println(y);
+        TNetlinkRoutingListener router=new TNetlinkRoutingListener();
+        router.start();;
+        System.out.println("netlink listener running");
         System.out.println(linuxutils.getsockname(tproxy.getFd()).toInetSocketAddress());
-        libnetlink.rtnl_handle handle=new libnetlink.rtnl_handle();
-        linuxutils.rtnl_open(handle, 0);
-        System.out.println(Hexdump.bytesToHex(handle.handle,4));
-        linuxutils.rtnl_close(handle);
-        System.out.println(Hexdump.bytesToHex(handle.handle,4));
         while(true) {
             Thread.sleep(1000);
-            //tundev.dumpSpeed();
-            //tproxy.dumpTCPInfo();
         }
     }
 }
