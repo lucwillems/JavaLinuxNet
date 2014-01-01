@@ -12,6 +12,36 @@
 #define ERROR_SIZE 254
 
 
+void tostring(JNIEnv *env, jobject obj) {
+
+  if ( obj > 0) {
+   jclass cls = (*env)->GetObjectClass(env,obj);
+
+   // First get the class object
+   jmethodID mid = (*env)->GetMethodID(env,cls, "getClass", "()Ljava/lang/Class;");
+   jobject clsObj = (*env)->CallObjectMethod(env,obj, mid);
+
+   // Now get the class object's class descriptor
+   cls = (*env)->GetObjectClass(env,clsObj);
+
+   // Find the getName() method on the class object
+   mid = (*env)->GetMethodID(env,cls, "getName", "()Ljava/lang/String;");
+
+   // Call the getName() to get a jstring object back
+   jstring strObj = (jstring)(*env)->CallObjectMethod(env,clsObj, mid);
+
+    // Now get the c string from the java jstring object
+    const char* str = (*env)->GetStringUTFChars(env,strObj, NULL);
+
+   // Print the class name
+   fprintf(stderr,"Calling class is: %s %x\n", str,obj);
+
+   // Release the memory pinned char array
+   (*env)->ReleaseStringUTFChars(env,strObj, str);
+   } else {
+     fprintf(stderr,"Calling class is: null\n");
+   }
+}
 
 /*
  * This will create a ErrnoException based on returned errno
@@ -408,6 +438,8 @@ struct listen_jni_callback
     jobject         listener;      //rtnl_listen_interface
 };
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 /*
  * callback function for listen
  */
@@ -417,7 +449,27 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    struct listen_jni_callback* jni=(struct listen_jni_callback*)arg;
    fprintf(stderr,"accept_msg: %d %d\n",who->nl_pid,who->nl_groups);
    fprintf(stderr,"jni: %x %x %x %x\n",jni->env,jni->this,jni->messageBuffer,jni->listener);
+   fprintf(stderr,"nl : size %d\n",n->nlmsg_len);
+   tostring(jni->env,jni->messageBuffer);
+   tostring(jni->env,jni->listener);
 
+
+   char* b = (char *)(*jni->env)->GetDirectBufferAddress(jni->env,jni->messageBuffer);
+   jlong capacity = (*jni->env)->GetDirectBufferCapacity(jni->env,jni->messageBuffer);
+   //copy message into ByteBuffer
+   fprintf(stderr,"nl : size %d cap: %d  %p %p\n",n->nlmsg_len,capacity,n,b);
+   //TODO  : make this save !!!
+   memcpy(b,n,MIN(n->nlmsg_len,capacity));
+
+   //do java callback
+   jclass cls = (*jni->env)->GetObjectClass(jni->env,jni->listener);
+   jmethodID acceptID = (*jni->env)->GetMethodID(jni->env,cls, "accept", "(Ljava/nio/ByteBuffer;)I");
+   if((*jni->env)->ExceptionOccurred(jni->env)) { return -1;}
+   fprintf(stderr,"nl: call %x",acceptID);
+   // Call the int acccept(ByteBuffer)
+   jint result = (jint) (*jni->env)->CallIntMethod(jni->env, jni->listener, acceptID, jni->messageBuffer);
+   fprintf(stderr,"nl: call done %d\n",result);
+   return result;
 }
 
 /*
@@ -429,14 +481,20 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    struct rtnl_handle *rth;
    struct listen_jni_callback callback;
 
-   jbyte *b;
+    fprintf(stderr,"rtnl_listen: %x %x %x %x\n",this,handle,messageBuffer,listener);
+    tostring(env,messageBuffer);
+    tostring(env,listener);
 
-   //get pointer to handler byte[] structure
-   b = (*env)->GetByteArrayElements(env, handle, NULL);
-   rth = (struct rtnl_handle *)b;
+    //get pointer to handler byte[] structure
+    jbyte *b = (*env)->GetByteArrayElements(env, handle, NULL);
+    if((*env)->ExceptionOccurred(env)) { return;}
+    rth = (struct rtnl_handle *)b;
 
-
-   fprintf(stderr,"rtnl_listen: %d\n",rth->fd);
+    char *buffer = (char*)(*env)->GetDirectBufferAddress(env,messageBuffer);
+    if((*env)->ExceptionOccurred(env)) { return;}
+    jlong len = (*env)->GetDirectBufferCapacity(env,messageBuffer);
+    if((*env)->ExceptionOccurred(env)) { return;}
+    fprintf(stderr,"rtnl_listen: %d %d %x\n",rth->fd,len,buffer);
 
    //java listener callback stuff
    callback.env=env;
@@ -449,6 +507,6 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
 
    //release it before it leaks ...
    (*env)->ReleaseByteArrayElements(env, handle, b, 0);
-   return result;
+   return 0;
 }
 

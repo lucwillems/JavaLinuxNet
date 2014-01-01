@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 public class TNetlinkRoutingListener extends TestRunner {
     private libnetlink.rtnl_handle handle;
-    private ByteBuffer messageBuffer=ByteBuffer.allocate(8192);
+    private ByteBuffer messageBuffer=ByteBuffer.allocateDirect(8192);
     private int groups=0;
 
     public TNetlinkRoutingListener() {
@@ -31,10 +31,11 @@ public class TNetlinkRoutingListener extends TestRunner {
         linuxutils.rtnl_open_byproto(handle, groups, libnetlink.linux.netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         while(true) {
-            linuxutils.rtnl_listen(handle,messageBuffer,new libnetlink.rtnl_accept() {
+            System.out.println(messageBuffer.capacity());
+            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink.rtnl_accept() {
                 @Override
                 public int accept(ByteBuffer message) {
-                    System.out.println("netlink message recieved");
+                    System.out.println("Recieved: "+Hexdump.bytesToHex(message,64));
                     return 0;
                 }
             });
