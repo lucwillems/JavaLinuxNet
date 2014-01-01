@@ -355,9 +355,10 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open(rth,subscriptions);
-  fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
-  fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
-  fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
+  //fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
+  //fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
+  //fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
+
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
   return result;
@@ -376,9 +377,9 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open_1byproto(JNIEnv *
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open_byproto(rth,subscriptions,protocol);
-  fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
-  fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
-  fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
+  //fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
+  //fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
+  //fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
   return result;
@@ -447,28 +448,31 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
 
    //get access to jni environment to implement callback to java
    struct listen_jni_callback* jni=(struct listen_jni_callback*)arg;
-   fprintf(stderr,"accept_msg: %d %d\n",who->nl_pid,who->nl_groups);
-   fprintf(stderr,"jni: %x %x %x %x\n",jni->env,jni->this,jni->messageBuffer,jni->listener);
-   fprintf(stderr,"nl : size %d\n",n->nlmsg_len);
-   tostring(jni->env,jni->messageBuffer);
-   tostring(jni->env,jni->listener);
+   //fprintf(stderr,"accept_msg: %d %d\n",who->nl_pid,who->nl_groups);
+   //fprintf(stderr,"jni: %x %x %x %x\n",jni->env,jni->this,jni->messageBuffer,jni->listener);
+   //fprintf(stderr,"nl : size %d\n",n->nlmsg_len);
+   //tostring(jni->env,jni->messageBuffer);
+   //tostring(jni->env,jni->listener);
 
 
    char* b = (char *)(*jni->env)->GetDirectBufferAddress(jni->env,jni->messageBuffer);
    jlong capacity = (*jni->env)->GetDirectBufferCapacity(jni->env,jni->messageBuffer);
-   //copy message into ByteBuffer
-   fprintf(stderr,"nl : size %d cap: %d  %p %p\n",n->nlmsg_len,capacity,n,b);
-   //TODO  : make this save !!!
+   //make sure our buffer is big enough
+   if  (n->nlmsg_len > capacity) {
+       fprintf(stderr,"rtnl_listen.accept() : buffer to small , need %d , have %d\n",n->nlmsg_len,capacity);
+       return -4;
+   }
+
+   //copy message into ByteBuffe
    memcpy(b,n,MIN(n->nlmsg_len,capacity));
 
    //do java callback
    jclass cls = (*jni->env)->GetObjectClass(jni->env,jni->listener);
    jmethodID acceptID = (*jni->env)->GetMethodID(jni->env,cls, "accept", "(Ljava/nio/ByteBuffer;)I");
-   if((*jni->env)->ExceptionOccurred(jni->env)) { return -1;}
-   fprintf(stderr,"nl: call %x",acceptID);
+   if((*jni->env)->ExceptionOccurred(jni->env)) { return -5;}
    // Call the int acccept(ByteBuffer)
    jint result = (jint) (*jni->env)->CallIntMethod(jni->env, jni->listener, acceptID, jni->messageBuffer);
-   fprintf(stderr,"nl: call done %d\n",result);
+   if((*jni->env)->ExceptionOccurred(jni->env)) { return -5;}
    return result;
 }
 
@@ -481,20 +485,26 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    struct rtnl_handle *rth;
    struct listen_jni_callback callback;
 
-    fprintf(stderr,"rtnl_listen: %x %x %x %x\n",this,handle,messageBuffer,listener);
-    tostring(env,messageBuffer);
-    tostring(env,listener);
+   //check buffer
+   if (messageBuffer == 0) {
+       //We ByteBuffer !!!
+       fprintf(stderr,"rtln_listen : NO messageBuffer !!!!");
+       return -2;
+   }
+   if (listener == 0) {
+      //We need listener !!!
+      fprintf(stderr,"rtln_listen : NO java callback listener !!!!");
+      return -3;
+   }
 
-    //get pointer to handler byte[] structure
-    jbyte *b = (*env)->GetByteArrayElements(env, handle, NULL);
-    if((*env)->ExceptionOccurred(env)) { return;}
-    rth = (struct rtnl_handle *)b;
+   //get pointer to handler byte[] structure
+   jbyte *b = (*env)->GetByteArrayElements(env, handle, NULL);
+   if((*env)->ExceptionOccurred(env)) { return;}
+   rth = (struct rtnl_handle *)b;
 
-    char *buffer = (char*)(*env)->GetDirectBufferAddress(env,messageBuffer);
-    if((*env)->ExceptionOccurred(env)) { return;}
-    jlong len = (*env)->GetDirectBufferCapacity(env,messageBuffer);
-    if((*env)->ExceptionOccurred(env)) { return;}
-    fprintf(stderr,"rtnl_listen: %d %d %x\n",rth->fd,len,buffer);
+   char *buffer = (char*)(*env)->GetDirectBufferAddress(env,messageBuffer);
+   jlong len = (*env)->GetDirectBufferCapacity(env,messageBuffer);
+   if((*env)->ExceptionOccurred(env)) { return;}
 
    //java listener callback stuff
    callback.env=env;
@@ -503,10 +513,9 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    callback.listener=listener;
    //this method blocks until something really bad happens
    int result=rtnl_listen(rth, accept_msg, &callback);
-   fprintf(stderr,"rtnl_listen done: %d.\n",result);
 
    //release it before it leaks ...
    (*env)->ReleaseByteArrayElements(env, handle, b, 0);
-   return 0;
+   return result;
 }
 

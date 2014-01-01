@@ -201,5 +201,12 @@ public class libnetlink {
     public interface rtnl_accept {
         public int accept(ByteBuffer message);
     }
+    //return code to send from accept interface
+    public static int rtl_accept_CONTINUE=0;
+    public static int rtl_accept_STOP=-1;
+    public static int rtl_accept_FAILED_NOMESSAGEBUFFER=-2;
+    public static int rtl_accept_FAILED_NOLISTENER=-3;
+    public static int rtl_accept_FAILED_BUFFERTOSMALL=-4;
+    public static int rtl_accept_FAILED_JVMFAILURE=-5;
 
 }

@@ -31,12 +31,14 @@ public class TNetlinkRoutingListener extends TestRunner {
         linuxutils.rtnl_open_byproto(handle, groups, libnetlink.linux.netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         while(true) {
-            System.out.println(messageBuffer.capacity());
+            //rtnl_listen is blocking until rtnl_accept interface returns rtl_accept_STOP.
+            //when stop, the listen will return and thread can continue...
             linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink.rtnl_accept() {
                 @Override
                 public int accept(ByteBuffer message) {
                     System.out.println("Recieved: "+Hexdump.bytesToHex(message,64));
-                    return 0;
+                    //continue or stop listening ?
+                    return libnetlink.rtl_accept_STOP;
                 }
             });
             try {
