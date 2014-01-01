@@ -326,6 +326,8 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open(rth,subscriptions);
   fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
+  fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
+  fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
   return result;
@@ -345,6 +347,8 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open_1byproto(JNIEnv *
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open_byproto(rth,subscriptions,protocol);
   fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
+  fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
+  fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
   return result;
