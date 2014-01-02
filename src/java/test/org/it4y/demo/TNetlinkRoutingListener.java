@@ -28,10 +28,12 @@ public class TNetlinkRoutingListener extends TestRunner {
     public void run() {
         //we are intrested in Routing/link/address events
         groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
-                 libnetlink.linux.rtnetlink.RTMGRP_LINK |
-                 libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR;
+                 libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
+                 libnetlink.linux.rtnetlink.RTMGRP_IPV4_MROUTE |
+//                 libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
+                 libnetlink.linux.rtnetlink.RTMGRP_LINK;
 
-        System.out.println("Groups: 0x" + Integer.toHexString(groups));
+                System.out.println("Groups: 0x" + Integer.toHexString(groups));
         linuxutils.rtnl_open_byproto(handle, groups,libnetlink.linux.netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         //get ALL links

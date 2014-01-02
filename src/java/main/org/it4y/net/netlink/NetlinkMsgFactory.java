@@ -27,9 +27,9 @@ public class NetlinkMsgFactory {
             case libnetlink.linux.rtnetlink.RTM_DELADDR: result=handleAddressMsg(nlmsg_len,nlmsg_type,buffer);break;
             case libnetlink.linux.rtnetlink.RTM_NEWADDRLABEL: System.out.println("New Address label:"+nlmsg_type);break;
             case libnetlink.linux.rtnetlink.RTM_DELADDRLABEL: System.out.println("Del Address label:"+nlmsg_type);break;
-            case libnetlink.linux.rtnetlink.RTM_NEWNEIGH: System.out.println("New neigh:"+nlmsg_type);break;
-            case libnetlink.linux.rtnetlink.RTM_DELNEIGH: System.out.println("Del neigth:"+nlmsg_type);break;
-            case libnetlink.linux.rtnetlink.RTM_GETNEIGH: System.out.println("Get neigth:"+nlmsg_type);break;
+            case libnetlink.linux.rtnetlink.RTM_NEWNEIGH: result=handleNeighbourMsg(nlmsg_len,nlmsg_type,buffer);break;
+            case libnetlink.linux.rtnetlink.RTM_DELNEIGH: result=handleNeighbourMsg(nlmsg_len,nlmsg_type,buffer);break;
+            case libnetlink.linux.rtnetlink.RTM_GETNEIGH: result=handleNeighbourMsg(nlmsg_len,nlmsg_type,buffer);break;
             case libnetlink.linux.rtnetlink.RTM_NEWPREFIX: System.out.println("New prefix:"+nlmsg_type);break;
             case libnetlink.linux.rtnetlink.RTM_NEWRULE: System.out.println("New route rule:"+nlmsg_type);break;
             case libnetlink.linux.rtnetlink.RTM_DELRULE: System.out.println("Del route rule:"+nlmsg_type);break;
@@ -59,10 +59,20 @@ public class NetlinkMsgFactory {
 
     private static NlMessage handleAddressMsg(int nlmsg_len,short nlmsg_type,ByteBuffer buffer) {
         switch(nlmsg_type) {
-            case libnetlink.linux.rtnetlink.RTM_NEWADDR: System.out.println("New Address["+nlmsg_type +"]: "+ Hexdump.bytesToHex(buffer,nlmsg_len));break;
+            case libnetlink.linux.rtnetlink.RTM_NEWADDR: System.out.println("New Address"+nlmsg_type);break;
             case libnetlink.linux.rtnetlink.RTM_DELADDR: System.out.println("Del Address:"+nlmsg_type);break;
         }
         return new interfaceAddressMsg(buffer);
+    }
+
+    private static NlMessage handleNeighbourMsg(int nlmsg_len,short nlmsg_type,ByteBuffer buffer) {
+        //move buffer position to start of ifinfomsg
+        switch(nlmsg_type) {
+
+            case libnetlink.linux.rtnetlink.RTM_NEWNEIGH: System.out.print("NEW neighbour: "+Hexdump.bytesToHex(buffer,nlmsg_len));break;
+            case libnetlink.linux.rtnetlink.RTM_DELNEIGH: System.out.print("DEL neighbour:");break;
+        }
+        return new neighbourMsg(buffer);
     }
 
 }

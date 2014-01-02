@@ -44,8 +44,12 @@ public abstract class RTAMessage {
         StringBuffer s=new StringBuffer();
         s.append("RTA[").append(size).append("(").append(getPaddedSize()).append("):");
         s.append(type);
-        if (getRTAName() != null ) {
-            s.append(" ").append(getRTAName());
+        try {
+            if (getRTAName() != null ) {
+                s.append(" ").append(getRTAName());
+            }
+        } catch(IndexOutOfBoundsException oeps) {
+            s.append(" ").append("???? unknown");
         }
         s.append("] ");
         s.append(Hexdump.bytesToHex(data,size));
