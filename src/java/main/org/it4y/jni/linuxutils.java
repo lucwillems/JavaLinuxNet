@@ -184,6 +184,10 @@ public class linuxutils {
 
 
     public static native int rtnl_wilddump_request(byte[] handle,int family, int type);
+    public static int rtnl_wilddump_request(libnetlink.rtnl_handle handle,int family, int type) {
+        return rtnl_wilddump_request(handle.handle,family,type);
+    }
+
     public static native int rtnl_send(byte[] handle, ByteBuffer buf, int len);
     public static native int rtnl_dump_request(byte[] handle, int type, ByteBuffer req, int len);
     private static native int rtnl_listen(byte[] handle, ByteBuffer buf, libnetlink.rtnl_accept listener );

@@ -6,6 +6,7 @@
 #include <linux/tcp.h>
 //libnet
 #include <libnetlink.h>
+#include <netlink/cache.h>
 
 #include "org_it4y_jni_linuxutils.h"
  /* Amount of characters in the error message buffer */
@@ -351,6 +352,10 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
   struct rtnl_handle *rth;
   jbyte *b;
 
+  struct nl_cache_mngr *mngr;
+  int len=sizeof(mngr);
+  fprintf(stderr,"cache manager: %d\n",len);
+
   //get pointer to handler byte[] structure
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
@@ -403,13 +408,23 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jc
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
 }
 
-/*
- * Class:     org_it4y_jni_linuxutils
- * Method:    rtnl_wilddump_request
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_wilddump_request(JNIEnv *env, jclass this, jint family , jint type) {
-  return -1;
+ /*
+  * Class:     org_it4y_jni_linuxutils
+  * Method:    rtnl_wilddump_request
+  * Signature: ([BII)I
+  */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1wilddump_1request(JNIEnv *env, jclass this, jbyteArray handle , jint family, jint type) {
+
+  struct rtnl_handle *rth;
+  jbyte *b;
+
+  //get pointer to handler byte[] structure
+  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  rth = (struct rtnl_handle *)b;
+  int result=rtnl_wilddump_request(rth,family,type);
+  //release it before it leaks ...
+  (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+  return result;
 }
 
 /*

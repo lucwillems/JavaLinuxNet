@@ -19,19 +19,19 @@ import java.lang.Exception;
 public class test {
 
     public static void main(String [] args) throws Exception {
-        TunTapInterfaceListener tundev=new TunTapInterfaceListener("luc",1500);
-        tundev.start();
-        System.out.println("tun interface listener running");
-        TProxyListener tproxy=new TProxyListener();
-        tproxy.start();
-        Thread.sleep(100);
-        System.out.println("tproxy server running");
         TNetlinkRoutingListener router=new TNetlinkRoutingListener();
         router.start();;
         System.out.println("netlink listener running");
-        System.out.println(linuxutils.getsockname(tproxy.getFd()).toInetSocketAddress());
+        TProxyListener tproxy=new TProxyListener();
+        tproxy.start();
+        System.out.println("tproxy server running");
+        Thread.sleep(100);
+        TunTapInterfaceListener tundev=new TunTapInterfaceListener("luc",1500);
+        tundev.start(); //this will bring interface luc UP
+        System.out.println("tun interface listener running");
         while(true) {
             Thread.sleep(1000);
+            //tundev.dumpSpeed();
         }
     }
 }
