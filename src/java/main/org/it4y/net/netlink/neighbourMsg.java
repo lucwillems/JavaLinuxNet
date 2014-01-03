@@ -56,7 +56,11 @@ public class neighbourMsg extends NlMessage {
         s.append("\n");
         //dump rta messages
         for (RTAMessage r: rtaMessages.values()) {
+             if (r.getType() == libnetlink.linux.if_neighbour.NDA_DST) {
+                s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
+             } else {
                 s.append(" ").append(r.toString()).append("\n");
+             }
         }
         return s.toString();
     }

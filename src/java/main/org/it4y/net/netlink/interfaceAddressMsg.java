@@ -58,6 +58,12 @@ public class interfaceAddressMsg extends NlMessage {
             for (RTAMessage r: rtaMessages.values()) {
                 if (r.getType()== libnetlink.linux.if_address.IFA_LABEL) {
                     s.append(" ").append(r.toString()).append(" ").append(r.getString()).append("\n");
+                }
+                else if (r.getType()== libnetlink.linux.if_address.IFA_BROADCAST) {
+                    s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
+                }
+                else if (r.getType()== libnetlink.linux.if_address.IFA_ADDRESS) {
+                        s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
                 } else {
                     s.append(" ").append(r.toString()).append("\n");
                 }

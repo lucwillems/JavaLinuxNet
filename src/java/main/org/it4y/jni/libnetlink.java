@@ -104,6 +104,7 @@ public class libnetlink {
             public static final int RTMGRP_DECnet_ROUTE = 0x4000;
             public static final int RTMGRP_IPV6_PREFIX = 0x20000;
 
+
             /* Types of messages */
             public static final int RTM_BASE = 16;
             public static final int RTM_NEWLINK = 16;

@@ -63,8 +63,8 @@ public class UDPPacket extends IpPacket {
     public void swapSourceDestinationPort() {
         final int ipheadersize=getIpHeaderSize();
         final short srcPort=rawPacket.getShort(ipheadersize);
-        rawPacket.putShort(ipheadersize,rawPacket.getShort(ipheadersize+2));
-        rawPacket.putShort(ipheadersize+2,srcPort);
+        rawPacket.putShort(ipheadersize, rawPacket.getShort(ipheadersize + 2));
+        rawPacket.putShort(ipheadersize + 2, srcPort);
     }
 
     public short getSourcePort() {
@@ -72,7 +72,8 @@ public class UDPPacket extends IpPacket {
     }
     public short getDestinationPort() {
         return rawPacket.getShort(getIpHeaderSize()+2);
-    }
+}
+
 
 
 }

@@ -69,6 +69,7 @@ public abstract class NlMessage {
     }
     public String toString() {
         StringBuffer s=new StringBuffer();
+        s.append(this.getClass().getSimpleName()).append(" ");
         s.append("nlmg[size:").append(nlmsg_len).append(",type:").append(nlmsg_type).append(",flags:0x").append(Integer.toHexString(nlmsg_flags)).append("]\n");
         return s.toString();
     }

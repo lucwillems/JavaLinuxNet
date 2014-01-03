@@ -1,8 +1,11 @@
 package org.it4y.net.netlink;
 
+import org.it4y.jni.libc;
 import org.it4y.jni.libnetlink;
 import org.it4y.util.Hexdump;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -71,5 +74,9 @@ public abstract class RTAMessage {
         data.get(result);
         String s=new String(result, Charset.forName("UTF-8"));
         return s;
+    }
+
+    public InetAddress getInetAddress() {
+        return libc.toInetAddress(data.getInt());
     }
 }

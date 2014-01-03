@@ -34,7 +34,7 @@ public class TProxyClientSocket {
         return remote.address;
     }
     public InetAddress getRemoteAddress() {
-        return remote.getRemoteAddres();
+        return remote.toInetAddress();
     }
     public int getRemotePort() {
         return remote.port;
@@ -44,7 +44,7 @@ public class TProxyClientSocket {
         StringBuffer s=new StringBuffer();
         s.append("local:").append(socket.getInetAddress()).append(":").append(socket.getPort()).append(" ");
         if (remote !=null) {
-            s.append("Remote:").append(remote.getRemoteAddres()).append(":").append(remote.port);
+            s.append("Remote:").append(remote.toInetAddress()).append(":").append(remote.port);
         }
         return s.toString();
     }

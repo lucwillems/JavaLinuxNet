@@ -10,9 +10,55 @@ import java.net.UnknownHostException;
  */
 
 public final class libc {
-
     /*
-     * this class wraps libc structure from C lib
+     * this class wraps libc in_addr (ipv4 address) from C lib
+     *
+     */
+
+    public static InetAddress toInetAddress(int address) {
+        InetAddress x=null;
+        byte[] ab = new byte[4];
+        ab[0] = (byte) ((address >> 24) & 0x00ff);
+        ab[1] = (byte) ((address >> 16) & 0x00ff);
+        ab[2] = (byte) ((address >> 8) & 0x00ff);
+        ab[3] = (byte) (address & 0x00ff);
+        //Why throw this will it is not going to happen ?
+        try {
+           x = Inet4Address.getByAddress(ab);
+        } catch (UnknownHostException ignore) {
+        }
+        return x;
+    }
+
+    public static class in_addr {
+        public int address=0;
+        private InetAddress cached_address = null;
+
+        public in_addr() {}
+        public in_addr(int address) {
+            this.address=address;
+        }
+
+        public InetAddress toInetAddress() {
+            if (cached_address == null) {
+                synchronized (this) {
+                    if (cached_address == null) {
+                        /* ok java uses shitty constructions so we need to hack here */
+                        /* Inet4Address.getByAddress() will do reverse of this. */
+                        /* a private constructor(int address,int port) exist but it is private */
+                        cached_address=libc.toInetAddress(address);
+                    }
+                }
+            }
+            return cached_address;
+        }
+
+        public String toString() {
+              return Integer.toHexString(address);
+        }
+    }
+    /*
+     * this class wraps libc sockaddr_in structure from C lib
      *
      */
     public static class sockaddr_in {
@@ -21,36 +67,31 @@ public final class libc {
         public int address;
 
         //cache this result as it is expensive
-        private InetAddress cached_remote_address = null;
+        private InetAddress cached_address = null;
 
-        public sockaddr_in() {
+        public sockaddr_in() {}
+        public sockaddr_in(int address,int port ,int family){
+            this.address=address;
+            this.port=port;
+            this.family=family;
         }
 
-        public InetAddress getRemoteAddres() {
-            if (cached_remote_address == null) {
+        public InetAddress toInetAddress() {
+            if (cached_address == null) {
                 synchronized (this) {
-                    if (cached_remote_address == null) {
+                    if (cached_address == null) {
                         /* ok java uses shitty constructions so we need to hack here */
                         /* Inet4Address.getByAddress() will do reverse of this. */
                         /* a private constructor(int address,int port) exist but it is private */
-                        byte[] ab = new byte[4];
-                        ab[0] = (byte) ((address >> 24) & 0x00ff);
-                        ab[1] = (byte) ((address >> 16) & 0x00ff);
-                        ab[2] = (byte) ((address >> 8) & 0x00ff);
-                        ab[3] = (byte) (address & 0x00ff);
-                        //Why throw this will it is not going to happen ?
-                        try {
-                            cached_remote_address = Inet4Address.getByAddress(ab);
-                        } catch (UnknownHostException ignore) {
-                        }
+                        cached_address=libc.toInetAddress(address);
                     }
                 }
             }
-            return cached_remote_address;
+            return cached_address;
         }
 
         public InetSocketAddress toInetSocketAddress() {
-            return new InetSocketAddress(getRemoteAddres(), port);
+            return new InetSocketAddress(toInetAddress(), port);
         }
 
         public String toString() {

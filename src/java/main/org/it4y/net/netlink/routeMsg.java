@@ -81,7 +81,14 @@ public class routeMsg extends NlMessage {
         s.append("\n");
         //dump rta messages
         for (RTAMessage r: rtaMessages.values()) {
+             if (r.getType() == libnetlink.linux.rtnetlink.RTA_DST ||
+                 r.getType() == libnetlink.linux.rtnetlink.RTA_SRC ||
+                 r.getType() == libnetlink.linux.rtnetlink.RTA_GATEWA
+                 ) {
+                s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
+             } else {
                 s.append(" ").append(r.toString()).append("\n");
+             }
         }
         return s.toString();
     }

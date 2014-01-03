@@ -9,6 +9,7 @@ import org.it4y.util.Hexdump;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Date;
 
 /**
  * Created by luc on 1/1/14.
@@ -34,7 +35,6 @@ public class TNetlinkRoutingListener extends TestRunner {
                  libnetlink.linux.rtnetlink.RTMGRP_IPV4_MROUTE |
                  libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
                  libnetlink.linux.rtnetlink.RTMGRP_LINK;
-        groups=0xffffffff;
         System.out.println("Groups: 0x" + Integer.toHexString(groups));
         linuxutils.rtnl_open_byproto(handle, groups,libnetlink.linux.netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
@@ -59,7 +59,7 @@ public class TNetlinkRoutingListener extends TestRunner {
                     message.rewind();
                     NlMessage msg=NetlinkMsgFactory.processRawPacket(message);
                     if (msg != null) {
-                        System.out.println(msg.toString());
+                        System.out.println(new Date()+" "+msg.toString());
                         //continue or stop listening ?
                         return msg.moreMessages() ? libnetlink.rtl_accept_CONTINUE:libnetlink.rtl_accept_STOP;
                     }
