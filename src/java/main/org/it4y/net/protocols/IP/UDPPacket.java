@@ -51,6 +51,7 @@ public class UDPPacket extends IpPacket {
         rawPacket.putShort(super.getHeaderSize()+6, (short) 0x0000) ; //16checksum must be 0 before calculation
     }
 
+    @Override
     public short updateChecksum() {
         final int ipheadersize=getIpHeaderSize();
         rawPacket.putShort(ipheadersize+6, (short) 0x0000) ; //16checksum must be 0 before calculation
@@ -58,11 +59,12 @@ public class UDPPacket extends IpPacket {
         rawPacket.putShort(ipheadersize+6,checksum);
         return checksum;
     }
+
     public void swapSourceDestinationPort() {
         final int ipheadersize=getIpHeaderSize();
         final short srcPort=rawPacket.getShort(ipheadersize);
-        rawPacket.putInt(ipheadersize,rawPacket.getInt(ipheadersize+2));
-        rawPacket.putInt(ipheadersize+2,srcPort);
+        rawPacket.putShort(ipheadersize,rawPacket.getShort(ipheadersize+2));
+        rawPacket.putShort(ipheadersize+2,srcPort);
     }
 
     public short getSourcePort() {

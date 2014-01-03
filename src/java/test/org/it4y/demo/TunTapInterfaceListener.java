@@ -79,8 +79,8 @@ public class TunTapInterfaceListener extends TestRunner {
                         //we must reset Buffer before manipulating it !!
                         ip.resetBuffer();
                         //echo packet back to owner
-                        ip.swapSourceDestination();
-                        ip.updateChecksum();
+                        ((UDPPacket)ip).swapSourceDestination();
+                        ((UDPPacket)ip).updateChecksum();
                         ((UDPPacket)ip).swapSourceDestinationPort();
                         tundev.writeByteBuffer(ip.getRawPacket(),ip.getRawSize());
                         hexDumpOut(ip.getRawPacket(), ip.getRawSize());
