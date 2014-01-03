@@ -31,7 +31,7 @@ public class test {
         System.out.println("tun interface listener running");
         while(true) {
             Thread.sleep(1000);
-            //tundev.dumpSpeed();
+            tundev.dumpSpeed();
         }
     }
 }

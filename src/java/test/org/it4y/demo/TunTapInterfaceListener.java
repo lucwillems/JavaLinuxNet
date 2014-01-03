@@ -23,6 +23,7 @@ public class TunTapInterfaceListener extends TestRunner {
     private static long cnt=0;
     private static long bits=0;
     private boolean debug=false;
+    private long pktcnt=0;
 
     public TunTapInterfaceListener(String name, int mtu) {
         super("tuntapListener-"+name);
@@ -56,6 +57,7 @@ public class TunTapInterfaceListener extends TestRunner {
                 //we must clear else we get issues
                 bbuffer.clear();
                 int size=tundev.readByteBuffer(bbuffer); //this will block until a packet is available
+                pktcnt++;
                 hexDumpIn(bbuffer,size);
                 IpPacket ip= IPFactory.processRawPacket(bbuffer, size);
                 if (ip != null) {
@@ -69,6 +71,7 @@ public class TunTapInterfaceListener extends TestRunner {
                             ((ICMPPacket)ip).convertToEchoReply();
                             //write raw packet back to network
                             tundev.writeByteBuffer(ip.getRawPacket(),ip.getRawSize());
+                            //System.out.println(ip.toString());
                             hexDumpOut(ip.getRawPacket(), ip.getRawSize());
                         }
                     }
@@ -101,7 +104,9 @@ public class TunTapInterfaceListener extends TestRunner {
     }
 
     public void dumpSpeed() {
-        System.out.println("mbit/sec: "+bits*8+" "+cnt);
+        if (bits > 0 ) {
+            System.out.println("mbit/sec: "+String.format("%.4f",(double)(bits*8)/(1024*1024))+" "+cnt+  " pkts: "+pktcnt);
+        }
         bits=0;
         cnt=0;
         last=System.currentTimeMillis();
