@@ -49,7 +49,7 @@ public abstract class NlMessage {
     }
 
     public boolean moreMessages() {
-        return (nlmsg_flags & 0x02)>0;
+        return (nlmsg_flags & (short)0x02)>0;
     }
     public RTAMessage getRTAMessage(String name) {
         return getRTAMessage(getRTAIndex(name));

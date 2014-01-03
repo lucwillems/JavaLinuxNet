@@ -65,7 +65,7 @@ public abstract class RTAMessage {
     public short getShort() {
         return data.getShort();
     }
-    public int getIn() {
+    public int getInt() {
         return data.getInt();
     }
     public String getString() {
@@ -75,6 +75,11 @@ public abstract class RTAMessage {
         String s=new String(result, Charset.forName("UTF-8"));
         return s;
     }
+
+    public String getHexString() {
+        return Hexdump.bytesToHex(data,6);
+    }
+
 
     public InetAddress getInetAddress() {
         return libc.toInetAddress(data.getInt());

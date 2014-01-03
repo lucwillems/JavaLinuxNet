@@ -19,6 +19,10 @@ public class NLDoneMessage extends NlMessage {
     public RTAMessage createRTAMessage(int position, ByteBuffer msg) {
         return null;
     }
+    @Override
+    public boolean moreMessages() {
+        return false;
+    }
 
     public String toString() {
         StringBuffer s=new StringBuffer();

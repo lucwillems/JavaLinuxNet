@@ -2,6 +2,7 @@ package org.it4y.demo;
 
 import org.it4y.jni.libnetlink;
 import org.it4y.jni.linuxutils;
+import org.it4y.net.netlink.NLDoneMessage;
 import org.it4y.net.netlink.NetlinkMsgFactory;
 import org.it4y.net.netlink.NlMessage;
 import org.it4y.util.Hexdump;
@@ -30,22 +31,22 @@ public class TNetlinkRoutingListener extends TestRunner {
     @Override
     public void run() {
         //we are intrested in Routing/link/address events
-        groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
-                 libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
+        groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
+                 libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
                  libnetlink.linux.rtnetlink.RTMGRP_IPV4_MROUTE |
-                 libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
+                 //libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
                  libnetlink.linux.rtnetlink.RTMGRP_LINK;
         System.out.println("Groups: 0x" + Integer.toHexString(groups));
         linuxutils.rtnl_open_byproto(handle, groups,libnetlink.linux.netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         while(true) {
             if (initstate <4) {
-             //we can handle only 1 wilddump at the same time, so we have a little stepping program
+             //we can handle only 1 wilddump at the same time, so we have a little stepping program here
              switch(initstate) {
-                case 0: linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETLINK);initstate++;break;
-                case 1: linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETADDR);initstate++;break;
-                case 2: linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETROUTE);initstate++;break;
-                default:System.out.println("Init finished");initstate=4;
+                case 0: System.out.println(new Date()+" Requesting link information...");linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETLINK);initstate++;break;
+                case 1: System.out.println(new Date()+" Requesting address information...");linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETADDR);initstate++;break;
+                case 2:  System.out.println(new Date()+" Requesting routing information...");linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETROUTE);initstate++;break;
+                default:System.out.println("Init finished");initstate=4; //finished
              }
             }
             //rtnl_listen is blocking until rtnl_accept interface returns rtl_accept_STOP.
@@ -61,17 +62,12 @@ public class TNetlinkRoutingListener extends TestRunner {
                     if (msg != null) {
                         System.out.println(new Date()+" "+msg.toString());
                         //continue or stop listening ?
-                        return msg.moreMessages() ? libnetlink.rtl_accept_CONTINUE:libnetlink.rtl_accept_STOP;
+                        return msg.moreMessages()  ? libnetlink.rtl_accept_CONTINUE : libnetlink.rtl_accept_STOP;
                     }
                     return libnetlink.rtl_accept_STOP;
                 }
             });
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignore) {
-                break;
-            }
         }
-        linuxutils.rtnl_close(handle);
+        //linuxutils.rtnl_close(handle);
     }
 }
