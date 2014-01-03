@@ -44,8 +44,8 @@ public class TProxyListener extends TestRunner {
             linuxutils.setintSockOption(client.getSocket(), SocketOptions.SOL_TCP,SocketOptions.TCP_USER_TIMEOUT,10000);
             System.out.println(linuxutils.getintSockOption(client.getSocket(), SocketOptions.SOL_TCP, SocketOptions.TCP_USER_TIMEOUT));
             //back to the future: switch back to reno :-)
-            //linuxutils.setstringSockOption(client.getSocket(),SocketOptions.SOL_TCP,SocketOptions.TCP_CONGESTION,"reno");
-            //String con=linuxutils.getstringSockOption(client.getSocket(), SocketOptions.SOL_TCP, SocketOptions.TCP_CONGESTION);
+            linuxutils.setstringSockOption(client.getSocket(),SocketOptions.SOL_TCP,SocketOptions.TCP_CONGESTION,"reno");
+            String con=linuxutils.getstringSockOption(client.getSocket(), SocketOptions.SOL_TCP, SocketOptions.TCP_CONGESTION);
             //System.out.println(con);
 
             System.out.println(System.currentTimeMillis()+": "+client);

@@ -17,6 +17,8 @@ public class TNetlinkRoutingListener extends TestRunner {
     private libnetlink.rtnl_handle handle;
     private ByteBuffer messageBuffer=ByteBuffer.allocateDirect(8129);
     private int groups=0;
+    private int initstate=0;
+
 
     public TNetlinkRoutingListener() {
         super("tnetlinkrouting-listener");
@@ -30,18 +32,22 @@ public class TNetlinkRoutingListener extends TestRunner {
         groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
                  libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
                  libnetlink.linux.rtnetlink.RTMGRP_IPV4_MROUTE |
-//                 libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
+                 libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
                  libnetlink.linux.rtnetlink.RTMGRP_LINK;
-
-                System.out.println("Groups: 0x" + Integer.toHexString(groups));
+        groups=0xffffffff;
+        System.out.println("Groups: 0x" + Integer.toHexString(groups));
         linuxutils.rtnl_open_byproto(handle, groups,libnetlink.linux.netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
-        //get ALL links
-        //linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETLINK);
-        //request all link states (we can use this to create a link cache
-        //linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETROUTE);
-        linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETADDR);
         while(true) {
+            if (initstate <4) {
+             //we can handle only 1 wilddump at the same time, so we have a little stepping program
+             switch(initstate) {
+                case 0: linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETLINK);initstate++;break;
+                case 1: linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETADDR);initstate++;break;
+                case 2: linuxutils.rtnl_wilddump_request(handle, 0,libnetlink.linux.rtnetlink.RTM_GETROUTE);initstate++;break;
+                default:System.out.println("Init finished");initstate=4;
+             }
+            }
             //rtnl_listen is blocking until rtnl_accept interface returns rtl_accept_STOP.
             //when stop, the listen will return and thread can continue...
             messageBuffer.rewind();

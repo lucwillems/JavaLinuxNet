@@ -16,6 +16,7 @@ import java.nio.channels.SocketChannel;
 public class linuxutils {
     //Load our native JNI lib
     static {
+        //THIS requires libnl3 !!!!
         JNILoader.loadLibrary("liblinuxutils.so");
     }
 

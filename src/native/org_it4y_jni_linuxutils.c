@@ -485,7 +485,7 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    jclass cls = (*jni->env)->GetObjectClass(jni->env,jni->listener);
    jmethodID acceptID = (*jni->env)->GetMethodID(jni->env,cls, "accept", "(Ljava/nio/ByteBuffer;)I");
    if((*jni->env)->ExceptionOccurred(jni->env)) { return -5;}
-   // Call the int acccept(ByteBuffer)
+   // Call the int accept(ByteBuffer)
    jint result = (jint) (*jni->env)->CallIntMethod(jni->env, jni->listener, acceptID, jni->messageBuffer);
    if((*jni->env)->ExceptionOccurred(jni->env)) { return -5;}
    return result;

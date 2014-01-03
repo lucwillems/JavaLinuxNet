@@ -23,6 +23,8 @@ public class JNILoader {
                         System.load(f.getCanonicalPath());
                         System.err.println("loaded "+f);
                         return;
+                    } else {
+                        System.out.println(f.getCanonicalFile()+" not found...");
                     }
                 }
             } catch (Throwable eio) {e = eio;}
