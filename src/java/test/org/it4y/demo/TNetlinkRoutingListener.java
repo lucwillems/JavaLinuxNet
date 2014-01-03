@@ -57,9 +57,7 @@ public class TNetlinkRoutingListener extends TestRunner {
                 public int accept(ByteBuffer message) {
                     //make sure ByteBuffer mar/position are set correct.
                     message.rewind();
-                    int msgsize=message.getInt(0);
                     NlMessage msg=NetlinkMsgFactory.processRawPacket(message);
-                    //System.out.println("nlmsg["+msgsize+"]: "+Hexdump.bytesToHex(message,msgsize));
                     if (msg != null) {
                         System.out.println(msg.toString());
                         //continue or stop listening ?

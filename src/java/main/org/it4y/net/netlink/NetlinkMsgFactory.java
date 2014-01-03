@@ -34,7 +34,9 @@ public class NetlinkMsgFactory {
             case libnetlink.linux.rtnetlink.RTM_NEWRULE: System.out.println("New route rule:"+nlmsg_type);break;
             case libnetlink.linux.rtnetlink.RTM_DELRULE: System.out.println("Del route rule:"+nlmsg_type);break;
             case libnetlink.linux.rtnetlink.RTM_NEWNETCONF:System.out.println("New netconf:"+nlmsg_type);break;
-            default: System.out.println("Netlink message type :"+nlmsg_type);
+            case libnetlink.linux.netlink.NLMSG_DONE:result=new NLDoneMessage(buffer);break;
+            case libnetlink.linux.netlink.NLMSG_ERROR:result=new NlErrorMessage(buffer);break;
+            default: System.out.println("UNKNOWN Netlink message type:"+nlmsg_type+" len:"+nlmsg_len+" ["+Hexdump.bytesToHex(buffer,nlmsg_len)+"]");
         }
 
         return result;
