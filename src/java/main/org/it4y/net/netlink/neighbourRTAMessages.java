@@ -1,6 +1,7 @@
 package org.it4y.net.netlink;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.if_neighbour;
 
 import java.nio.ByteBuffer;
 
@@ -14,6 +15,6 @@ public class neighbourRTAMessages extends RTAMessage {
 
     @Override
     public String getRTAName() {
-        return libnetlink.linux.if_neighbour.RTA_NAMES[type];
+        return if_neighbour.RTA_NAMES[type];
     }
 }

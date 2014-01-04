@@ -1,6 +1,8 @@
 package org.it4y.net.link;
 
 import org.it4y.jni.libc;
+import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.if_arp;
 
 import java.net.InetAddress;
 
@@ -18,11 +20,13 @@ public class NetworkInterface {
     private int ipv4P2Paddress;
     private int netmask;
     private int interfaceFlag;
+    private int interfaceType;
 
-    public NetworkInterface(String name, int index, int interfaceFlag) {
+    public NetworkInterface(String name, int index, int interfaceFlag,int interfaceType) {
         this.name = name;
         this.index = index;
         this.interfaceFlag=interfaceFlag;
+        this.interfaceType=interfaceType;
     }
 
     public int getIndex() {
@@ -118,6 +122,7 @@ public class NetworkInterface {
     public String toString() {
         StringBuffer s = new StringBuffer();
         s.append(name).append("[");
+        s.append(if_arp.ARPHDR_NAMES.get(interfaceType)).append(",");
         s.append("idx:").append(index).append(",");
         if (this.ipv4Address != 0) {
             s.append("a:").append(getIpv4AddressAsInetAddress().toString().substring(1)).append("/").append(netmask).append(",");
@@ -128,7 +133,6 @@ public class NetworkInterface {
         s.append("mtu:").append(mtu).append(",");
         s.append("state:").append(state).append(",");
         s.append("flags:0x").append(Integer.toHexString(interfaceFlag)).append(" ");
-        if(isLoopBack())    { s.append(",Loopback");}
         if(isPoint2Point()) {
             s.append(",P2P");
             if (ipv4P2Paddress != 0) {
@@ -143,11 +147,9 @@ public class NetworkInterface {
     }
 
     public boolean isActive() {
-        if (isLoopBack())    { return mtu != 0 & isLowerUP();}
-        else if (isPoint2Point()) { return ipv4Address != 0 & mtu != 0 & isLowerUP();}
-        else {
-            return ipv4Address != 0 & mtu != 0 & netmask != 0 & state==6;
-        }
+        if (isLoopBack())         { return ipv4Address != 0 & mtu != 0 & netmask != 0 & isLowerUP();}
+        else if (isPoint2Point()) { return ipv4Address != 0 & mtu != 0 & netmask != 0 & isLowerUP();}
+        else {                      return ipv4Address != 0 & mtu != 0 & netmask != 0 & isLowerUP() & state==6; }
     }
 
 

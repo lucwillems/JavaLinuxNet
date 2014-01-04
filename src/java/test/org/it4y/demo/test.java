@@ -43,8 +43,8 @@ public class test {
         });
         lnkMng.start();
         //multi threaded access
-        TestThread tt=new TestThread(lnkMng);
-        tt.start();
+        //TestThread tt=new TestThread(lnkMng);
+        //tt.start();
         while (true) {
             Thread.sleep(3000);
             tundev.dumpSpeed();

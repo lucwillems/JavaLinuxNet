@@ -1,6 +1,10 @@
 package org.it4y.net.link;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.if_address;
+import org.it4y.jni.linux.if_link;
+import org.it4y.jni.linux.netlink;
+import org.it4y.jni.linux.rtnetlink;
 import org.it4y.jni.linuxutils;
 import org.it4y.net.netlink.*;
 import org.slf4j.Logger;
@@ -96,11 +100,11 @@ public class LinkManager extends Thread {
      */
     protected void InitNetLink() {
         //we are intrested in Routing/link/address events
-        groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
-                libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
-                libnetlink.linux.rtnetlink.RTMGRP_IPV4_MROUTE |
-                libnetlink.linux.rtnetlink.RTMGRP_LINK;
-        linuxutils.rtnl_open_byproto(handle, groups, libnetlink.linux.netlink.NETLINK_ROUTE);
+        groups = rtnetlink.RTMGRP_IPV4_IFADDR |
+                 rtnetlink.RTMGRP_IPV4_ROUTE |
+                 rtnetlink.RTMGRP_IPV4_MROUTE |
+                 rtnetlink.RTMGRP_LINK;
+        linuxutils.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
         log.debug("linkmanager started");
     }
 
@@ -119,17 +123,17 @@ public class LinkManager extends Thread {
                 switch (initstate) {
                     case 0:
                         log.debug("dump link");
-                        linuxutils.rtnl_wilddump_request(handle, 0, libnetlink.linux.rtnetlink.RTM_GETLINK);
+                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
                         initstate++;
                         break;
                     case 1:
                         log.debug("dump addresses");
-                        linuxutils.rtnl_wilddump_request(handle, 0, libnetlink.linux.rtnetlink.RTM_GETADDR);
+                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
                         initstate++;
                         break;
                     case 2:
                         log.debug("dump routing");
-                        linuxutils.rtnl_wilddump_request(handle, 0, libnetlink.linux.rtnetlink.RTM_GETROUTE);
+                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
                         initstate++;
                         break;
                     default:
@@ -186,18 +190,18 @@ public class LinkManager extends Thread {
         NetworkInterface x = interfaceList.get(name);
 
         switch (msg.getNlMsgType()) {
-            case libnetlink.linux.rtnetlink.RTM_NEWLINK: //add or update interface to list
+            case rtnetlink.RTM_NEWLINK: //add or update interface to list
                 if (x == null) { //new interface
-                    x = new NetworkInterface(name, msg.getInterfaceIndex(), msg.getInterfaceFlags());
+                    x = new NetworkInterface(name, msg.getInterfaceIndex(), msg.getInterfaceFlags(),(int)msg.getInterfaceType()&0xffff);
                     prevActiveState=false;
-                    if (msg.getRTAMessage(libnetlink.linux.if_link.IFLA_ADDRESS) != null) {
-                        x.setMacAddress(msg.getRTAMessage(libnetlink.linux.if_link.IFLA_ADDRESS).getHexString());
+                    if (msg.getRTAMessage(if_link.IFLA_ADDRESS) != null) {
+                        x.setMacAddress(msg.getRTAMessage(if_link.IFLA_ADDRESS).getHexString());
                     }
-                    if (msg.getRTAMessage(libnetlink.linux.if_link.IFLA_MTU) != null) {
-                        x.setmtu(msg.getRTAMessage(libnetlink.linux.if_link.IFLA_MTU).getInt());
+                    if (msg.getRTAMessage(if_link.IFLA_MTU) != null) {
+                        x.setmtu(msg.getRTAMessage(if_link.IFLA_MTU).getInt());
                     }
-                    if (msg.getRTAMessage(libnetlink.linux.if_link.IFLA_OPERSTATE) != null) {
-                        x.setState((int) msg.getRTAMessage(libnetlink.linux.if_link.IFLA_OPERSTATE).getByte() & 0xff);
+                    if (msg.getRTAMessage(if_link.IFLA_OPERSTATE) != null) {
+                        x.setState((int) msg.getRTAMessage(if_link.IFLA_OPERSTATE).getByte() & 0xff);
                     }
                     interfaceList.put(name, x);
                     log.info("new interface {}", x);
@@ -207,7 +211,7 @@ public class LinkManager extends Thread {
                     prevActiveState=x.isActive();
                     boolean doNotification=false;
                     if (msg.getRTAMessage("operstate") != null) {
-                        int newState = (int) msg.getRTAMessage(libnetlink.linux.if_link.IFLA_OPERSTATE).getByte() & 0xff;
+                        int newState = (int) msg.getRTAMessage(if_link.IFLA_OPERSTATE).getByte() & 0xff;
                         if (x.getState() != newState) {
                             x.setState(newState);
                             doNotification=true;
@@ -223,7 +227,7 @@ public class LinkManager extends Thread {
                     }
                 }
                 break;
-            case libnetlink.linux.rtnetlink.RTM_DELLINK: //remove interface from list
+            case rtnetlink.RTM_DELLINK: //remove interface from list
                 log.info("remove interface {}", name);
                 prevActiveState=x.isActive();
                 interfaceList.remove(name);
@@ -246,17 +250,17 @@ public class LinkManager extends Thread {
         prevActiveState=x.isActive();
         log.trace("interface {}", x);
         switch (msg.getNlMsgType()) {
-            case libnetlink.linux.rtnetlink.RTM_NEWADDR: //add or update interface to list
-                if (msg.getRTAMessage(libnetlink.linux.if_address.IFA_ADDRESS) != null) {
-                    x.setIpv4Address(msg.getRTAMessage(libnetlink.linux.if_address.IFA_ADDRESS).getInt());
+            case rtnetlink.RTM_NEWADDR: //add or update interface to list
+                if (msg.getRTAMessage(if_address.IFA_ADDRESS) != null) {
+                    x.setIpv4Address(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
                 }
                 //a P2P link store other Peer address in IFA_BROADCAST so get it
-                if (x.isPoint2Point() & msg.getRTAMessage(libnetlink.linux.if_address.IFA_BROADCAST) != null) {
-                    x.setIpv4P2Paddress(msg.getRTAMessage(libnetlink.linux.if_address.IFA_BROADCAST).getInt());
+                if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_BROADCAST) != null) {
+                    x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_BROADCAST).getInt());
                 }
                 sendLinkNotification(LinkNotification.EventAction.Update, LinkNotification.EventType.Address, x);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_DELADDR: //remove interface from list
+            case rtnetlink.RTM_DELADDR: //remove interface from list
                 x.setIpv4Address(0);
                 x.setIpv4P2Paddress(0);
                 sendLinkNotification(LinkNotification.EventAction.Remove, LinkNotification.EventType.Address, x);
@@ -271,8 +275,8 @@ public class LinkManager extends Thread {
      */
     private void handleRoutingMessage(routeMsg msg) {
         //get interface name
-        if (msg.getRTAMessage(libnetlink.linux.rtnetlink.RTA_OIF) != null) {
-            NetworkInterface x = findByInterfaceIndex(msg.getRTAMessage(libnetlink.linux.rtnetlink.RTA_OIF).getInt());
+        if (msg.getRTAMessage(rtnetlink.RTA_OIF) != null) {
+            NetworkInterface x = findByInterfaceIndex(msg.getRTAMessage(rtnetlink.RTA_OIF).getInt());
             //log.debug(msg.toString());
             if (x == null) {
                 log.debug("no interface found");
@@ -281,23 +285,25 @@ public class LinkManager extends Thread {
             prevActiveState=x.isActive();
             log.trace("interface {}", x);
             //log.info(msg.toString());
-            boolean isLinkLocal = ((int) msg.getRouteScope() & 0xff) == libnetlink.linux.rtnetlink.RT_SCOPE_LINK &
-                    msg.getRouteDestLen() < 32;
-            boolean isDefaultGateway = msg.getRTAMessage(libnetlink.linux.rtnetlink.RTA_GATEWA) != null &&
-                    msg.getRTAMessage(libnetlink.linux.rtnetlink.RTA_DST) == null;
+            boolean isLinkLocal = ((int) msg.getRouteScope()  & 0xff) == rtnetlink.RT_SCOPE_LINK & ((int)msg.getRouteDestLen() &0xff)>0 && msg.getRouteType()==rtnetlink.RTN_UNICAST;
+            boolean isLocalHost = ((int) msg.getRouteScope()  & 0xff) == rtnetlink.RT_SCOPE_HOST &
+                                  ((int)msg.getRouteDestLen() & 0xff)>0 && msg.getRouteType()==rtnetlink.RTN_LOCAL &&
+                                  ((int)msg.getRouteDestLen() & 0xff)<32;
+            boolean isDefaultGateway = msg.getRTAMessage(rtnetlink.RTA_GATEWA) != null &&
+                    msg.getRTAMessage(rtnetlink.RTA_DST) == null;
             //log.info("{} {}",isLocal,isDefaultGateway);
             switch (msg.getNlMsgType()) {
-                case libnetlink.linux.rtnetlink.RTM_NEWROUTE: //add or update interface to list
-                    if (isLinkLocal) {
+                case rtnetlink.RTM_NEWROUTE: //add or update interface to list
+                    if (isLinkLocal | isLocalHost) {
                         x.setNetmask(msg.getRouteDestLen());
                     } else if (isDefaultGateway) {
-                        x.setIpv4Gateway(msg.getRTAMessage(libnetlink.linux.rtnetlink.RTA_GATEWA).getInt());
+                        x.setIpv4Gateway(msg.getRTAMessage(rtnetlink.RTA_GATEWA).getInt());
                     } else {
                         break;
                     }
                     sendLinkNotification(LinkNotification.EventAction.Update, LinkNotification.EventType.Routing, x);
                     break;
-                case libnetlink.linux.rtnetlink.RTM_DELROUTE:
+                case rtnetlink.RTM_DELROUTE:
                     if (isDefaultGateway) {
                         x.setIpv4Gateway(0);
                         sendLinkNotification(LinkNotification.EventAction.Remove, LinkNotification.EventType.Routing, x);

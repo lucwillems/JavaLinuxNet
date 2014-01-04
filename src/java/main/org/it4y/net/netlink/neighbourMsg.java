@@ -1,6 +1,7 @@
 package org.it4y.net.netlink;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.if_neighbour;
 
 import java.nio.ByteBuffer;
 
@@ -32,8 +33,8 @@ public class neighbourMsg extends NlMessage {
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i = 0; i < libnetlink.linux.if_neighbour.RTA_NAMES.length; i++) {
-            if (name.equals(libnetlink.linux.if_neighbour.RTA_NAMES[i])) {
+        for (int i = 0; i < if_neighbour.RTA_NAMES.length; i++) {
+            if (name.equals(if_neighbour.RTA_NAMES[i])) {
                 return i;
             }
         }
@@ -56,7 +57,7 @@ public class neighbourMsg extends NlMessage {
         s.append("\n");
         //dump rta messages
         for (RTAMessage r : rtaMessages.values()) {
-            if (r.getType() == libnetlink.linux.if_neighbour.NDA_DST) {
+            if (r.getType() == if_neighbour.NDA_DST) {
                 s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
             } else {
                 s.append(" ").append(r.toString()).append("\n");

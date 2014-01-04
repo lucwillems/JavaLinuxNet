@@ -1,6 +1,7 @@
 package org.it4y.net.netlink;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.rtnetlink;
 
 import java.nio.ByteBuffer;
 
@@ -35,8 +36,8 @@ public class routeMsg extends NlMessage {
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i = 0; i < libnetlink.linux.rtnetlink.RTA_NAMES.length; i++) {
-            if (name.equals(libnetlink.linux.rtnetlink.RTA_NAMES[i])) {
+        for (int i = 0; i < rtnetlink.RTA_NAMES.length; i++) {
+            if (name.equals(rtnetlink.RTA_NAMES[i])) {
                 return i;
             }
         }
@@ -59,19 +60,19 @@ public class routeMsg extends NlMessage {
         s.append(" table:").append(((short) rtm_table) & 0xff);
         s.append(" prot:");
         switch (((int) rtm_protocol) & 0xff) {
-            case libnetlink.linux.rtnetlink.RTPROT_UNSPEC:
+            case rtnetlink.RTPROT_UNSPEC:
                 s.append("unspec");
                 break;
-            case libnetlink.linux.rtnetlink.RTPROT_REDIRECT:
+            case rtnetlink.RTPROT_REDIRECT:
                 s.append("redirect");
                 break;
-            case libnetlink.linux.rtnetlink.RTPROT_KERNEL:
+            case rtnetlink.RTPROT_KERNEL:
                 s.append("kernel");
                 break;
-            case libnetlink.linux.rtnetlink.RTPROT_BOOT:
+            case rtnetlink.RTPROT_BOOT:
                 s.append("boot");
                 break;
-            case libnetlink.linux.rtnetlink.RTPROT_STATIC:
+            case rtnetlink.RTPROT_STATIC:
                 s.append("static");
                 break;
             default:
@@ -79,33 +80,33 @@ public class routeMsg extends NlMessage {
         }
         s.append(" scope:");
         switch (((int) rtm_scope) & 0xff) {
-            case libnetlink.linux.rtnetlink.RT_SCOPE_UNIVERSE:
+            case rtnetlink.RT_SCOPE_UNIVERSE:
                 s.append("universe");
                 break;
-            case libnetlink.linux.rtnetlink.RT_SCOPE_SITE:
+            case rtnetlink.RT_SCOPE_SITE:
                 s.append("site");
                 break;
-            case libnetlink.linux.rtnetlink.RT_SCOPE_LINK:
+            case rtnetlink.RT_SCOPE_LINK:
                 s.append("link");
                 break;
-            case libnetlink.linux.rtnetlink.RT_SCOPE_HOST:
+            case rtnetlink.RT_SCOPE_HOST:
                 s.append("host");
                 break;
-            case libnetlink.linux.rtnetlink.RT_SCOPE_NOWHERE:
+            case rtnetlink.RT_SCOPE_NOWHERE:
                 s.append("hell");
                 break;
             default:
                 s.append(((short) rtm_scope) & 0xff);
         }
         //s.append(" type:").append(((short)rtm_type)&0xff);
-        s.append(" type:").append(libnetlink.linux.rtnetlink.RTTYPE_NAMES[rtm_type]);
+        s.append(" type:").append(rtnetlink.RTTYPE_NAMES[rtm_type]);
         s.append(" flags:").append(Integer.toHexString(rtm_flags));
         s.append("\n");
         //dump rta messages
         for (RTAMessage r : rtaMessages.values()) {
-            if (r.getType() == libnetlink.linux.rtnetlink.RTA_DST ||
-                    r.getType() == libnetlink.linux.rtnetlink.RTA_SRC ||
-                    r.getType() == libnetlink.linux.rtnetlink.RTA_GATEWA
+            if (r.getType() == rtnetlink.RTA_DST ||
+                    r.getType() ==rtnetlink.RTA_SRC ||
+                    r.getType() == rtnetlink.RTA_GATEWA
                     ) {
                 s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
             } else {

@@ -1,6 +1,8 @@
 package org.it4y.demo;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.netlink;
+import org.it4y.jni.linux.rtnetlink;
 import org.it4y.jni.linuxutils;
 import org.it4y.net.netlink.NetlinkMsgFactory;
 import org.it4y.net.netlink.NlMessage;
@@ -29,13 +31,13 @@ public class TNetlinkRoutingListener extends TestRunner {
     @Override
     public void run() {
         //we are intrested in Routing/link/address events
-        groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
-                libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
-                libnetlink.linux.rtnetlink.RTMGRP_IPV4_MROUTE |
-                //libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
-                libnetlink.linux.rtnetlink.RTMGRP_LINK;
+        groups = rtnetlink.RTMGRP_IPV4_IFADDR |
+                 rtnetlink.RTMGRP_IPV4_ROUTE |
+                 rtnetlink.RTMGRP_IPV4_MROUTE |
+                 //libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
+                 rtnetlink.RTMGRP_LINK;
         System.out.println("Groups: 0x" + Integer.toHexString(groups));
-        linuxutils.rtnl_open_byproto(handle, groups, libnetlink.linux.netlink.NETLINK_ROUTE);
+        linuxutils.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         while (true) {
             if (initstate < 4) {
@@ -43,17 +45,17 @@ public class TNetlinkRoutingListener extends TestRunner {
                 switch (initstate) {
                     case 0:
                         System.out.println(new Date() + " Requesting link information...");
-                        linuxutils.rtnl_wilddump_request(handle, 0, libnetlink.linux.rtnetlink.RTM_GETLINK);
+                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
                         initstate++;
                         break;
                     case 1:
                         System.out.println(new Date() + " Requesting address information...");
-                        linuxutils.rtnl_wilddump_request(handle, 0, libnetlink.linux.rtnetlink.RTM_GETADDR);
+                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
                         initstate++;
                         break;
                     case 2:
                         System.out.println(new Date() + " Requesting routing information...");
-                        linuxutils.rtnl_wilddump_request(handle, 0, libnetlink.linux.rtnetlink.RTM_GETROUTE);
+                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
                         initstate++;
                         break;
                     default:

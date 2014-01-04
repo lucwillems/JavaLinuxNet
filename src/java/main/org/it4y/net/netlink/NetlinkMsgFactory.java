@@ -1,6 +1,8 @@
 package org.it4y.net.netlink;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.netlink;
+import org.it4y.jni.linux.rtnetlink;
 import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
@@ -19,43 +21,43 @@ public class NetlinkMsgFactory {
         NlMessage result = null;
 
         switch (nlmsg_type) {
-            case libnetlink.linux.rtnetlink.RTM_NEWROUTE:
+            case rtnetlink.RTM_NEWROUTE:
                 result = handleRoutingMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_DELROUTE:
+            case rtnetlink.RTM_DELROUTE:
                 result = handleRoutingMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_NEWLINK:
+            case rtnetlink.RTM_NEWLINK:
                 result = handleLinkMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_DELLINK:
+            case rtnetlink.RTM_DELLINK:
                 result = handleLinkMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_NEWADDR:
+            case rtnetlink.RTM_NEWADDR:
                 result = handleAddressMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_DELADDR:
+            case rtnetlink.RTM_DELADDR:
                 result = handleAddressMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
             //case libnetlink.linux.rtnetlink.RTM_NEWADDRLABEL: System.out.println("New Address label:"+nlmsg_type);break;
             //case libnetlink.linux.rtnetlink.RTM_DELADDRLABEL: System.out.println("Del Address label:"+nlmsg_type);break;
-            case libnetlink.linux.rtnetlink.RTM_NEWNEIGH:
+            case rtnetlink.RTM_NEWNEIGH:
                 result = handleNeighbourMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_DELNEIGH:
+            case rtnetlink.RTM_DELNEIGH:
                 result = handleNeighbourMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
-            case libnetlink.linux.rtnetlink.RTM_GETNEIGH:
+            case rtnetlink.RTM_GETNEIGH:
                 result = handleNeighbourMsg(nlmsg_len, nlmsg_type, buffer);
                 break;
             //case libnetlink.linux.rtnetlink.RTM_NEWPREFIX: System.out.println("New prefix:"+nlmsg_type);break;
             //case libnetlink.linux.rtnetlink.RTM_NEWRULE: System.out.println("New route rule:"+nlmsg_type);break;
             //case libnetlink.linux.rtnetlink.RTM_DELRULE: System.out.println("Del route rule:"+nlmsg_type);break;
             //case libnetlink.linux.rtnetlink.RTM_NEWNETCONF:System.out.println("New netconf:"+nlmsg_type);break;
-            case libnetlink.linux.netlink.NLMSG_DONE:
+            case netlink.NLMSG_DONE:
                 result = new NLDoneMessage(buffer);
                 break;
-            case libnetlink.linux.netlink.NLMSG_ERROR:
+            case netlink.NLMSG_ERROR:
                 result = new NlErrorMessage(buffer);
                 break;
             default:

@@ -1,6 +1,8 @@
 package org.it4y.net.netlink;
 
 import org.it4y.jni.libnetlink;
+import org.it4y.jni.linux.if_arp;
+import org.it4y.jni.linux.if_link;
 
 import java.nio.ByteBuffer;
 
@@ -29,8 +31,8 @@ public class interfaceInfoMsg extends NlMessage {
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i = 0; i < libnetlink.linux.if_link.RTA_NAMES.length; i++) {
-            if (name.equals(libnetlink.linux.if_link.RTA_NAMES[i])) {
+        for (int i = 0; i < if_link.RTA_NAMES.length; i++) {
+            if (name.equals(if_link.RTA_NAMES[i])) {
                 return i;
             }
         }
@@ -46,7 +48,7 @@ public class interfaceInfoMsg extends NlMessage {
         StringBuffer s = new StringBuffer();
         s.append(super.toString());
         s.append("fam: ").append(ifi_family);
-        s.append(" type:0x").append(Integer.toHexString(ifi_type));
+        s.append(" type:").append((if_arp.ARPHDR_NAMES.get((int)ifi_type&0xffff)));
         s.append(" idx:").append(ifi_index);
         s.append(" flags:0x").append(Integer.toHexString(ifi_flags));
         s.append(" changed:0x").append(Integer.toHexString(ifi_changed));
