@@ -11,7 +11,7 @@ public class libnetlink {
         //from include<linux/netlink.h>
         public static final class netlink {
 
-            public static final int NLMSGHDR_SIZE=16;
+            public static final int NLMSGHDR_SIZE = 16;
 
             public static final int NETLINK_ROUTE = 0;
             ;	/* Routing/device hook				*/
@@ -154,123 +154,123 @@ public class libnetlink {
             public static final int RTM_GETMDB = 86;
 
             /* RTnetlink multicast groups */
-            public static final int RTNLGRP_NONE=0;
-            public static final int RTNLGRP_LINK=1;
-            public static final int RTNLGRP_NOTIFY=2;
-            public static final int RTNLGRP_NEIGH=3;
-            public static final int RTNLGRP_TC=4;
-            public static final int RTNLGRP_IPV4_IFADDR=5;
-            public static final int RTNLGRP_IPV4_MROUTE=6;
-            public static final int RTNLGRP_IPV4_ROUTE=7;
-            public static final int RTNLGRP_IPV4_RULE=8;
-            public static final int RTNLGRP_IPV6_IFADDR=9;
-            public static final int RTNLGRP_IPV6_MROUTE=10;
-            public static final int RTNLGRP_IPV6_ROUTE=11;
-            public static final int RTNLGRP_IPV6_IFINFO=12;
-            public static final int RTNLGRP_DECnet_IFADDR=13;
-            public static final int RTNLGRP_NOP2=14;
-            public static final int RTNLGRP_DECnet_ROUTE=15;
-            public static final int RTNLGRP_DECnet_RULE=16;
-            public static final int RTNLGRP_NOP4=17;
-            public static final int RTNLGRP_IPV6_PREFIX=18;
-            public static final int RTNLGRP_IPV6_RULE=19;
-            public static final int RTNLGRP_ND_USEROPT=20;
-            public static final int RTNLGRP_PHONET_IFADDR=21;
-            public static final int RTNLGRP_PHONET_ROUTE=22;
-            public static final int RTNLGRP_DCB=23;
-            public static final int RTNLGRP_IPV4_NETCONF=24;
-            public static final int RTNLGRP_IPV6_NETCONF=25;
-            public static final int RTNLGRP_MDB=26;
+            public static final int RTNLGRP_NONE = 0;
+            public static final int RTNLGRP_LINK = 1;
+            public static final int RTNLGRP_NOTIFY = 2;
+            public static final int RTNLGRP_NEIGH = 3;
+            public static final int RTNLGRP_TC = 4;
+            public static final int RTNLGRP_IPV4_IFADDR = 5;
+            public static final int RTNLGRP_IPV4_MROUTE = 6;
+            public static final int RTNLGRP_IPV4_ROUTE = 7;
+            public static final int RTNLGRP_IPV4_RULE = 8;
+            public static final int RTNLGRP_IPV6_IFADDR = 9;
+            public static final int RTNLGRP_IPV6_MROUTE = 10;
+            public static final int RTNLGRP_IPV6_ROUTE = 11;
+            public static final int RTNLGRP_IPV6_IFINFO = 12;
+            public static final int RTNLGRP_DECnet_IFADDR = 13;
+            public static final int RTNLGRP_NOP2 = 14;
+            public static final int RTNLGRP_DECnet_ROUTE = 15;
+            public static final int RTNLGRP_DECnet_RULE = 16;
+            public static final int RTNLGRP_NOP4 = 17;
+            public static final int RTNLGRP_IPV6_PREFIX = 18;
+            public static final int RTNLGRP_IPV6_RULE = 19;
+            public static final int RTNLGRP_ND_USEROPT = 20;
+            public static final int RTNLGRP_PHONET_IFADDR = 21;
+            public static final int RTNLGRP_PHONET_ROUTE = 22;
+            public static final int RTNLGRP_DCB = 23;
+            public static final int RTNLGRP_IPV4_NETCONF = 24;
+            public static final int RTNLGRP_IPV6_NETCONF = 25;
+            public static final int RTNLGRP_MDB = 26;
 
 
             /* RTM_METRICS ---types of RTAX_* */
 
-            public static final int RTAX_UNSPEC=0;
-            public static final int RTAX_LOCK=1;
-            public static final int RTAX_MTU=2;
-            public static final int RTAX_WINDOW=3;
-            public static final int RTAX_RTT=4;
-            public static final int RTAX_RTTVAR=5;
-            public static final int RTAX_SSTHRESH=6;
-            public static final int RTAX_CWND=7;
-            public static final int RTAX_ADVMSS=8;
-            public static final int RTAX_REORDERING=9;
-            public static final int RTAX_HOPLIMIT=10;
-            public static final int RTAX_INITCWND=11;
-            public static final int RTAX_FEATURES=12;
-            public static final int RTAX_RTO_MIN=13;
-            public static final int RTAX_INITRWND=14;
-            public static final int RTAX_QUICKACK=15;
+            public static final int RTAX_UNSPEC = 0;
+            public static final int RTAX_LOCK = 1;
+            public static final int RTAX_MTU = 2;
+            public static final int RTAX_WINDOW = 3;
+            public static final int RTAX_RTT = 4;
+            public static final int RTAX_RTTVAR = 5;
+            public static final int RTAX_SSTHRESH = 6;
+            public static final int RTAX_CWND = 7;
+            public static final int RTAX_ADVMSS = 8;
+            public static final int RTAX_REORDERING = 9;
+            public static final int RTAX_HOPLIMIT = 10;
+            public static final int RTAX_INITCWND = 11;
+            public static final int RTAX_FEATURES = 12;
+            public static final int RTAX_RTO_MIN = 13;
+            public static final int RTAX_INITRWND = 14;
+            public static final int RTAX_QUICKACK = 15;
 
             /* RT routing scopes */
-            public static final int RT_SCOPE_UNIVERSE=0;
+            public static final int RT_SCOPE_UNIVERSE = 0;
             /* User defined values  */
-            public static final int RT_SCOPE_SITE=200;
-            public static final int RT_SCOPE_LINK=253;
-            public static final int RT_SCOPE_HOST=254;
-            public static final int RT_SCOPE_NOWHERE=255;
+            public static final int RT_SCOPE_SITE = 200;
+            public static final int RT_SCOPE_LINK = 253;
+            public static final int RT_SCOPE_HOST = 254;
+            public static final int RT_SCOPE_NOWHERE = 255;
 
             /* routing protocols */
-            public static final byte RTPROT_UNSPEC=0;
-            public static final byte RTPROT_REDIRECT=1;      /* Route installed by ICMP redirects */
-                                                             /* not used by current IPv4 */
-            public static final byte RTPROT_KERNEL=2;        /* Route installed by kernel            */
-            public static final byte RTPROT_BOOT=3;          /* Route installed during boot          */
-            public static final byte RTPROT_STATIC=4;        /* Route installed by administrator     */
-            public static final byte RTPROT_GATED=8;         /* Apparently, GateD */
-            public static final byte RTPROT_RA=9;            /* RDISC/ND router advertisements */
-            public static final byte RTPROT_MRT=10;          /* Merit MRT */
-            public static final byte RTPROT_ZEBRA=11;        /* Zebra */
-            public static final byte RTPROT_BIRD=12;         /* BIRD */
-            public static final byte RTPROT_DNROUTED=13;     /* DECnet routing daemon */
-            public static final byte RTPROT_XORP=14;         /* XORP */
-            public static final byte RTPROT_NTK=15;          /* Netsukuku */
-            public static final byte RTPROT_DHCP=16;         /* DHCP client */
-            public static final byte RTPROT_MROUTED=17;      /* Multicast daemon */
+            public static final byte RTPROT_UNSPEC = 0;
+            public static final byte RTPROT_REDIRECT = 1;      /* Route installed by ICMP redirects */
+            /* not used by current IPv4 */
+            public static final byte RTPROT_KERNEL = 2;        /* Route installed by kernel            */
+            public static final byte RTPROT_BOOT = 3;          /* Route installed during boot          */
+            public static final byte RTPROT_STATIC = 4;        /* Route installed by administrator     */
+            public static final byte RTPROT_GATED = 8;         /* Apparently, GateD */
+            public static final byte RTPROT_RA = 9;            /* RDISC/ND router advertisements */
+            public static final byte RTPROT_MRT = 10;          /* Merit MRT */
+            public static final byte RTPROT_ZEBRA = 11;        /* Zebra */
+            public static final byte RTPROT_BIRD = 12;         /* BIRD */
+            public static final byte RTPROT_DNROUTED = 13;     /* DECnet routing daemon */
+            public static final byte RTPROT_XORP = 14;         /* XORP */
+            public static final byte RTPROT_NTK = 15;          /* Netsukuku */
+            public static final byte RTPROT_DHCP = 16;         /* DHCP client */
+            public static final byte RTPROT_MROUTED = 17;      /* Multicast daemon */
 
             /* Routing message attributes */
-            public static final String[] RTA_NAMES ={
-                "unspec",
-                "dst",
-                "src",
-                "iif",
-                "oif",
-                "gateway",
-                "priority",
-                "prefsrc",
-                "metrics",
-                "multipath",
-                "protoinfo",
-                "flow",
-                "cacheinfo",
-                "session",
-                "mp_algo",
-                "table",
-                "mark",
-                "mfc_stats"
+            public static final String[] RTA_NAMES = {
+                    "unspec",
+                    "dst",
+                    "src",
+                    "iif",
+                    "oif",
+                    "gateway",
+                    "priority",
+                    "prefsrc",
+                    "metrics",
+                    "multipath",
+                    "protoinfo",
+                    "flow",
+                    "cacheinfo",
+                    "session",
+                    "mp_algo",
+                    "table",
+                    "mark",
+                    "mfc_stats"
             };
-            public static final int RTA_UNSPEC=0;
-            public static final int RTA_DST=1;
-            public static final int RTA_SRC=2;
-            public static final int RTA_IIF=3;
-            public static final int RTA_OIF=4;
-            public static final int RTA_GATEWA=5;
-            public static final int RTA_PRIORITY=6;
-            public static final int RTA_PREFSRC=7;
-            public static final int RTA_METRICS=8;
-            public static final int RTA_MULTIPATH=9;
-            public static final int RTA_PROTOINFO=10; /* no longer used */
-            public static final int RTA_FLOW=11;
-            public static final int RTA_CACHEINFO=12;
-            public static final int RTA_SESSION=13; /* no longer used */
-            public static final int RTA_MP_ALGO=14; /* no longer used */
-            public static final int RTA_TABLE=15;
-            public static final int RTA_MARK=16;
-            public static final int RTA_MFC_STATS=17;
-            public static final int __RTA_MAX=RTA_MFC_STATS;
+            public static final int RTA_UNSPEC = 0;
+            public static final int RTA_DST = 1;
+            public static final int RTA_SRC = 2;
+            public static final int RTA_IIF = 3;
+            public static final int RTA_OIF = 4;
+            public static final int RTA_GATEWA = 5;
+            public static final int RTA_PRIORITY = 6;
+            public static final int RTA_PREFSRC = 7;
+            public static final int RTA_METRICS = 8;
+            public static final int RTA_MULTIPATH = 9;
+            public static final int RTA_PROTOINFO = 10; /* no longer used */
+            public static final int RTA_FLOW = 11;
+            public static final int RTA_CACHEINFO = 12;
+            public static final int RTA_SESSION = 13; /* no longer used */
+            public static final int RTA_MP_ALGO = 14; /* no longer used */
+            public static final int RTA_TABLE = 15;
+            public static final int RTA_MARK = 16;
+            public static final int RTA_MFC_STATS = 17;
+            public static final int __RTA_MAX = RTA_MFC_STATS;
 
             /* rtm_type */
-            public static final String[] RTTYPE_NAMES ={
+            public static final String[] RTTYPE_NAMES = {
                     "unspec",
                     "unicast",
                     "local",
@@ -284,26 +284,26 @@ public class libnetlink {
                     "nat",
                     "xresolve"
             };
-            public static final int RTN_UNSPEC=0;
-            public static final int RTN_UNICAST=1;          /* Gateway or direct route      */
-            public static final int RTN_LOCAL=2;            /* Accept locally               */
-            public static final int RTN_BROADCAST=3;        /* Accept locally as broadcast, */
-                                                            /* send as broadcast */
-            public static final int RTN_ANYCAST=4;          /* Accept locally as broadcast,
+            public static final int RTN_UNSPEC = 0;
+            public static final int RTN_UNICAST = 1;          /* Gateway or direct route      */
+            public static final int RTN_LOCAL = 2;            /* Accept locally               */
+            public static final int RTN_BROADCAST = 3;        /* Accept locally as broadcast, */
+            /* send as broadcast */
+            public static final int RTN_ANYCAST = 4;          /* Accept locally as broadcast,
                                                              /* but send as unicast */
-            public static final int RTN_MULTICAST=5;       /* Multicast route              */
-            public static final int RTN_BLACKHOLE=6;        /* Drop                         */
-            public static final int RTN_UNREACHABLE=7;      /* Destination is unreachable   */
-            public static final int RTN_PROHIBIT=8;         /* Administratively prohibited  */
-            public static final int RTN_THROW=9;            /* Not in this table            */
-            public static final int RTN_NAT=10;             /* Translate this address       */
-            public static final int RTN_XRESOLVE=11;        /* Use external resolver        */
-            public static final int __RTN_MAX=RTN_XRESOLVE;
+            public static final int RTN_MULTICAST = 5;       /* Multicast route              */
+            public static final int RTN_BLACKHOLE = 6;        /* Drop                         */
+            public static final int RTN_UNREACHABLE = 7;      /* Destination is unreachable   */
+            public static final int RTN_PROHIBIT = 8;         /* Administratively prohibited  */
+            public static final int RTN_THROW = 9;            /* Not in this table            */
+            public static final int RTN_NAT = 10;             /* Translate this address       */
+            public static final int RTN_XRESOLVE = 11;        /* Use external resolver        */
+            public static final int __RTN_MAX = RTN_XRESOLVE;
         }
 
         //from include<linux/if_link.h>
         public static final class if_link {
-            public static final String[] RTA_NAMES ={
+            public static final String[] RTA_NAMES = {
                     "unspec",
                     "address",
                     "broadcast",
@@ -339,45 +339,46 @@ public class libnetlink {
                     "num_rx_queues",
                     "carrier"
             };
-            public static final int IFLA_UNSPEC=0;
-            public static final int IFLA_ADDRESS=1;
-            public static final int IFLA_BROADCAST=2;
-            public static final int IFLA_IFNAME=3;
-            public static final int IFLA_MTU=4;
-            public static final int IFLA_LINK=5;
-            public static final int IFLA_QDISC=6;
-            public static final int IFLA_STATS=7;
-            public static final int IFLA_COST=8;
-            public static final int IFLA_PRIORITY=9;
-            public static final int IFLA_MASTER=10;
-            public static final int IFLA_WIRELESS=11;		/* Wireless Extension event - see wireless.h */
-            public static final int IFLA_PROTINFO=12;		/* Protocol specific information for a link */
-            public static final int IFLA_TXQLEN=13;
-            public static final int IFLA_MAP=14;
-            public static final int IFLA_WEIGHT=15;
-            public static final int IFLA_OPERSTATE=16;
-            public static final int IFLA_LINKMODE=17;
-            public static final int IFLA_LINKINFO=18;
-            public static final int IFLA_NET_NS_PID=19;
-            public static final int IFLA_IFALIAS=20;
-            public static final int IFLA_NUM_VF=21;		/* Number of VFs if device is SR-IOV PF */
-            public static final int IFLA_VFINFO_LIST=22;
-            public static final int IFLA_STATS64=23;
-            public static final int IFLA_VF_PORTS=24;
-            public static final int IFLA_PORT_SELF=25;
-            public static final int IFLA_AF_SPEC=26;
-            public static final int IFLA_GROUP=27;		/* Group the device belongs to */
-            public static final int IFLA_NET_NS_FD=28;
-            public static final int IFLA_EXT_MASK=29;		/* Extended info mask, VFs, etc */
-            public static final int IFLA_PROMISCUITY=30;	/* Promiscuity count: > 0 means acts PROMISC */
-            public static final int IFLA_NUM_TX_QUEUES=31;
-            public static final int IFLA_NUM_RX_QUEUES=32;
-            public static final int IFLA_CARRIER=33;
-            public static final int __IFLA_MAX=IFLA_CARRIER;
+            public static final int IFLA_UNSPEC = 0;
+            public static final int IFLA_ADDRESS = 1;
+            public static final int IFLA_BROADCAST = 2;
+            public static final int IFLA_IFNAME = 3;
+            public static final int IFLA_MTU = 4;
+            public static final int IFLA_LINK = 5;
+            public static final int IFLA_QDISC = 6;
+            public static final int IFLA_STATS = 7;
+            public static final int IFLA_COST = 8;
+            public static final int IFLA_PRIORITY = 9;
+            public static final int IFLA_MASTER = 10;
+            public static final int IFLA_WIRELESS = 11;		/* Wireless Extension event - see wireless.h */
+            public static final int IFLA_PROTINFO = 12;		/* Protocol specific information for a link */
+            public static final int IFLA_TXQLEN = 13;
+            public static final int IFLA_MAP = 14;
+            public static final int IFLA_WEIGHT = 15;
+            public static final int IFLA_OPERSTATE = 16;
+            public static final int IFLA_LINKMODE = 17;
+            public static final int IFLA_LINKINFO = 18;
+            public static final int IFLA_NET_NS_PID = 19;
+            public static final int IFLA_IFALIAS = 20;
+            public static final int IFLA_NUM_VF = 21;		/* Number of VFs if device is SR-IOV PF */
+            public static final int IFLA_VFINFO_LIST = 22;
+            public static final int IFLA_STATS64 = 23;
+            public static final int IFLA_VF_PORTS = 24;
+            public static final int IFLA_PORT_SELF = 25;
+            public static final int IFLA_AF_SPEC = 26;
+            public static final int IFLA_GROUP = 27;		/* Group the device belongs to */
+            public static final int IFLA_NET_NS_FD = 28;
+            public static final int IFLA_EXT_MASK = 29;		/* Extended info mask, VFs, etc */
+            public static final int IFLA_PROMISCUITY = 30;	/* Promiscuity count: > 0 means acts PROMISC */
+            public static final int IFLA_NUM_TX_QUEUES = 31;
+            public static final int IFLA_NUM_RX_QUEUES = 32;
+            public static final int IFLA_CARRIER = 33;
+            public static final int __IFLA_MAX = IFLA_CARRIER;
         }
+
         //from include<linux/if_address.h>
         public static final class if_address {
-            public static final String[] RTA_NAMES ={
+            public static final String[] RTA_NAMES = {
                     "unspec",
                     "address",
                     "local",
@@ -387,19 +388,20 @@ public class libnetlink {
                     "cacheinfo",
                     "multicast"
             };
-            public static final int IFA_UNSPEC=0;
-            public static final int IFA_ADDRESS=1;
-            public static final int IFA_LOCAL=2;
-            public static final int IFA_LABEL=3;
-            public static final int IFA_BROADCAST=4;
-            public static final int IFA_ANYCAST=5;
-            public static final int IFA_CACHEINFO=6;
-            public static final int IFA_MULTICAST=7;
-            public static final int __IFA_MAX=IFA_MULTICAST;
+            public static final int IFA_UNSPEC = 0;
+            public static final int IFA_ADDRESS = 1;
+            public static final int IFA_LOCAL = 2;
+            public static final int IFA_LABEL = 3;
+            public static final int IFA_BROADCAST = 4;
+            public static final int IFA_ANYCAST = 5;
+            public static final int IFA_CACHEINFO = 6;
+            public static final int IFA_MULTICAST = 7;
+            public static final int __IFA_MAX = IFA_MULTICAST;
         }
+
         //from include<linux/if_neighbour.h>
         public static final class if_neighbour {
-            public static final String[] RTA_NAMES ={
+            public static final String[] RTA_NAMES = {
                     "unspec",
                     "dst",
                     "lladdr",
@@ -410,16 +412,16 @@ public class libnetlink {
                     "vni",
                     "ifindex"
             };
-            public static final int NDA_UNSPEC=0;
-            public static final int NDA_DST=1;
-            public static final int NDA_LLADDR=2;
-            public static final int NDA_CACHEINFO=3;
-            public static final int NDA_PROBES=4;
-            public static final int NDA_VLAN=5;
-            public static final int NDA_PORT=6;
-            public static final int NDA_VNI=7;
-            public static final int NDA_IFINDEX=8;
-            public static final int __NDA_MAX=NDA_IFINDEX;
+            public static final int NDA_UNSPEC = 0;
+            public static final int NDA_DST = 1;
+            public static final int NDA_LLADDR = 2;
+            public static final int NDA_CACHEINFO = 3;
+            public static final int NDA_PROBES = 4;
+            public static final int NDA_VLAN = 5;
+            public static final int NDA_PORT = 6;
+            public static final int NDA_VNI = 7;
+            public static final int NDA_IFINDEX = 8;
+            public static final int __NDA_MAX = NDA_IFINDEX;
         }
     }
 
@@ -427,7 +429,7 @@ public class libnetlink {
     //From include
     public static class utils {
         public static int nl_mgrp(int group) {
-            return group >0 ? (1 << (group - 1)) : 0;
+            return group > 0 ? (1 << (group - 1)) : 0;
         }
     }
 
@@ -444,11 +446,12 @@ public class libnetlink {
     public interface rtnl_accept {
         public int accept(ByteBuffer message);
     }
+
     //return code to send from accept interface
-    public static int rtl_accept_CONTINUE=0;
-    public static int rtl_accept_STOP=-1;
-    public static int rtl_accept_FAILED_NOMESSAGEBUFFER=-2;
-    public static int rtl_accept_FAILED_NOLISTENER=-3;
-    public static int rtl_accept_FAILED_BUFFERTOSMALL=-4;
-    public static int rtl_accept_FAILED_JVMFAILURE=-5;
+    public static int rtl_accept_CONTINUE = 0;
+    public static int rtl_accept_STOP = -1;
+    public static int rtl_accept_FAILED_NOMESSAGEBUFFER = -2;
+    public static int rtl_accept_FAILED_NOLISTENER = -3;
+    public static int rtl_accept_FAILED_BUFFERTOSMALL = -4;
+    public static int rtl_accept_FAILED_JVMFAILURE = -5;
 }

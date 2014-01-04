@@ -1,7 +1,5 @@
 package org.it4y.net.netlink;
 
-import org.it4y.util.Hexdump;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -24,7 +22,7 @@ public class NlErrorMessage extends NlMessage {
     }
 
     public String toString() {
-        StringBuffer s=new StringBuffer();
+        StringBuffer s = new StringBuffer();
         s.append(super.toString());
         s.append("netlink ERROR ");
         return s.toString();

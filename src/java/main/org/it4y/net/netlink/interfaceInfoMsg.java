@@ -7,29 +7,29 @@ import java.nio.ByteBuffer;
 /**
  * Created by luc on 1/2/14.
  */
-public class interfaceInfoMsg extends  NlMessage {
+public class interfaceInfoMsg extends NlMessage {
 
-    byte  ifi_family;
+    byte ifi_family;
     short ifi_type;
-    int   ifi_index;
-    int   ifi_flags;
-    int   ifi_changed;
+    int ifi_index;
+    int ifi_flags;
+    int ifi_changed;
 
     public interfaceInfoMsg(ByteBuffer msg) {
         super(msg);
         //get ifinfomsg header
         msg.get(); //dummy byte
-        ifi_family=msg.get();
-        ifi_type=msg.getShort();
-        ifi_index=msg.getInt();
-        ifi_flags=msg.getInt();
-        ifi_changed=msg.getInt();
+        ifi_family = msg.get();
+        ifi_type = msg.getShort();
+        ifi_index = msg.getInt();
+        ifi_flags = msg.getInt();
+        ifi_changed = msg.getInt();
         parseRTAMessages(msg);
     }
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i=0;i<libnetlink.linux.if_link.RTA_NAMES.length;i++) {
+        for (int i = 0; i < libnetlink.linux.if_link.RTA_NAMES.length; i++) {
             if (name.equals(libnetlink.linux.if_link.RTA_NAMES[i])) {
                 return i;
             }
@@ -39,11 +39,11 @@ public class interfaceInfoMsg extends  NlMessage {
 
     @Override
     public RTAMessage createRTAMessage(int position, ByteBuffer msg) {
-        return new InterfaceRTAMessages(position,msg);
+        return new InterfaceRTAMessages(position, msg);
     }
 
     public String toString() {
-        StringBuffer s=new StringBuffer();
+        StringBuffer s = new StringBuffer();
         s.append(super.toString());
         s.append("fam: ").append(ifi_family);
         s.append(" type:0x").append(Integer.toHexString(ifi_type));
@@ -52,13 +52,36 @@ public class interfaceInfoMsg extends  NlMessage {
         s.append(" changed:0x").append(Integer.toHexString(ifi_changed));
         s.append("\n");
         //dump rta messages
-        for (RTAMessage r: rtaMessages.values()) {
+        for (RTAMessage r : rtaMessages.values()) {
             if (r.getType() == 3) {
-              s.append(" ").append(r.toString()).append(" ").append(r.getString()).append("\n");
+                s.append(" ").append(r.toString()).append(" ").append(r.getString()).append("\n");
             } else {
-              s.append(" ").append(r.toString()).append("\n");
+                s.append(" ").append(r.toString()).append("\n");
             }
         }
         return s.toString();
     }
+
+    public byte getInterfaceFamily() {
+        return ifi_family;
+    }
+
+    public short getInterfaceType() {
+        return ifi_type;
+    }
+
+    public int getInterfaceIndex() {
+        return ifi_index;
+    }
+
+    public int getInterfaceFlags() {
+        return ifi_flags;
+    }
+
+    public int getInterfaceChanged() {
+        return ifi_changed;
+    }
+
+
 }
+

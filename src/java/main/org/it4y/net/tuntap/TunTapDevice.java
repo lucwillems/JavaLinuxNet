@@ -23,18 +23,21 @@ import org.it4y.jni.tuntap;
 
 public class TunTapDevice extends tuntap {
 
-    public TunTapDevice(String device)  {
+    public TunTapDevice(String device) {
         super();
-        this.device=device;
+        this.device = device;
     }
 
     public void open() throws Exception {
         int errno;
         //open on name or let kernel chouse
-        if (device != null) { errno=openTunDevice(device);
-        } else { errno=openTun(); }
+        if (device != null) {
+            errno = openTunDevice(device);
+        } else {
+            errno = openTun();
+        }
         if (errno != 0) {
-          throw new Exception("Could not open '/dev/net/tun!'\n" + "errno="+errno);
+            throw new Exception("Could not open '/dev/net/tun!'\n" + "errno=" + errno);
         }
     }
 

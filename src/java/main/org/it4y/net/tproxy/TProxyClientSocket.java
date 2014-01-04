@@ -12,15 +12,15 @@ import java.net.UnknownHostException;
  */
 public class TProxyClientSocket {
 
-    private Socket socket=null;
+    private Socket socket = null;
     private libc.sockaddr_in remote;
 
     /*
      * TODO : can't we do this better than getByAddress ?
      */
     public TProxyClientSocket(Socket socket, libc.sockaddr_in remote) throws UnknownHostException {
-        this.socket=socket;
-        this.remote=remote;
+        this.socket = socket;
+        this.remote = remote;
     }
 
     public Socket getSocket() {
@@ -30,20 +30,23 @@ public class TProxyClientSocket {
     public InetSocketAddress getRemote() {
         return remote.toInetSocketAddress();
     }
+
     public int getRemoteAddressAsInt() {
         return remote.address;
     }
+
     public InetAddress getRemoteAddress() {
         return remote.toInetAddress();
     }
+
     public int getRemotePort() {
         return remote.port;
     }
 
     public String toString() {
-        StringBuffer s=new StringBuffer();
+        StringBuffer s = new StringBuffer();
         s.append("local:").append(socket.getInetAddress()).append(":").append(socket.getPort()).append(" ");
-        if (remote !=null) {
+        if (remote != null) {
             s.append("Remote:").append(remote.toInetAddress()).append(":").append(remote.port);
         }
         return s.toString();

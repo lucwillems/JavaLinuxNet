@@ -1,6 +1,5 @@
 package org.it4y.net;
 
-import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 
 /**
@@ -8,15 +7,16 @@ import java.nio.ByteBuffer;
  */
 public class RawPacket {
 
-    protected ByteBuffer rawPacket=null;
-    protected int rawSize=-1;
-    protected int rawLimit=-1;
+    protected ByteBuffer rawPacket = null;
+    protected int rawSize = -1;
+    protected int rawLimit = -1;
 
-    public RawPacket(ByteBuffer bytes,int length) {
-        this.rawPacket=bytes;
-        this.rawSize=length;
-        this.rawLimit=bytes.limit();
+    public RawPacket(ByteBuffer bytes, int length) {
+        this.rawPacket = bytes;
+        this.rawSize = length;
+        this.rawLimit = bytes.limit();
     }
+
     public ByteBuffer getRawPacket() {
         return rawPacket;
     }

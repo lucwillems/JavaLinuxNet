@@ -12,6 +12,7 @@ public class InterfaceRTAMessages extends RTAMessage {
     public InterfaceRTAMessages(int pos, ByteBuffer buffer) {
         super(pos, buffer);
     }
+
     public String getRTAName() {
         return libnetlink.linux.if_link.RTA_NAMES[type];
     }

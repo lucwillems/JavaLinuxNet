@@ -5,8 +5,18 @@ package org.it4y.net.protocols.IP;
  */
 public class TCPoptionSACK implements TCPOption {
 
-    public TCPoptionSACK() {}
-    public String getName() {return "SACK";}
-    public int getLength() {return 2;}
-    public String toString() {return getName();}
+    public TCPoptionSACK() {
+    }
+
+    public String getName() {
+        return "SACK";
+    }
+
+    public int getLength() {
+        return 2;
+    }
+
+    public String toString() {
+        return getName();
+    }
 }

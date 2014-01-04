@@ -5,8 +5,20 @@ package org.it4y.net.protocols.IP;
  */
 public class TCPoptionWindowScale implements TCPOption {
     byte scale;
-    public TCPoptionWindowScale(byte scale) { this.scale=scale;}
-    public String getName() {return "wscale";}
-    public int getLength() {return 3;}
-    public String toString() {return "wscale="+((int)(scale) &0x00ff);}
+
+    public TCPoptionWindowScale(byte scale) {
+        this.scale = scale;
+    }
+
+    public String getName() {
+        return "wscale";
+    }
+
+    public int getLength() {
+        return 3;
+    }
+
+    public String toString() {
+        return "wscale=" + ((int) (scale) & 0x00ff);
+    }
 }

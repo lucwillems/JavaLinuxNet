@@ -1,15 +1,11 @@
 package org.it4y.net.tproxy;
 
-import org.it4y.jni.JNILoader;
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.jni.tproxy;
 import org.it4y.net.SocketUtils;
-import org.it4y.net.linux.*;
 import org.it4y.net.linux.SocketOptions;
-import org.it4y.net.tproxy.TProxyClientSocket;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.*;
@@ -44,27 +40,27 @@ public class TProxyServerSocket extends ServerSocket {
     }
 
     public void setIPTransparentOption() throws libc.ErrnoException {
-        linuxutils.setbooleanSockOption(this, SocketOptions.SOL_IP,SocketOptions.IP_TRANSPARENT,true);
+        linuxutils.setbooleanSockOption(this, SocketOptions.SOL_IP, SocketOptions.IP_TRANSPARENT, true);
     }
 
 
-    public void initTProxy(InetAddress address,int port) throws Exception {
+    public void initTProxy(InetAddress address, int port) throws Exception {
         setIPTransparentOption();
         setReuseAddress(true);
         //bind to localhost interface
-        InetSocketAddress local=new InetSocketAddress(address,port);
-        bind(local,500);
+        InetSocketAddress local = new InetSocketAddress(address, port);
+        bind(local, 500);
     }
 
     public TProxyClientSocket accepProxy() throws IOException {
-        tproxy proxy=new tproxy();
-        Socket c=accept();
+        tproxy proxy = new tproxy();
+        Socket c = accept();
         //get original destination address stored in client socket structure
         try {
-          libc.sockaddr_in remote=linuxutils.getsockname(c);
-          return new TProxyClientSocket(c,remote);
+            libc.sockaddr_in remote = linuxutils.getsockname(c);
+            return new TProxyClientSocket(c, remote);
         } catch (libc.ErrnoException errno) {
-            throw new IOException("libc error",errno);
+            throw new IOException("libc error", errno);
         }
     }
 

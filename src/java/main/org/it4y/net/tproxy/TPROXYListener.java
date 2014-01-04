@@ -9,38 +9,35 @@ import java.net.ServerSocket;
  */
 public class TPROXYListener extends Thread {
 
-    private int port=0;
-    private int backlog=0;
-    private InetAddress bind=null;
+    private int port = 0;
+    private int backlog = 0;
+    private InetAddress bind = null;
     private ServerSocket socket;
 
-    private boolean running=false;
+    private boolean running = false;
 
-    public TPROXYListener(int port, int backlog ,InetAddress bind) {
-        this.port=port;
-        this.backlog=backlog;
-        this.bind=bind;
+    public TPROXYListener(int port, int backlog, InetAddress bind) {
+        this.port = port;
+        this.backlog = backlog;
+        this.bind = bind;
     }
 
     public void halt() {
-        running=false;
+        running = false;
     }
 
     public void run() {
 
         try {
-            socket=new TProxyServerSocket();
+            socket = new TProxyServerSocket();
             socket.setReuseAddress(true);
-        } catch( IOException io) {
-            System.out.println("Ooeeps :"+io.getMessage());
+        } catch (IOException io) {
+            System.out.println("Ooeeps :" + io.getMessage());
             return;
         }
         //set some important socket options
         System.out.println("TPROXY socket created..");
-        running=true;
-
-
-
+        running = true;
 
 
     }

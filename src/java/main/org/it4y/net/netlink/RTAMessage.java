@@ -1,12 +1,11 @@
 package org.it4y.net.netlink;
 
 import org.it4y.jni.libc;
-import org.it4y.jni.libnetlink;
 import org.it4y.util.Hexdump;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 /**
@@ -17,71 +16,80 @@ public abstract class RTAMessage {
     short type;
     ByteBuffer data;
 
-    public RTAMessage(int pos ,ByteBuffer buffer) {
-       size=buffer.getShort(pos);
-       type=buffer.getShort(pos+2);
-       //get size bytes from buffer for data
-       int old_position=buffer.position();
-       int old_limit=buffer.limit();
-       buffer.position(pos+4);
-       buffer.limit(pos+size);
-       data=buffer.slice();
-       buffer.position(old_position);
-       buffer.limit(old_limit);
+    public RTAMessage(int pos, ByteBuffer buffer) {
+        size = buffer.getShort(pos);
+        type = buffer.getShort(pos + 2);
+        //get size bytes from buffer for data
+        int old_position = buffer.position();
+        int old_limit = buffer.limit();
+        buffer.position(pos + 4);
+        buffer.limit(pos + size);
+        data = buffer.slice();
+        data.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.position(old_position);
+        buffer.limit(old_limit);
+        //mark start position
+        data.mark();
     }
+
     public short getSize() {
         return size;
     }
+
     public short getType() {
         return type;
     }
 
     public int getPaddedSize() {
         //roundup to 4 bytes padding
-        return (int)Math.ceil(size/4.0)*4;
+        return (int) Math.ceil(size / 4.0) * 4;
     }
 
-    public abstract String getRTAName() ;
+    public abstract String getRTAName();
 
     public String toString() {
-        StringBuffer s=new StringBuffer();
+        StringBuffer s = new StringBuffer();
         s.append("RTA[").append(size).append("(").append(getPaddedSize()).append("):");
         s.append(type);
         try {
-            if (getRTAName() != null ) {
+            if (getRTAName() != null) {
                 s.append(" ").append(getRTAName());
             }
-        } catch(IndexOutOfBoundsException oeps) {
+        } catch (IndexOutOfBoundsException oeps) {
             s.append(" ").append("???? unknown");
         }
         s.append("] ");
-        s.append(Hexdump.bytesToHex(data,size));
+        s.append(Hexdump.bytesToHex(data, size));
         return s.toString();
     }
 
-    public byte get() {
-        return data.get();
+    public byte getByte() {
+        return data.get(0);
     }
+
     public short getShort() {
-        return data.getShort();
+        return data.getShort(0);
     }
+
     public int getInt() {
-        return data.getInt();
+        return data.getInt(0);
     }
+
     public String getString() {
         //Strings are always UTF-8 null terminated string so convert it that way
-        byte[] result = new byte[data.capacity()-1];
-        data.get(result);
-        String s=new String(result, Charset.forName("UTF-8"));
+        byte[] result = new byte[data.capacity() - 1];
+        data.rewind();
+        data.get(result, 0, result.length);
+        String s = new String(result, Charset.forName("UTF-8"));
         return s;
     }
 
     public String getHexString() {
-        return Hexdump.bytesToHex(data,6);
+        return Hexdump.bytesToHex(data, 6);
     }
 
 
     public InetAddress getInetAddress() {
-        return libc.toInetAddress(data.getInt());
+        return libc.toInetAddress(libc.ntol(data.getInt(0)));
     }
 }

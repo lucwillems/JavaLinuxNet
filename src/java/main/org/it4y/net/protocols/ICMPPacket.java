@@ -9,12 +9,12 @@ import java.nio.ByteBuffer;
  */
 public class ICMPPacket extends IpPacket {
 
-    public static final byte ICMP_HEADER_SIZE=4;
-    public static final byte ECHO_REPLY =(byte)0;
-    public static final byte ECHO_REQUEST =(byte)8;
+    public static final byte ICMP_HEADER_SIZE = 4;
+    public static final byte ECHO_REPLY = (byte) 0;
+    public static final byte ECHO_REQUEST = (byte) 8;
 
-    public ICMPPacket(ByteBuffer buffer,int size) {
-        super(buffer,size);
+    public ICMPPacket(ByteBuffer buffer, int size) {
+        super(buffer, size);
     }
 
     public int getHeaderSize() {
@@ -22,21 +22,21 @@ public class ICMPPacket extends IpPacket {
     }
 
     public int getPayLoadSize() {
-        return rawLimit-super.getHeaderSize()-ICMP_HEADER_SIZE;
+        return rawLimit - super.getHeaderSize() - ICMP_HEADER_SIZE;
     }
 
     public ByteBuffer getHeader() {
         //get IP header size
-        int headersize=super.getHeaderSize();
+        int headersize = super.getHeaderSize();
         resetBuffer();
         rawPacket.position(headersize);
-        rawPacket.limit(headersize+ICMP_HEADER_SIZE);
+        rawPacket.limit(headersize + ICMP_HEADER_SIZE);
         return rawPacket.slice();
     }
 
     public ByteBuffer getPayLoad() {
         //get IP header size
-        int headersize=super.getHeaderSize()+ICMP_HEADER_SIZE;
+        int headersize = super.getHeaderSize() + ICMP_HEADER_SIZE;
         resetBuffer();
         rawPacket.position(headersize);
         rawPacket.limit(rawSize);
@@ -44,7 +44,7 @@ public class ICMPPacket extends IpPacket {
     }
 
     public byte getType() {
-        return rawPacket.get(super.getHeaderSize()+0);
+        return rawPacket.get(super.getHeaderSize() + 0);
     }
 
     public void setType(byte type) {
@@ -52,7 +52,7 @@ public class ICMPPacket extends IpPacket {
     }
 
     public byte getCode() {
-        return rawPacket.get(super.getHeaderSize()+1);
+        return rawPacket.get(super.getHeaderSize() + 1);
     }
 
     public void setCode(byte code) {
@@ -76,14 +76,16 @@ public class ICMPPacket extends IpPacket {
      *
      */
     public void convertToEchoReply() {
-        if (getType() != ECHO_REQUEST) { throw new RuntimeException("Not ICMP request");}
-         resetBuffer();
-         setTTL((byte) 64);      //TTL
-         //swap src/dst address
-         swapSourceDestination();
-         updateChecksum();
-         //change it to a reply, preserve data
-         setType(ECHO_REPLY);
+        if (getType() != ECHO_REQUEST) {
+            throw new RuntimeException("Not ICMP request");
+        }
+        resetBuffer();
+        setTTL((byte) 64);      //TTL
+        //swap src/dst address
+        swapSourceDestination();
+        updateChecksum();
+        //change it to a reply, preserve data
+        setType(ECHO_REPLY);
     }
 
 }

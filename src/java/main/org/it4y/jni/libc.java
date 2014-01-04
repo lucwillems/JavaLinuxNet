@@ -15,8 +15,17 @@ public final class libc {
      *
      */
 
+    public static int ntol(int address) {
+        int[] ab = new int[4];
+        ab[0] = ((address >> 24) & 0x00ff);
+        ab[1] = ((address >> 16) & 0x00ff);
+        ab[2] = ((address >> 8) & 0x00ff);
+        ab[3] = (address & 0x00ff);
+        return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+(ab[0]);
+    }
+
     public static InetAddress toInetAddress(int address) {
-        InetAddress x=null;
+        InetAddress x = null;
         byte[] ab = new byte[4];
         ab[0] = (byte) ((address >> 24) & 0x00ff);
         ab[1] = (byte) ((address >> 16) & 0x00ff);
@@ -24,19 +33,21 @@ public final class libc {
         ab[3] = (byte) (address & 0x00ff);
         //Why throw this will it is not going to happen ?
         try {
-           x = Inet4Address.getByAddress(ab);
+            x = Inet4Address.getByAddress(ab);
         } catch (UnknownHostException ignore) {
         }
         return x;
     }
 
     public static class in_addr {
-        public int address=0;
+        public int address = 0;
         private InetAddress cached_address = null;
 
-        public in_addr() {}
+        public in_addr() {
+        }
+
         public in_addr(int address) {
-            this.address=address;
+            this.address = address;
         }
 
         public InetAddress toInetAddress() {
@@ -46,7 +57,7 @@ public final class libc {
                         /* ok java uses shitty constructions so we need to hack here */
                         /* Inet4Address.getByAddress() will do reverse of this. */
                         /* a private constructor(int address,int port) exist but it is private */
-                        cached_address=libc.toInetAddress(address);
+                        cached_address = libc.toInetAddress(address);
                     }
                 }
             }
@@ -54,9 +65,10 @@ public final class libc {
         }
 
         public String toString() {
-              return Integer.toHexString(address);
+            return Integer.toHexString(address);
         }
     }
+
     /*
      * this class wraps libc sockaddr_in structure from C lib
      *
@@ -69,11 +81,13 @@ public final class libc {
         //cache this result as it is expensive
         private InetAddress cached_address = null;
 
-        public sockaddr_in() {}
-        public sockaddr_in(int address,int port ,int family){
-            this.address=address;
-            this.port=port;
-            this.family=family;
+        public sockaddr_in() {
+        }
+
+        public sockaddr_in(int address, int port, int family) {
+            this.address = address;
+            this.port = port;
+            this.family = family;
         }
 
         public InetAddress toInetAddress() {
@@ -83,7 +97,7 @@ public final class libc {
                         /* ok java uses shitty constructions so we need to hack here */
                         /* Inet4Address.getByAddress() will do reverse of this. */
                         /* a private constructor(int address,int port) exist but it is private */
-                        cached_address=libc.toInetAddress(address);
+                        cached_address = libc.toInetAddress(address);
                     }
                 }
             }
@@ -222,7 +236,7 @@ public final class libc {
         }
 
         public String toString() {
-            StringBuffer s=new StringBuffer();
+            StringBuffer s = new StringBuffer();
             s.append("state:").append(tcpi_state).append(" ");
             s.append("ca_state:").append(tcpi_ca_state).append("\n ");
             s.append("retransmits:").append(tcpi_retransmits).append(" ");

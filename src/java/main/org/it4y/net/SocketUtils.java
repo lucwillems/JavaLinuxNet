@@ -36,7 +36,7 @@ public class SocketUtils {
 
     public static FileDescriptor getFileDescriptor(ServerSocket socket) {
         try {
-            SocketImpl impl=getImplementation(socket);
+            SocketImpl impl = getImplementation(socket);
             Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
             method.setAccessible(true);
             return (FileDescriptor) method.invoke(impl);
@@ -48,7 +48,7 @@ public class SocketUtils {
 
     public static FileDescriptor getFileDescriptor(Socket socket) {
         try {
-            SocketImpl impl=getImplementation(socket);
+            SocketImpl impl = getImplementation(socket);
             Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
             method.setAccessible(true);
             return (FileDescriptor) method.invoke(impl);
@@ -59,13 +59,15 @@ public class SocketUtils {
     }
 
     public static int getFd(ServerSocket socket) {
-        FileDescriptor fd=getFileDescriptor(socket);
-        if (fd==null) { throw new RuntimeException("No FD found..");}
+        FileDescriptor fd = getFileDescriptor(socket);
+        if (fd == null) {
+            throw new RuntimeException("No FD found..");
+        }
         //Get FD field value
         try {
             Field privateFd = FileDescriptor.class.getDeclaredField("fd");
             privateFd.setAccessible(true);
-            return ((Integer)privateFd.get(fd)).intValue();
+            return ((Integer) privateFd.get(fd)).intValue();
         } catch (Exception ignore) {
             System.out.println(ignore);
         }
@@ -73,15 +75,15 @@ public class SocketUtils {
     }
 
     public static int getFd(Socket socket) {
-        FileDescriptor fd=getFileDescriptor(socket);
-        if (fd==null) {
+        FileDescriptor fd = getFileDescriptor(socket);
+        if (fd == null) {
             return -1;
         }
         //Get FD field value
         try {
             Field privateFd = FileDescriptor.class.getDeclaredField("fd");
             privateFd.setAccessible(true);
-            return ((Integer)privateFd.get(fd)).intValue();
+            return ((Integer) privateFd.get(fd)).intValue();
         } catch (Exception ignore) {
             System.out.println(ignore);
         }

@@ -8,10 +8,10 @@ import java.nio.ByteBuffer;
 public class Hexdump {
     final protected static char[] hexArray = "0123456789ABCDEF ".toCharArray();
 
-    public static String bytesToHex(ByteBuffer bytes,int maxSize) {
-        char[] hexChars = new char[Math.min(bytes.capacity(),maxSize) * 3];
+    public static String bytesToHex(ByteBuffer bytes, int maxSize) {
+        char[] hexChars = new char[Math.min(bytes.capacity(), maxSize) * 3];
         int v;
-        for ( int j = 0; j < Math.min(maxSize,bytes.capacity()); j++ ) {
+        for (int j = 0; j < Math.min(maxSize, bytes.capacity()); j++) {
             v = bytes.get(j) & 0xFF;
             hexChars[j * 3] = hexArray[v >>> 4];
             hexChars[j * 3 + 1] = hexArray[v & 0x0F];
@@ -19,10 +19,11 @@ public class Hexdump {
         }
         return new String(hexChars);
     }
-    public static String bytesToHex(byte[] bytes,int maxSize) {
-        char[] hexChars = new char[Math.min(bytes.length,maxSize) * 3];
+
+    public static String bytesToHex(byte[] bytes, int maxSize) {
+        char[] hexChars = new char[Math.min(bytes.length, maxSize) * 3];
         int v;
-        for ( int j = 0; j < Math.min(maxSize,bytes.length); j++ ) {
+        for (int j = 0; j < Math.min(maxSize, bytes.length); j++) {
             v = bytes[j] & 0xFF;
             hexChars[j * 3] = hexArray[v >>> 4];
             hexChars[j * 3 + 1] = hexArray[v & 0x0F];
