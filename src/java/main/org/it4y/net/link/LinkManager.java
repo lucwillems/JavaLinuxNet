@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -16,28 +18,83 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by luc on 1/3/14.
  */
-public class LinkManager extends Thread implements libnetlink.rtnl_accept {
+public class LinkManager extends Thread {
 
+    /**
+     * We us this lock to protect agains multithreaded (mostly) read/write access
+     * of the hashmap and content of this map
+     */
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    /**
+     * the read lock
+     */
     private final Lock rlock = rwl.readLock();
+    /**
+     * the write lock
+     */
     private final Lock wlock = rwl.writeLock();
+    /**
+     * our internal logger
+     */
     private Logger log = LoggerFactory.getLogger(LinkManager.class);
+    /**
+     * A map of known interface, using name as key
+     */
     private HashMap<String, NetworkInterface> interfaceList;
+
+    /**
+     * A list of LinkNotification listeners
+     */
+    private ArrayList<NotificationRegister> listeners;
+
+    /**
+     * our netlink rtnl_handle handle
+     */
     private libnetlink.rtnl_handle handle;
+
+    /**
+     * Byte buffer we use to retrieve the socket data from netlink
+     */
     private ByteBuffer messageBuffer = ByteBuffer.allocateDirect(8129);
+
+    /**
+     * netlink multicast groups we are intrested in
+     */
     private int groups = 0;
+    /**
+     * During startup , initstate keeps track of the current init state
+     *<pre>
+     *     0=init
+     *     ..
+     *     4=initialization done, all information is known.
+     *</pre>
+     */
     private int initstate = 0;
+
+    /**
+     * previous active state to detect state changes (interface ready/not ready)
+     */
     private boolean prevActiveState = false;
 
+    /**
+     * LinkManager keeps track of active network interfaces and collect basic interface information.
+     * it will send notifications when network interfaces state changes so actions can be done.
+     * it use netlink version 3 to retrieve this information from the linux kernel
+     */
     public LinkManager() {
-        super("netlink-linkmanager");
-        log.debug("init linkmanager");
+        super("netlink-manager");
+        log.debug("init netlink-manager");
         interfaceList = new HashMap<String, NetworkInterface>();
+        listeners=new ArrayList<NotificationRegister>();
         handle = new libnetlink.rtnl_handle();
         this.setDaemon(true);
     }
 
-    public void InitNetLink() {
+    /**
+     * initialize netlink interface
+     *
+     */
+    protected void InitNetLink() {
         //we are intrested in Routing/link/address events
         groups = libnetlink.linux.rtnetlink.RTMGRP_IPV4_IFADDR |
                 libnetlink.linux.rtnetlink.RTMGRP_IPV4_ROUTE |
@@ -47,6 +104,9 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         log.debug("linkmanager started");
     }
 
+    /**
+     * start the main link manager thread which listen to netlink messages and process them
+     */
     public void run() {
 
         //init netlink
@@ -81,34 +141,42 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
             //when stop, the listen will return and thread can continue...
             messageBuffer.rewind();
             messageBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            linuxutils.rtnl_listen(handle, messageBuffer, this);
-        }
+            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink.rtnl_accept() {
 
-    }
+                @Override
+                public int accept(ByteBuffer message) {
+                    NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
+                    if (msg != null) {
+                        log.debug("message:{} type={}", msg.getClass().getSimpleName(), msg.getNlMsgType());
+                        log.trace("{}", msg);
 
-    public int accept(ByteBuffer message) {
-        NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
-        if (msg != null) {
-            log.debug("message:{} type={}", msg.getClass().getSimpleName(), msg.getNlMsgType());
-            log.trace("{}", msg);
-            wlock.lock();
-            try {
-                if (msg instanceof interfaceInfoMsg) {
-                    handleLinkMessages((interfaceInfoMsg) msg);
-                } else if (msg instanceof interfaceAddressMsg) {
-                    handleAddressMessages((interfaceAddressMsg) msg);
-                } else if (msg instanceof routeMsg) {
-                    handleRoutingMessage((routeMsg) msg);
+                        //we are going to modify so set write lock here
+                        wlock.lock();
+                        try {
+                            if (msg instanceof interfaceInfoMsg) {
+                                handleLinkMessages((interfaceInfoMsg) msg);
+                            } else if (msg instanceof interfaceAddressMsg) {
+                                handleAddressMessages((interfaceAddressMsg) msg);
+                            } else if (msg instanceof routeMsg) {
+                                handleRoutingMessage((routeMsg) msg);
+                            }
+                        } finally {
+                            wlock.unlock();
+                        }
+                        //continue or stop listening ?
+                        return msg.moreMessages() ? libnetlink.rtl_accept_CONTINUE : libnetlink.rtl_accept_STOP;
+                    }
+                    return libnetlink.rtl_accept_STOP;
                 }
-            } finally {
-                wlock.unlock();
-            }
-            //continue or stop listening ?
-            return msg.moreMessages() ? libnetlink.rtl_accept_CONTINUE : libnetlink.rtl_accept_STOP;
+            });
         }
-        return libnetlink.rtl_accept_STOP;
+
     }
 
+    /**
+     * Handle netlink link messages
+     * @param msg
+     */
     private void handleLinkMessages(interfaceInfoMsg msg) {
         //get interface name
         String name = msg.getRTAMessage("ifname") != null ? msg.getRTAMessage("ifname").getString() : null;
@@ -164,6 +232,10 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
+    /**
+     * Handle netlink address messages
+     * @param msg
+     */
     private void handleAddressMessages(interfaceAddressMsg msg) {
         //get interface name
         NetworkInterface x = findByInterfaceIndex(msg.getInterfaceIndex());
@@ -192,6 +264,11 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
+    /**
+     * Handle netlink routing messages
+     *
+     * @param msg
+     */
     private void handleRoutingMessage(routeMsg msg) {
         //get interface name
         if (msg.getRTAMessage(libnetlink.linux.rtnetlink.RTA_OIF) != null) {
@@ -230,14 +307,11 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
-    private void sendLinkNotification(LinkNotification.EventAction action, LinkNotification.EventType event, NetworkInterface x) {
-        log.debug("notify Event: {} {} {} ", action, event, x);//TODO
-        if (prevActiveState != x.isActive()) {
-            //this notification will only be send when active state changes
-            log.warn("State Event: {} active: {} ", x, x.isActive());//TODO
-        }
-    }
-
+    /**
+     * Find interface with default gateway
+     *
+     * @return NetworkInterface
+     */
     public NetworkInterface getDefaultGateway() {
         rlock.lock();
         try {
@@ -253,6 +327,13 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
+    /**
+     * Find interface by kernel index number. returns null in case the interface doesn't exist
+     * this method is slow.
+     *
+     * @param index
+     * @return NetworkInterface
+     */
     public NetworkInterface findByInterfaceIndex(int index) {
         rlock.lock();
         try {
@@ -267,6 +348,12 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
+    /**
+     * Find interface by name, returns NULL incase the interface doesn't exist
+     *
+     * @param name
+     * @return NetworkInterface
+     */
     public NetworkInterface findByInterfaceName(String name) {
         rlock.lock();
         try {
@@ -276,6 +363,26 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
+    /**
+     * returns a set of interface names active. Use ReadLock() and ReadUnlock() to make iteration of this list
+     * thread save outside LinkManager
+     *
+     * do something like this :
+     *<pre>
+     *{@code
+     *  lnkMng.ReadLock();
+     *  try {
+     *    for (String name:lnkMng.getInterfaceList()) {
+     *        NetworkInterface x=lnkMng.findByInterfaceName(name);
+     *        ...
+     *    }
+     *  } finally {
+     *    lnkMng.ReadUnLock();
+     *  }
+     *}
+     *</pre>
+     * @return Set<String>
+     */
     public Set<String> getInterfaceList() {
         rlock.lock();
         try {
@@ -285,14 +392,100 @@ public class LinkManager extends Thread implements libnetlink.rtnl_accept {
         }
     }
 
+    /**
+     * Set readLock on internal interface list.
+     */
     public void ReadLock() {
-        log.info("Lock read");
+        log.trace("Lock read");
         rlock.lock();
     }
 
+    /**
+     * Release the read lock on the internal interface list
+     */
     public void ReadUnLock() {
-        log.info("unLock read");
+        log.trace("unLock read");
         rlock.unlock();
     }
+
+    /**
+     * true if internal data is up to date after startup.
+     * the internal interface list is created asynchronous so during startup we need to wait until it is ready.
+     * @return
+     */
+    public boolean isReady() {
+        return initstate==4;
+    }
+
+    /**
+     * notification register entry
+     */
+    class NotificationRegister {
+        LinkNotification.EventType type;
+        LinkNotification.EventAction action;
+        LinkNotification listener;
+
+        public NotificationRegister(LinkNotification.EventAction action,LinkNotification.EventType type,LinkNotification listener) {
+            this.type=type;
+            this.action=action;
+            this.listener=listener;
+        }
+
+        public boolean isIntrestedIn(LinkNotification.EventType aType,LinkNotification.EventAction aAction) {
+            return (this.action== LinkNotification.EventAction.All||this.action==aAction) &&
+                   (this.type== LinkNotification.EventType.All || this.type==aType);
+        }
+    }
+
+    public LinkNotification registerListener(LinkNotification.EventAction aAction,LinkNotification.EventType aType,LinkNotification aListener) {
+        wlock.lock();
+        try {
+            listeners.add(new NotificationRegister(aAction,aType,aListener));
+            log.info("{} listener registrated",listeners.size());
+            return aListener;
+        } finally {
+            wlock.unlock();
+        }
+    }
+
+    public void unRegisterListener(LinkNotification aListener) {
+        wlock.lock();
+        try {
+            Iterator<NotificationRegister> i=listeners.iterator();
+            while(i.hasNext()) {
+                NotificationRegister x=i.next();
+                if (x.listener.equals(aListener)) {
+                    listeners.remove(x);
+                    log.info("{} removed listener");
+                }
+            }
+        } finally {
+            wlock.unlock();
+        }
+    }
+
+    /**
+     * Send link notification and State notification for registrated listeners
+     * this is still run when the write lock is active
+     * @param action
+     * @param event
+     * @param x
+     */
+    private void sendLinkNotification(LinkNotification.EventAction action, LinkNotification.EventType event, NetworkInterface x) {
+        for (NotificationRegister listener : listeners) {
+            if (listener.isIntrestedIn(event,action)) {
+                //call the listener
+                log.debug("onEvent {}",listener.listener);
+                listener.listener.onEvent(action,event,x);
+            }
+            if (prevActiveState != x.isActive()) {
+                //this notification will only be send when active state changes
+                log.debug("onStateChanged {}",listener.listener);
+                listener.listener.onStateChanged(x);
+            }
+        }
+    }
+
+
 }
 
