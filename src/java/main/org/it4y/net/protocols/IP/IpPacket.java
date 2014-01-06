@@ -27,20 +27,37 @@ public class IpPacket extends RawPacket {
 
     public ByteBuffer getHeader() {
         resetBuffer();
-        rawPacket.limit(getHeaderSize());
-        return rawPacket.slice();
+        int opositiorn=rawPacket.position();
+        int olimit=rawPacket.limit();
+        try {
+            rawPacket.position(getIpHeaderSize());
+            rawPacket.limit(getHeaderSize());
+            return rawPacket.slice();
+        } finally {
+            rawPacket.limit(olimit);
+            rawPacket.position(opositiorn);
+        }
     }
 
     public ByteBuffer getPayLoad() {
         resetBuffer();
-        rawPacket.position(getHeaderSize());
-        rawPacket.limit(rawSize);
-        return rawPacket.slice();
+        int opositiorn=rawPacket.position();
+        int olimit=rawPacket.limit();
+        try {
+            int headerSize=getIpHeaderSize()+getHeaderSize();
+            rawPacket.position(headerSize);
+            rawPacket.limit(getIPLenght()-headerSize);
+            return rawPacket.slice();
+        } finally {
+            rawPacket.limit(olimit);
+            rawPacket.position(opositiorn);
+        }
     }
 
     //IP specific header size
     public int getIpHeaderSize() {
-        return (byte) ((rawPacket.get(0) & (byte) 0x0f) * (byte) 4);
+        int size= (int)((byte) ((rawPacket.get(0) & (byte) 0x0f) * (byte) 4) &0xff);
+        return size;
     }
 
     //IP specific header
@@ -67,7 +84,7 @@ public class IpPacket extends RawPacket {
         rawPacket.put(1, tos);
     }
 
-    public short getLenght() {
+    public short getIPLenght() {
         return rawPacket.getShort(2);
     }
 
@@ -138,7 +155,7 @@ public class IpPacket extends RawPacket {
         return getHeaderSize() > 20;
     }
 
-    //See  RFC1071
+
     public short rfc1071Checksum(int offset, int size) {
         int sum = 0;
         int data;
@@ -168,5 +185,16 @@ public class IpPacket extends RawPacket {
         s.append((ip >> 8) & 0x00ff).append(".");
         s.append((ip) & 0x00ff);
         return s;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer s=new StringBuffer();
+        s.append("IP[").append("len:").append(getRawSize()).append(",");
+        s.append("src:").append(ipToString(getSourceAddress())).append(",");
+        s.append("dst:").append(ipToString(getDestinationAddress())).append(",");
+        s.append("tos:").append(getTOS()).append(",");
+        s.append("ttl:").append(getTTL()).append("]");
+        return s.toString();
     }
 }

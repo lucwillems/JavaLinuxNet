@@ -1,4 +1,6 @@
-package org.it4y.net.protocols.IP;
+package org.it4y.net.protocols.IP.TCP;
+
+import org.it4y.net.protocols.IP.TCP.TCPOption;
 
 /**
  * Created by luc on 12/26/13.
@@ -22,17 +24,17 @@ public class TCPoptionTimeStamp implements TCPOption {
 
     public String toString() {
         StringBuffer s = new StringBuffer();
-        s.append(getName()).append("[");
+        s.append(getName()).append(":(");
         if (tsval != 0) {
-            s.append((long) tsval);
+            s.append((long) tsval & 0xffffffffL);
         }
         if (tsval != 0 & tsecr != 0) {
             s.append(",");
         }
         if (tsecr != 0) {
-            s.append((long) tsecr);
+            s.append((long) tsecr & 0xffffffffL);
         }
-        s.append("]");
+        s.append(")");
         return s.toString();
     }
 }

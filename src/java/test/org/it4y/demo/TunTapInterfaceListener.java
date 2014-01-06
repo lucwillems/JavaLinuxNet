@@ -1,7 +1,10 @@
 package org.it4y.demo;
 
-import org.it4y.net.protocols.ICMPPacket;
+import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.*;
+import org.it4y.net.protocols.IP.TCP.TCPOption;
+import org.it4y.net.protocols.IP.TCP.TCPPacket;
+import org.it4y.net.protocols.IP.UDP.UDPPacket;
 import org.it4y.net.tuntap.TunTapDevice;
 import org.it4y.util.Hexdump;
 
@@ -73,6 +76,7 @@ public class TunTapInterfaceListener extends TestRunner {
                         }
                     } else if (ip.getProtocol() == ip.UDP) {
                         //we must reset Buffer before manipulating it !!
+                        System.out.println("IP: " + ip.toString());
                         ip.resetBuffer();
                         //echo packet back to owner
                         ((UDPPacket) ip).swapSourceDestination();
@@ -83,8 +87,6 @@ public class TunTapInterfaceListener extends TestRunner {
                     } else if (ip.getProtocol() == ip.TCP) {
                         //we must reset Buffer before manipulating it !!
                         System.out.println(ip.toString());
-                        TCPOption x = ((TCPPacket) ip).getOptionByType(TCPOption.TIMESTAMP);
-                        System.out.println(x);
                     } else {
                         System.out.println(ip.toString());
                     }

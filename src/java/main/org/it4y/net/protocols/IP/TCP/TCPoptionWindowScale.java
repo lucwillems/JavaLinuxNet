@@ -1,4 +1,6 @@
-package org.it4y.net.protocols.IP;
+package org.it4y.net.protocols.IP.TCP;
+
+import org.it4y.net.protocols.IP.TCP.TCPOption;
 
 /**
  * Created by luc on 12/26/13.
@@ -19,6 +21,6 @@ public class TCPoptionWindowScale implements TCPOption {
     }
 
     public String toString() {
-        return "wscale=" + ((int) (scale) & 0x00ff);
+        return "wscale:" + ((int) (scale) & 0x00ff);
     }
 }

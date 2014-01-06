@@ -1,6 +1,8 @@
 package org.it4y.net.protocols.IP;
 
-import org.it4y.net.protocols.ICMPPacket;
+import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
+import org.it4y.net.protocols.IP.TCP.TCPPacket;
+import org.it4y.net.protocols.IP.UDP.UDPPacket;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package org.it4y.net.protocols.IP;
+package org.it4y.net.protocols.IP.TCP;
 
 /**
  * Created by luc on 12/26/13.

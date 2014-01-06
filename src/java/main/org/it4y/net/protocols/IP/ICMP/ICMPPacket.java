@@ -1,4 +1,4 @@
-package org.it4y.net.protocols;
+package org.it4y.net.protocols.IP.ICMP;
 
 import org.it4y.net.protocols.IP.IpPacket;
 

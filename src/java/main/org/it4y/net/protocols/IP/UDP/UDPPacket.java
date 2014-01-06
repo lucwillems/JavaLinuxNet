@@ -1,4 +1,7 @@
-package org.it4y.net.protocols.IP;
+package org.it4y.net.protocols.IP.UDP;
+
+import org.it4y.net.protocols.IP.IpPacket;
+import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
 
@@ -18,32 +21,46 @@ public class UDPPacket extends IpPacket {
     }
 
     public int getPayLoadSize() {
-        return rawLimit - getIpHeaderSize() - UDP_HEADER_SIZE;
+        return getLength() - UDP_HEADER_SIZE;
     }
 
     public ByteBuffer getHeader() {
         //get IP header size
         int headersize = getIpHeaderSize();
         resetBuffer();
-        rawPacket.position(headersize);
-        rawPacket.limit(headersize + UDP_HEADER_SIZE);
-        return rawPacket.slice();
+        int oposition=rawPacket.position();
+        int olimit=rawPacket.limit();
+        try {
+            rawPacket.position(headersize);
+            rawPacket.limit(headersize + UDP_HEADER_SIZE);
+            return rawPacket.slice();
+        } finally {
+            rawPacket.limit(olimit);
+            rawPacket.position(oposition);
+        }
     }
 
     public ByteBuffer getPayLoad() {
         //get IP header size
         int headersize = getIpHeaderSize() + UDP_HEADER_SIZE;
         resetBuffer();
-        rawPacket.position(headersize);
-        return rawPacket.slice();
+        int oposition=rawPacket.position();
+        int olimit=rawPacket.limit();
+        try {
+            rawPacket.position(headersize);
+            return rawPacket.slice();
+        } finally {
+            rawPacket.limit(olimit);
+            rawPacket.position(oposition);
+        }
     }
 
     public short getLength() {
-        return rawPacket.getShort(super.getHeaderSize() + 4);
+        return rawPacket.getShort(super.getIpHeaderSize() + 4);
     }
 
     public short getChecksum() {
-        return rawPacket.getShort(super.getHeaderSize() + 6);
+        return rawPacket.getShort(super.getIpHeaderSize() + 6);
     }
 
     public void resetChecksum() {
@@ -74,5 +91,16 @@ public class UDPPacket extends IpPacket {
         return rawPacket.getShort(getIpHeaderSize() + 2);
     }
 
-
+    public String toString() {
+        StringBuffer s=new StringBuffer();
+        s.append(super.toString());
+        s.append("UDP[");
+        s.append("sport:").append((int)getSourcePort()&0xffff).append(",");
+        s.append("dport:").append((int)getDestinationPort()&0xffff).append(",");
+        s.append("h:").append(getHeaderSize()).append(",");
+        s.append("d:").append(getPayLoadSize());
+        s.append("] ");
+        s.append(Hexdump.bytesToHex(getPayLoad(),Math.min(getLength(),128)));
+        return s.toString();
+    };
 }

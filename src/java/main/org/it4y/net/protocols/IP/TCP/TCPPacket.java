@@ -1,4 +1,8 @@
-package org.it4y.net.protocols.IP;
+package org.it4y.net.protocols.IP.TCP;
+
+import org.it4y.net.protocols.IP.IpPacket;
+import org.it4y.net.protocols.IP.TCP.*;
+import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
 
@@ -13,12 +17,13 @@ public class TCPPacket extends IpPacket {
 
     @Override
     public int getHeaderSize() {
-        return getDataOffset();
+        int size=getDataOffset();
+        return size;
     }
 
     @Override
     public int getPayLoadSize() {
-        return rawSize - getIpHeaderSize() - getHeaderSize();
+        return getIPLenght() - getIpHeaderSize() - getHeaderSize();
     }
 
     public void swapSourceDestinationPort() {
@@ -44,8 +49,10 @@ public class TCPPacket extends IpPacket {
         return rawPacket.getInt(getIpHeaderSize() + 8);
     }
 
-    public byte getDataOffset() {
-        return (byte) ((rawPacket.getShort(getIpHeaderSize() + 11) & (short) 0x00ff) >>> 2);
+    public int getDataOffset() {
+        //first 4bits=number of 4bytes header size
+         int size=(((int)rawPacket.getShort(getIpHeaderSize() + 12) &0xf000) >>10);
+        return size;
     }
 
     public boolean isNS() {
@@ -82,6 +89,18 @@ public class TCPPacket extends IpPacket {
 
     public boolean isFIN() {
         return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x01) > (byte) 0);
+    }
+
+    public short getWindowSize() {
+        return rawPacket.getShort(getIpHeaderSize() + 14);
+    }
+
+    public short getChecksumSize() {
+        return rawPacket.getShort(getIpHeaderSize() + 16);
+    }
+
+    public short getUrgentPointer() {
+        return rawPacket.getShort(getIpHeaderSize() + 18);
     }
 
     public boolean hasOptions() {
@@ -152,25 +171,17 @@ public class TCPPacket extends IpPacket {
         return null;
     }
 
-    public short getWindowSize() {
-        return rawPacket.getShort(getIpHeaderSize() + 14);
-    }
-
-    public short getChecksumSize() {
-        return rawPacket.getShort(getIpHeaderSize() + 16);
-    }
-
-    public short getUrgentPointer() {
-        return rawPacket.getShort(getIpHeaderSize() + 18);
-    }
-
     @Override
     public String toString() {
-        resetBuffer();
         StringBuffer s = new StringBuffer();
-        s.append("TCP[").append(IpPacket.ipToString(getSourceAddress())).append(":").append((long) (getSourcePort()) & 0xffffL).append(" > ");
-        s.append(IpPacket.ipToString(getDestinationAddress())).append(":").append((long) (getDestinationPort()) & 0xffffL).append("]");
-        s.append("[");
+        s.append(super.toString());
+        s.append("TCP[");
+        s.append("h:").append(getHeaderSize()).append(",");
+        s.append("p:").append(getPayLoadSize()).append(",");
+        s.append("sport:").append((int) (getSourcePort()) & 0xffff).append(",");
+        s.append("dport:").append((int) (getDestinationPort()) & 0xffff).append(",");
+        s.append("seq:").append((long) (getSequenceNumber()) & 0xffffffffL).append(",");
+        s.append("ack:").append((long) (getAckNumber()) & 0xffffffffL).append(",");
         if (isSYN()) {
             s.append("S");
         }
@@ -183,17 +194,21 @@ public class TCPPacket extends IpPacket {
         if (isFIN()) {
             s.append("F");
         }
-        s.append("]");
+        s.append(",");
+        s.append("wnd:").append((int)getWindowSize()&0xffff).append(",");
+        s.append("urg:").append((int)getUrgentPointer()&0xffff).append(",");
         //TCP options
-        s.append("{");
         int x = 0;
         TCPOption o;
         while ((o = getOption(x)) != null) {
             x++;
-            s.append(o.toString()).append(" ");
+            s.append(o.toString()).append(",");
         }
-        s.append("}");
-        s.append(" seq:").append((long) (getSequenceNumber()) & 0xffffffffL).append(" ack:").append((long) (getAckNumber()) & 0xffffffffL).append(" wnd:").append(getWindowSize()).append(" len:").append(getPayLoadSize());
+        s.setLength(s.length()-1);
+        s.append("]");
+        if (getPayLoadSize()>0) {
+            s.append("\n payload:").append(Hexdump.bytesToHex(getPayLoad(),Math.min(getPayLoadSize(),500)));
+        }
         return s.toString();
     }
 }
