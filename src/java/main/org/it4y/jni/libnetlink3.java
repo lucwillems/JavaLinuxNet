@@ -1,7 +1,5 @@
 package org.it4y.jni;
 
-import org.it4y.jni.JNILoader;
-
 import java.nio.ByteBuffer;
 
 /**
