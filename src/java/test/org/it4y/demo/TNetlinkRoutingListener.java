@@ -1,6 +1,6 @@
 package org.it4y.demo;
 
-import org.it4y.jni.libnetlink;
+import org.it4y.jni.libnetlink3;
 import org.it4y.jni.linux.netlink;
 import org.it4y.jni.linux.rtnetlink;
 import org.it4y.jni.linuxutils;
@@ -16,7 +16,7 @@ import java.util.Date;
  * Created by luc on 1/1/14.
  */
 public class TNetlinkRoutingListener extends TestRunner {
-    private libnetlink.rtnl_handle handle;
+    private libnetlink3.rtnl_handle handle;
     private ByteBuffer messageBuffer = ByteBuffer.allocateDirect(8129);
     private int groups = 0;
     private int initstate = 0;
@@ -24,7 +24,7 @@ public class TNetlinkRoutingListener extends TestRunner {
 
     public TNetlinkRoutingListener() {
         super("tnetlinkrouting-listener");
-        handle = new libnetlink.rtnl_handle();
+        handle = new libnetlink3.rtnl_handle();
 
     }
 
@@ -34,7 +34,6 @@ public class TNetlinkRoutingListener extends TestRunner {
         groups = rtnetlink.RTMGRP_IPV4_IFADDR |
                  rtnetlink.RTMGRP_IPV4_ROUTE |
                  rtnetlink.RTMGRP_IPV4_MROUTE |
-                 //libnetlink.linux.rtnetlink.RTMGRP_NEIGH |
                  rtnetlink.RTMGRP_LINK;
         System.out.println("Groups: 0x" + Integer.toHexString(groups));
         linuxutils.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
@@ -67,7 +66,7 @@ public class TNetlinkRoutingListener extends TestRunner {
             //when stop, the listen will return and thread can continue...
             messageBuffer.rewind();
             messageBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink.rtnl_accept() {
+            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
                 @Override
                 public int accept(ByteBuffer message) {
                     //make sure ByteBuffer mar/position are set correct.
@@ -76,9 +75,9 @@ public class TNetlinkRoutingListener extends TestRunner {
                     if (msg != null) {
                         System.out.println(new Date() + " " + msg.toString());
                         //continue or stop listening ?
-                        return msg.moreMessages() ? libnetlink.rtl_accept_CONTINUE : libnetlink.rtl_accept_STOP;
+                        return msg.moreMessages() ? libnetlink3.rtl_accept_CONTINUE : libnetlink3.rtl_accept_STOP;
                     }
-                    return libnetlink.rtl_accept_STOP;
+                    return libnetlink3.rtl_accept_STOP;
                 }
             });
         }

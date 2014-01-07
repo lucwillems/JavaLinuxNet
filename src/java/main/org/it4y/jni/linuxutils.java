@@ -189,7 +189,7 @@ public class linuxutils {
      */
     private static native int rtnl_open(byte[] handle, int subscriptions);
 
-    public static int rtnl_open(libnetlink.rtnl_handle handler, int subscriptions) {
+    public static int rtnl_open(libnetlink3.rtnl_handle handler, int subscriptions) {
         return rtnl_open(handler.handle, subscriptions);
     }
 
@@ -201,7 +201,7 @@ public class linuxutils {
      */
     private static native int rtnl_open_byproto(byte[] handle, int subscriptions, int protocol);
 
-    public static int rtnl_open_byproto(libnetlink.rtnl_handle handler, int subscriptions, int protocol) {
+    public static int rtnl_open_byproto(libnetlink3.rtnl_handle handler, int subscriptions, int protocol) {
         return rtnl_open_byproto(handler.handle, subscriptions, protocol);
     }
 
@@ -210,14 +210,14 @@ public class linuxutils {
      */
     private static native void rtnl_close(byte[] handle);
 
-    public static void rtnl_close(libnetlink.rtnl_handle handler) {
+    public static void rtnl_close(libnetlink3.rtnl_handle handler) {
         rtnl_close(handler.handle);
     }
 
 
     public static native int rtnl_wilddump_request(byte[] handle, int family, int type);
 
-    public static int rtnl_wilddump_request(libnetlink.rtnl_handle handle, int family, int type) {
+    public static int rtnl_wilddump_request(libnetlink3.rtnl_handle handle, int family, int type) {
         return rtnl_wilddump_request(handle.handle, family, type);
     }
 
@@ -225,9 +225,9 @@ public class linuxutils {
 
     public static native int rtnl_dump_request(byte[] handle, int type, ByteBuffer req, int len);
 
-    private static native int rtnl_listen(byte[] handle, ByteBuffer buf, libnetlink.rtnl_accept listener);
+    private static native int rtnl_listen(byte[] handle, ByteBuffer buf, libnetlink3.rtnl_accept listener);
 
-    public static int rtnl_listen(libnetlink.rtnl_handle handle, ByteBuffer buf, libnetlink.rtnl_accept listener) {
+    public static int rtnl_listen(libnetlink3.rtnl_handle handle, ByteBuffer buf, libnetlink3.rtnl_accept listener) {
         return rtnl_listen(handle.handle, buf, listener);
     }
 

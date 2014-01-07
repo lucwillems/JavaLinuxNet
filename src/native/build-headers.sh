@@ -1,5 +1,7 @@
 #/bin/bash
 #
-javah -classpath ../../out/production/JavaLinuxNet org.it4y.jni.tuntap
-javah -classpath ../../out/production/JavaLinuxNet org.it4y.jni.tproxy
-javah -classpath ../../out/production/JavaLinuxNet org.it4y.jni.linuxutils
+CLASSPATH=../../target/classes/
+javah -classpath $CLASSPATH org.it4y.jni.tuntap
+javah -classpath $CLASSPATH org.it4y.jni.tproxy
+javah -classpath $CLASSPATH org.it4y.jni.linuxutils
+javah -classpath $CLASSPATH org.it4y.jni.libnetlink3

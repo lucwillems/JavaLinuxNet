@@ -1,6 +1,5 @@
 package org.it4y.net.netlink;
 
-import org.it4y.jni.libnetlink;
 import org.it4y.jni.linux.if_address;
 
 import java.nio.ByteBuffer;

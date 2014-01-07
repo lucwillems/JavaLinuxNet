@@ -1,6 +1,6 @@
 package org.it4y.net.link;
 
-import org.it4y.jni.libnetlink;
+import org.it4y.jni.libnetlink3;
 import org.it4y.jni.linux.if_address;
 import org.it4y.jni.linux.if_link;
 import org.it4y.jni.linux.netlink;
@@ -54,7 +54,7 @@ public class LinkManager extends Thread {
     /**
      * our netlink rtnl_handle handle
      */
-    private libnetlink.rtnl_handle handle;
+    private libnetlink3.rtnl_handle handle;
 
     /**
      * Byte buffer we use to retrieve the socket data from netlink
@@ -90,7 +90,7 @@ public class LinkManager extends Thread {
         log.debug("init netlink-manager");
         interfaceList = new HashMap<String, NetworkInterface>();
         listeners=new ArrayList<NotificationRegister>();
-        handle = new libnetlink.rtnl_handle();
+        handle = new libnetlink3.rtnl_handle();
         this.setDaemon(true);
     }
 
@@ -145,7 +145,7 @@ public class LinkManager extends Thread {
             //when stop, the listen will return and thread can continue...
             messageBuffer.rewind();
             messageBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink.rtnl_accept() {
+            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
 
                 @Override
                 public int accept(ByteBuffer message) {
@@ -168,9 +168,9 @@ public class LinkManager extends Thread {
                             wlock.unlock();
                         }
                         //continue or stop listening ?
-                        return msg.moreMessages() ? libnetlink.rtl_accept_CONTINUE : libnetlink.rtl_accept_STOP;
+                        return msg.moreMessages() ? libnetlink3.rtl_accept_CONTINUE : libnetlink3.rtl_accept_STOP;
                     }
-                    return libnetlink.rtl_accept_STOP;
+                    return libnetlink3.rtl_accept_STOP;
                 }
             });
         }

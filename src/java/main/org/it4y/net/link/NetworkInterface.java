@@ -1,7 +1,6 @@
 package org.it4y.net.link;
 
 import org.it4y.jni.libc;
-import org.it4y.jni.libnetlink;
 import org.it4y.jni.linux.if_arp;
 
 import java.net.InetAddress;

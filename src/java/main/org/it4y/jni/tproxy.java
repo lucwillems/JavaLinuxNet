@@ -6,7 +6,7 @@ package org.it4y.jni;
 public class tproxy {
     //Load our native JNI lib
     static {
-        JNILoader.loadLibrary("libtproxy.so");
+        JNILoader.loadLibrary("libjnitproxy.so");
     }
 
     public int remoteIp;

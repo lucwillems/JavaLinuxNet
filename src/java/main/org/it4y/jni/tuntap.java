@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 public class tuntap {
     /* Load libtuntap.so */
     static {
-        JNILoader.loadLibrary("libtuntap.so");
+        JNILoader.loadLibrary("libjnituntap.so");
     }
 
     protected int fd = -1;
