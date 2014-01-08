@@ -20,7 +20,7 @@ public class IndexNameMapTest {
     }
 
     @Test
-    public void testGetIntegerKey() throws Exception {
+    public void testIntegerKey() throws Exception {
         IndexNameMap<Integer,String> test=new IndexNameMap<Integer, String>();
         Assert.assertNotNull(test);
         //get a index not existing should return the  text with [<number]
@@ -32,7 +32,7 @@ public class IndexNameMapTest {
     }
 
     @Test
-    public void testGetStringKey() throws Exception {
+    public void testStringKey() throws Exception {
         IndexNameMap<String,String> test=new IndexNameMap<String, String>();
         Assert.assertNotNull(test);
         String index="hello";

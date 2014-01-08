@@ -1,11 +1,13 @@
 package org.it4y.net;
 
-import java.io.FileDescriptor;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketImpl;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 /**
  * Created by luc on 12/27/13.
@@ -58,11 +60,40 @@ public class SocketUtils {
         return null;
     }
 
-    public static int getFd(ServerSocket socket) {
-        FileDescriptor fd = getFileDescriptor(socket);
-        if (fd == null) {
-            throw new RuntimeException("No FD found..");
+    public static FileDescriptor getFileDescriptor(FileOutputStream stream) {
+        try {
+            Field privateFd = FileOutputStream.class.getDeclaredField("fd");
+            privateFd.setAccessible(true);
+            return ((FileDescriptor) privateFd.get(stream));
+        } catch (Exception ignore) {
+            System.out.println(ignore);
         }
+        return null;
+    }
+
+    public static FileDescriptor getFileDescriptor(FileInputStream stream) {
+        try {
+            Field privateFd = FileInputStream.class.getDeclaredField("fd");
+            privateFd.setAccessible(true);
+            return ((FileDescriptor) privateFd.get(stream));
+        } catch (Exception ignore) {
+            System.out.println(ignore);
+        }
+        return null;
+    }
+
+    public static FileDescriptor getFileDescriptor(RandomAccessFile random) {
+        try {
+            Field privateFd = RandomAccessFile.class.getDeclaredField("fd");
+            privateFd.setAccessible(true);
+            return ((FileDescriptor) privateFd.get(random));
+        } catch (Exception ignore) {
+            System.out.println(ignore);
+        }
+        return null;
+    }
+
+    public static int getFileHandle(FileDescriptor fd) {
         //Get FD field value
         try {
             Field privateFd = FileDescriptor.class.getDeclaredField("fd");
@@ -74,20 +105,53 @@ public class SocketUtils {
         return -1;
     }
 
+    public static int getFd(ServerSocket socket) {
+        FileDescriptor fd = getFileDescriptor(socket);
+        if (fd == null) {
+            throw new RuntimeException("No FD found..");
+        }
+        return getFileHandle(fd);
+    }
+
+
+
     public static int getFd(Socket socket) {
         FileDescriptor fd = getFileDescriptor(socket);
         if (fd == null) {
             return -1;
         }
-        //Get FD field value
-        try {
-            Field privateFd = FileDescriptor.class.getDeclaredField("fd");
-            privateFd.setAccessible(true);
-            return ((Integer) privateFd.get(fd)).intValue();
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+        return getFileHandle(fd);
+    }
+
+    public static int getFd(ServerSocketChannel socket ){
+       return getFd(socket.socket());
+    }
+
+    public static int getFd(SocketChannel socket ){
+        return getFd(socket.socket());
+    }
+
+    public static int getFd(FileOutputStream stream ){
+        FileDescriptor fd = getFileDescriptor(stream);
+        if (fd == null) {
+            return -1;
         }
-        return -1;
+        return getFileHandle(fd);
+    }
+
+    public static int getFd(FileInputStream stream ){
+        FileDescriptor fd = getFileDescriptor(stream);
+        if (fd == null) {
+            return -1;
+        }
+        return getFileHandle(fd);
+    }
+    public static int getFd(RandomAccessFile random ){
+        FileDescriptor fd = getFileDescriptor(random);
+        if (fd == null) {
+            return -1;
+        }
+        return getFileHandle(fd);
     }
 
 }
