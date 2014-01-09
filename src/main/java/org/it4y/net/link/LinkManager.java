@@ -76,6 +76,11 @@ public class LinkManager extends Thread {
     private int initstate = 0;
 
     /**
+     * internal flag of runnig thread
+     */
+    private boolean running=false;
+
+    /**
      * previous active state to detect state changes (interface ready/not ready)
      */
     private boolean prevActiveState = false;
@@ -108,6 +113,15 @@ public class LinkManager extends Thread {
         log.debug("linkmanager started");
     }
 
+    public void halt() {
+        wlock.lock();
+        try {
+            running=false;
+            initstate=5;
+        } finally {
+            wlock.unlock();
+        }
+    }
     /**
      * start the main link manager thread which listen to netlink messages and process them
      */
@@ -117,7 +131,8 @@ public class LinkManager extends Thread {
         InitNetLink();
 
         //wait for netlink messages
-        while (true) {
+        running=true;
+        while (running) {
             if (initstate < 4) {
                 //we can handle only 1 wilddump at the same time, so we have a little stepping program here
                 switch (initstate) {
@@ -491,6 +506,14 @@ public class LinkManager extends Thread {
             }
         }
     }
+
+    /**
+     * is lm thread running
+     * @return
+     */
+    public boolean isRunning() {
+        return running;
+    };
 
 
 }

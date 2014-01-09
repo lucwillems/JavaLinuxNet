@@ -22,12 +22,12 @@ public class DemoTestApp {
         //router.start();
 
         System.out.println("netlink listener running");
-        TProxyListener tproxy = new TProxyListener();
-        tproxy.start();
+        //TProxyListener tproxy = new TProxyListener();
+        //tproxy.start();
         System.out.println("tproxy server running");
         Thread.sleep(100);
-        TunTapInterfaceListener tundev = new TunTapInterfaceListener("luc", 1500);
-        tundev.start(); //this will bring interface luc UP
+        //TunTapInterfaceListener tundev = new TunTapInterfaceListener("luc", 1500);
+        //tundev.start(); //this will bring interface luc UP
         System.out.println("tun interface listener running");
         LinkManager lnkMng=new LinkManager();
         lnkMng.registerListener(LinkNotification.EventAction.None,LinkNotification.EventType.All, new LinkNotification() {
@@ -47,7 +47,7 @@ public class DemoTestApp {
         //tt.start();
         while (true) {
             Thread.sleep(3000);
-            tundev.dumpSpeed();
+            //tundev.dumpSpeed();
         }
     }
 }

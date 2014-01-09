@@ -23,7 +23,7 @@ public class JNILoader {
                     File f = new File(path + "/" + lib);
                     if (f.exists()) {
                         System.load(f.getCanonicalPath());
-                        log.info("native lib loaded: " + f);
+                        log.info("native lib loaded: " + f.getCanonicalFile());
                         return;
                     } else {
                         log.debug("{} not found",f.getCanonicalFile());

@@ -41,6 +41,17 @@ public class libnetlink3 {
 
         public rtnl_handle() {
         }
+
+        public ByteBuffer toByteBuffer() {
+            return ByteBuffer.wrap(handle);
+        }
+
+        private void clear() {
+            for(int i=0;i<handle.length;i++) {
+                handle[i]=0;
+            }
+        }
+
     }
 
     //libnet routing stuff
@@ -75,6 +86,7 @@ public class libnetlink3 {
 
     public static void rtnl_close(rtnl_handle handler) {
         rtnl_close(handler.handle);
+        handler.clear();
     }
 
 
