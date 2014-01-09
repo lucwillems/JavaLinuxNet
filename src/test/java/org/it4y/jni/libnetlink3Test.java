@@ -43,7 +43,6 @@ public class libnetlink3Test {
         Assert.assertTrue(buffer.getShort() != 0); //fd field
         Assert.assertTrue(buffer.getInt() != 0);   //local
         Assert.assertTrue(buffer.getInt() !=0);   //peer
-        Assert.assertTrue(buffer.getShort() ==0); //seq
 
         libnetlink3.rtnl_close(handle);
         buffer=ByteBuffer.wrap(handle.handle);
