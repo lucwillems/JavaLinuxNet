@@ -26,6 +26,8 @@ public class LinkManagerTest {
         //wait so thread can start
         Thread.sleep(100);
         Assert.assertTrue(lm.isRunning());
+        Assert.assertTrue(lm.isDaemon());
+        Assert.assertTrue(lm.isAlive());
         int retry=0;
         //we need to wait until linkmanager has all the data
         while(!lm.isReady() & retry < 20) {
@@ -187,7 +189,7 @@ public class LinkManagerTest {
 
         final Counter cnt=new Counter();
 
-        final LinkManager lm=startLinkManager(LinkNotification.EventType.Routing, LinkNotification.EventAction.All, new LinkNotification() {
+        final LinkManager lm=startLinkManager(LinkNotification.EventType.All, LinkNotification.EventAction.All, new LinkNotification() {
 
             @Override
             public void onEvent(EventAction action, EventType type, NetworkInterface network) {
@@ -204,6 +206,24 @@ public class LinkManagerTest {
         Assert.assertTrue(cnt.getCount() >= 1);
         //if it is not thread save, we don't get here
         lm.halt();
+    }
+
+    @Test
+    public void testUnregisterNotification() throws Exception {
+        final LinkManager lm=startLinkManager();
+        LinkNotification noti=new LinkNotification() {
+            @Override
+            public void onEvent(EventAction action, EventType type, NetworkInterface network) {
+
+            }
+
+            @Override
+            public void onStateChanged(NetworkInterface network) {
+            }
+        };
+        lm.registerListener(LinkNotification.EventAction.All, LinkNotification.EventType.All, noti);
+        lm.unRegisterListener(noti);
+
     }
 
 }
