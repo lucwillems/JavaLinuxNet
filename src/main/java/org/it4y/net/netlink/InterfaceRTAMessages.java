@@ -14,6 +14,6 @@ public class InterfaceRTAMessages extends RTAMessage {
     }
 
     public String getRTAName() {
-        return if_link.RTA_NAMES[type];
+        return if_link.IFLA_NAMES.get(type);
     }
 }

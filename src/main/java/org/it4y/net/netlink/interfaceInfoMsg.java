@@ -30,8 +30,8 @@ public class interfaceInfoMsg extends NlMessage {
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i = 0; i < if_link.RTA_NAMES.length; i++) {
-            if (name.equals(if_link.RTA_NAMES[i])) {
+        for (Integer i : if_link.IFLA_NAMES.keySet()) {
+            if (name.equals(if_link.IFLA_NAMES.get(i))) {
                 return i;
             }
         }

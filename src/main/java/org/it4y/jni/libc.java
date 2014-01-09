@@ -4,24 +4,33 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 
 /**
  * Created by luc on 12/30/13.
  */
 
 public final class libc {
+
+    /* i'm on littleendian ? */
+    static final boolean isLittleEndian=ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN);
+
     /*
      * this class wraps libc in_addr (ipv4 address) from C lib
      *
      */
 
     public static int ntol(int address) {
-        int[] ab = new int[4];
-        ab[0] = ((address >> 24) & 0x00ff);
-        ab[1] = ((address >> 16) & 0x00ff);
-        ab[2] = ((address >> 8) & 0x00ff);
-        ab[3] = (address & 0x00ff);
-        return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+(ab[0]);
+        int[] ab=new int[4];
+        if (isLittleEndian) {
+            ab[0] = ((address >> 24) & 0x00ff);
+            ab[1] = ((address >> 16) & 0x00ff);
+            ab[2] = ((address >> 8) & 0x00ff);
+            ab[3] = (address & 0x00ff);
+            return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+(ab[0]);
+        } else {
+           return address;
+        }
     }
 
     public static InetAddress toInetAddress(int address) {
@@ -65,7 +74,7 @@ public final class libc {
         }
 
         public String toString() {
-            return Integer.toHexString(address);
+            return String.format("0x%08x",(address & 0xffffffff));
         }
     }
 
@@ -109,7 +118,7 @@ public final class libc {
         }
 
         public String toString() {
-            return Integer.toHexString(address) + ":" + port;
+            return String.format("0x%08x:%d",(address & 0xffffffff),(port &0xffff));
         }
 
 
@@ -199,7 +208,7 @@ public final class libc {
                 int tcpi_rcv_space,
                 int tcpi_total_retrans
         ) {
-            System.out.print("setData");
+            //System.out.print("setData");
             this.tcpi_state = tcpi_state;
             this.tcpi_ca_state = tcpi_ca_state;
             this.tcpi_retransmits = tcpi_retransmits;

@@ -8,8 +8,10 @@ import java.util.Map;
 /**
  * Created by luc on 1/4/14.
  */
+
 //from include<linux/if_address.h>
 public final class if_address {
+
     public static final Map<Integer, String> IFA_NAMES =
             Collections.unmodifiableMap(new IndexNameMap<Integer, String>() {
                 {

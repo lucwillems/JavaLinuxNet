@@ -14,6 +14,6 @@ public class neighbourRTAMessages extends RTAMessage {
 
     @Override
     public String getRTAName() {
-        return if_neighbour.RTA_NAMES[type];
+        return if_neighbour.NDA_NAMES.get(type);
     }
 }

@@ -35,8 +35,8 @@ public class routeMsg extends NlMessage {
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i = 0; i < rtnetlink.RTA_NAMES.length; i++) {
-            if (name.equals(rtnetlink.RTA_NAMES[i])) {
+        for (int i : rtnetlink.RTA_NAMES.keySet()) {
+            if (name.equals(rtnetlink.RTA_NAMES.get(i))) {
                 return i;
             }
         }
@@ -98,7 +98,7 @@ public class routeMsg extends NlMessage {
                 s.append(((short) rtm_scope) & 0xff);
         }
         //s.append(" type:").append(((short)rtm_type)&0xff);
-        s.append(" type:").append(rtnetlink.RTTYPE_NAMES[rtm_type]);
+        s.append(" type:").append(rtnetlink.RTN_NAMES.get(rtm_type));
         s.append(" flags:").append(Integer.toHexString(rtm_flags));
         s.append("\n");
         //dump rta messages

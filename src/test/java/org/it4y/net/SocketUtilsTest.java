@@ -42,7 +42,7 @@ public class SocketUtilsTest {
 
     @Test
     public void testFileOutputStreamFd() throws Exception {
-        FileOutputStream fo=new FileOutputStream("/tmp/test");
+        FileOutputStream fo=new FileOutputStream("/tmp/DemoTestApp");
         int fd=SocketUtils.getFd(fo);
         log.info("fd file outputstream: {}",fd);
         Assert.assertTrue("FD must be > 0", fd > 0);

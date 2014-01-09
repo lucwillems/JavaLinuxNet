@@ -15,6 +15,6 @@ public class routeRTAMessages extends RTAMessage {
 
     @Override
     public String getRTAName() {
-        return rtnetlink.RTA_NAMES[type];
+        return rtnetlink.RTA_NAMES.get(type);
     }
 }

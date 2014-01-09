@@ -25,8 +25,8 @@ public class IndexNameMapTest {
         Assert.assertNotNull(test);
         //get a index not existing should return the  text with [<number]
         Assert.assertEquals("[1]",test.get(1));
-        String x=test.put(new Integer(1),"test");
-        Assert.assertEquals("test",test.get(1));
+        String x=test.put(new Integer(1),"DemoTestApp");
+        Assert.assertEquals("DemoTestApp",test.get(1));
         test.remove(new Integer(1));
         Assert.assertEquals("[1]",test.get(1));
     }
@@ -38,8 +38,8 @@ public class IndexNameMapTest {
         String index="hello";
         //get a index not existing should return the  text with [<number]
         Assert.assertEquals("[hello]",test.get(index));
-        String x=test.put(index,"test");
-        Assert.assertEquals("test",test.get(index));
+        String x=test.put(index,"DemoTestApp");
+        Assert.assertEquals("DemoTestApp",test.get(index));
         test.remove(index);
         Assert.assertEquals("[hello]",test.get(index));
     }

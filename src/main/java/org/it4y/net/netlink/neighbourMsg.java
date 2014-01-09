@@ -32,8 +32,8 @@ public class neighbourMsg extends NlMessage {
 
     @Override
     public int getRTAIndex(String name) {
-        for (int i = 0; i < if_neighbour.RTA_NAMES.length; i++) {
-            if (name.equals(if_neighbour.RTA_NAMES[i])) {
+        for (int i  : if_neighbour.NDA_NAMES.keySet()) {
+            if (name.equals(if_neighbour.NDA_NAMES.get(i))) {
                 return i;
             }
         }

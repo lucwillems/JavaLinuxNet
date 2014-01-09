@@ -1,5 +1,10 @@
 package org.it4y.jni.linux;
 
+import org.it4y.util.IndexNameMap;
+
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Created by luc on 1/4/14.
  */
@@ -141,75 +146,83 @@ public final class rtnetlink {
         public static final byte RTPROT_NTK = 15;          /* Netsukuku */
         public static final byte RTPROT_DHCP = 16;         /* DHCP client */
         public static final byte RTPROT_MROUTED = 17;      /* Multicast daemon */
+
         /* Routing message attributes */
-        public static final String[] RTA_NAMES = {
-                "unspec",
-                "dst",
-                "src",
-                "iif",
-                "oif",
-                "gateway",
-                "priority",
-                "prefsrc",
-                "metrics",
-                "multipath",
-                "protoinfo",
-                "flow",
-                "cacheinfo",
-                "session",
-                "mp_algo",
-                "table",
-                "mark",
-                "mfc_stats"
-        };
-        public static final int RTA_UNSPEC = 0;
-        public static final int RTA_DST = 1;
-        public static final int RTA_SRC = 2;
-        public static final int RTA_IIF = 3;
-        public static final int RTA_OIF = 4;
-        public static final int RTA_GATEWA = 5;
-        public static final int RTA_PRIORITY = 6;
-        public static final int RTA_PREFSRC = 7;
-        public static final int RTA_METRICS = 8;
-        public static final int RTA_MULTIPATH = 9;
-        public static final int RTA_PROTOINFO = 10; /* no longer used */
-        public static final int RTA_FLOW = 11;
-        public static final int RTA_CACHEINFO = 12;
-        public static final int RTA_SESSION = 13; /* no longer used */
-        public static final int RTA_MP_ALGO = 14; /* no longer used */
-        public static final int RTA_TABLE = 15;
-        public static final int RTA_MARK = 16;
-        public static final int RTA_MFC_STATS = 17;
-        public static final int __RTA_MAX = RTA_MFC_STATS;
+        public static final Map<Integer, String> RTA_NAMES =
+           Collections.unmodifiableMap(new IndexNameMap<Integer, String>() {
+               {
+                        put(RTA_UNSPEC, "unspec");
+                        put(RTA_DST,"dst");
+                        put(RTA_SRC,"src");
+                        put(RTA_IIF,"iif");
+                        put(RTA_OIF,"oif");
+                        put(RTA_GATEWA,"gateway");
+                        put(RTA_PRIORITY,"priority");
+                        put(RTA_PREFSRC,"prefsrc");
+                        put(RTA_METRICS,"metrics");
+                        put(RTA_MULTIPATH,"multipath");
+                        put(RTA_PROTOINFO,"protoinfo");
+                        put(RTA_FLOW,"flow");
+                        put(RTA_CACHEINFO,"cacheinfo");
+                        put(RTA_SESSION,"session");
+                        put(RTA_MP_ALGO,"mp_algo");
+                        put(RTA_TABLE,"table");
+                        put(RTA_MARK,"mark");
+                        put(RTA_MFC_STATS,"mfc_stats");
+                    }});
+
+                    public static final int RTA_UNSPEC = 0;
+                    public static final int RTA_DST = 1;
+                    public static final int RTA_SRC = 2;
+                    public static final int RTA_IIF = 3;
+                    public static final int RTA_OIF = 4;
+                    public static final int RTA_GATEWA = 5;
+                    public static final int RTA_PRIORITY = 6;
+                    public static final int RTA_PREFSRC = 7;
+                    public static final int RTA_METRICS = 8;
+                    public static final int RTA_MULTIPATH = 9;
+                    public static final int RTA_PROTOINFO = 10; /* no longer used */
+                    public static final int RTA_FLOW = 11;
+                    public static final int RTA_CACHEINFO = 12;
+                    public static final int RTA_SESSION = 13; /* no longer used */
+                    public static final int RTA_MP_ALGO = 14; /* no longer used */
+                    public static final int RTA_TABLE = 15;
+                    public static final int RTA_MARK = 16;
+                    public static final int RTA_MFC_STATS = 17;
+                    public static final int __RTA_MAX = RTA_MFC_STATS;
         /* rtm_type */
-        public static final String[] RTTYPE_NAMES = {
-                "unspec",
-                "unicast",
-                "local",
-                "broadcast",
-                "anycast",
-                "multicast",
-                "blackhole",
-                "unreachable",
-                "prohibited",
-                "throw",
-                "nat",
-                "xresolve"
-        };
-        public static final int RTN_UNSPEC = 0;
-        public static final int RTN_UNICAST = 1;          /* Gateway or direct route      */
-        public static final int RTN_LOCAL = 2;            /* Accept locally               */
-        public static final int RTN_BROADCAST = 3;        /* Accept locally as broadcast, */
+
+                    public static final Map<Integer, String> RTN_NAMES =
+                            Collections.unmodifiableMap(new IndexNameMap<Integer, String>() {
+                                {
+                                put(RTN_UNSPEC,"unspec");
+                                put(RTN_UNICAST,"unicast");
+                                put(RTN_LOCAL,"local");
+                                put(RTN_BROADCAST,"broadcast");
+                                put(RTN_ANYCAST,"anycast");
+                                put(RTN_MULTICAST,"multicast");
+                                put(RTN_BLACKHOLE,"blackhole");
+                                put(RTN_UNREACHABLE,"unreachable");
+                                put(RTN_PROHIBIT,"prohibited");
+                                put(RTN_THROW,"throw");
+                                put(RTN_NAT,"nat");
+                                put(RTN_XRESOLVE,"xresolve");
+                            }});
+
+                    public static final int RTN_UNSPEC = 0;
+                    public static final int RTN_UNICAST = 1;          /* Gateway or direct route      */
+                    public static final int RTN_LOCAL = 2;            /* Accept locally               */
+                    public static final int RTN_BROADCAST = 3;        /* Accept locally as broadcast, */
         /* send as broadcast */
-        public static final int RTN_ANYCAST = 4;          /* Accept locally as broadcast,
+                    public static final int RTN_ANYCAST = 4;          /* Accept locally as broadcast,
                                                              /* but send as unicast */
-        public static final int RTN_MULTICAST = 5;       /* Multicast route              */
-        public static final int RTN_BLACKHOLE = 6;        /* Drop                         */
-        public static final int RTN_UNREACHABLE = 7;      /* Destination is unreachable   */
-        public static final int RTN_PROHIBIT = 8;         /* Administratively prohibited  */
-        public static final int RTN_THROW = 9;            /* Not in this table            */
-        public static final int RTN_NAT = 10;             /* Translate this address       */
-        public static final int RTN_XRESOLVE = 11;        /* Use external resolver        */
-        public static final int __RTN_MAX = RTN_XRESOLVE;
+                    public static final int RTN_MULTICAST = 5;       /* Multicast route              */
+                    public static final int RTN_BLACKHOLE = 6;        /* Drop                         */
+                    public static final int RTN_UNREACHABLE = 7;      /* Destination is unreachable   */
+                    public static final int RTN_PROHIBIT = 8;         /* Administratively prohibited  */
+                    public static final int RTN_THROW = 9;            /* Not in this table            */
+                    public static final int RTN_NAT = 10;             /* Translate this address       */
+                    public static final int RTN_XRESOLVE = 11;        /* Use external resolver        */
+                    public static final int __RTN_MAX = RTN_XRESOLVE;
 
 }
