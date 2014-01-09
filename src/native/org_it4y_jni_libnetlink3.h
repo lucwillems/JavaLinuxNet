@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1dump_1request
 /*
  * Class:     org_it4y_jni_libnetlink3
  * Method:    rtnl_listen
- * Signature: ([BLjava/nio/ByteBuffer;Lorg/it4y/jni/libnetlink/rtnl_accept;)I
+ * Signature: ([BLjava/nio/ByteBuffer;Lorg/it4y/jni/libnetlink3/rtnl_accept;)I
  */
 JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1listen
   (JNIEnv *, jclass, jbyteArray, jobject, jobject);
