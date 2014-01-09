@@ -68,7 +68,7 @@ jint throwErrnoExceptionfError(JNIEnv *env, int error) {
  * Method:    rtnl_open
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jclass this, jbyteArray handle, jint subscriptions) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open(JNIEnv *env, jclass this, jbyteArray handle, jint subscriptions) {
   struct rtnl_handle *rth;
   jbyte *b;
 
@@ -94,7 +94,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open(JNIEnv *env, jcla
  * Method:    rtnl_open_byproto
  * Signature: ([BII)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open_1byproto(JNIEnv *env, jclass this , jbyteArray handle , jint subscriptions , jint protocol) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open_1byproto(JNIEnv *env, jclass this , jbyteArray handle , jint subscriptions , jint protocol) {
   struct rtnl_handle *rth;
   jbyte *b;
 
@@ -115,7 +115,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1open_1byproto(JNIEnv *
  * Method:    rtnl_close
  * Signature: ([B)I
  */
-JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jclass this , jbyteArray handle) {
+JNIEXPORT void JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1close(JNIEnv *env , jclass this , jbyteArray handle) {
 
   struct rtnl_handle *rth;
   jbyte *b;
@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_rtnl_1close(JNIEnv *env , jc
   * Method:    rtnl_wilddump_request
   * Signature: ([BII)I
   */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1wilddump_1request(JNIEnv *env, jclass this, jbyteArray handle , jint family, jint type) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1wilddump_1request(JNIEnv *env, jclass this, jbyteArray handle , jint family, jint type) {
 
   struct rtnl_handle *rth;
   jbyte *b;
@@ -152,7 +152,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1wilddump_1request(JNIE
  * Method:    rtnl_send
  * Signature: (Ljava/nio/ByteBuffer;I)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_send(JNIEnv *env, jclass this, jobject bytebuffer, jint len) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_send(JNIEnv *env, jclass this, jobject bytebuffer, jint len) {
   return -1;
 }
 
@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_send(JNIEnv *env, jclas
  * Method:    rtnl_dump_request
  * Signature: (ILjava/nio/ByteBuffer;I)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_dump_request(JNIEnv *env, jclass this , jint type , jobject req , jint len) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_dump_request(JNIEnv *env, jclass this , jint type , jobject req , jint len) {
   return -1;
 }
 
@@ -216,7 +216,7 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
  * Method:    rtnl_listen
  * Signature: (Ljava/nio/ByteBuffer;)I
  */
- JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_rtnl_1listen(JNIEnv *env, jclass this, jbyteArray handle, jobject messageBuffer, jobject listener) {
+ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1listen(JNIEnv *env, jclass this, jbyteArray handle, jobject messageBuffer, jobject listener) {
    struct rtnl_handle *rth;
    struct listen_jni_callback callback;
 
