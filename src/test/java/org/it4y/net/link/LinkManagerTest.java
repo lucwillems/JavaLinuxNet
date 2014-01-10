@@ -3,15 +3,19 @@ package org.it4y.net.link;
 import junit.framework.Assert;
 import org.it4y.util.Counter;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Created by luc on 1/9/14.
  */
 public class LinkManagerTest {
-
+    private final Logger log= LoggerFactory.getLogger(LinkManager.class);
 
     private LinkManager startLinkManager(LinkNotification.EventType aType,LinkNotification.EventAction aAction,LinkNotification aListener)  throws Exception {
         LinkManager lm=new LinkManager();
@@ -98,20 +102,56 @@ public class LinkManagerTest {
     @Test
     public void testConcurrentFindbyName() throws Exception{
         final LinkManager lm=startLinkManager();
-        ExecutorService es= Executors.newFixedThreadPool(40);
+        final Counter readcnt=new Counter();
+        final Counter wrtcnt=new Counter();
+
+        //we need access to internal wlock lock for simulating write locks
+        Field privateLock = LinkManager.class.getDeclaredField("wlock");
+        privateLock.setAccessible(true);
+        final Lock wlock=(Lock)privateLock.get(lm);
+
+        log.info("running concurrent access...");
+        log.info("# of cpu: {}",Runtime.getRuntime().availableProcessors());
+        ExecutorService es= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*4);
         //Run 40 jobs on the linkmanager requesting all links concurrently
         for (int i=0;i<100;i++) {
+            //start some read access
             for (final String net : lm.getInterfaceList()) {
                 es.submit(new Runnable() {
                     @Override
                     public void run() {
+                        readcnt.inc();
                         NetworkInterface x=lm.findByInterfaceName(net);
                         Assert.assertNotNull(x);
                         Assert.assertEquals(net,x.getName());
                     }
                 });
+                //and long locking write access
+                if ((i % 3) == 0) {
+                 es.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        wrtcnt.inc();
+                        wlock.lock();
+                        try {
+                            //do something usefull while holding the lock
+                            Thread.sleep(20);
+                        } catch (InterruptedException ignore) {
+                        } finally {
+                            wlock.unlock();
+                        }
+                    }
+                });
+               }
             }
+
         }
+        Thread.sleep(500);
+        //All read/write locks are executed multible times
+        log.info("Read locks: {}",readcnt.getCount());
+        log.info("Write locks: {}",wrtcnt.getCount());
+        Assert.assertTrue(readcnt.getCount()>1);
+        Assert.assertTrue(wrtcnt.getCount()>1);
         //if it is not thread save, we don't get here
         lm.halt();
     }

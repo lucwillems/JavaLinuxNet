@@ -477,9 +477,10 @@ public class LinkManager extends Thread {
                 NotificationRegister x=i.next();
                 if (x.listener.equals(aListener)) {
                     i.remove();
-                    log.info("{} removed listener");
+                    log.info("removed listener {}",x);
                 }
             }
+            log.info("{} listener registrated",listeners.size());
         } finally {
             wlock.unlock();
         }
