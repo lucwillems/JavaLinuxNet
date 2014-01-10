@@ -1,5 +1,6 @@
 package org.it4y.jni;
 
+import org.it4y.jni.linux.socket;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -49,15 +50,15 @@ public class libcTest {
     public void testSockaddr_in() throws Exception {
         libc.sockaddr_in sa;
 
-        sa=new libc.sockaddr_in();
+        sa=new libc.sockaddr_in(0,0, socket.AF_INET);
         Assert.assertNotNull(sa);
         Assert.assertEquals(0, sa.address);
-        Assert.assertEquals(0,sa.family);
         Assert.assertEquals(0, sa.port);
-        sa=new libc.sockaddr_in(0x01020304,0x1234,5);
+        Assert.assertEquals(2,socket.AF_INET);
+        sa=new libc.sockaddr_in(0x01020304,0x1234,socket.AF_INET6);
         Assert.assertEquals(0x01020304, sa.address);
         Assert.assertEquals(0x1234,sa.port);
-        Assert.assertEquals(5,sa.family);
+        Assert.assertEquals(10,socket.AF_INET6);
         InetSocketAddress isa=sa.toInetSocketAddress();
         Assert.assertNotNull(isa);
         Assert.assertEquals("/1.2.3.4:4660",isa.toString());

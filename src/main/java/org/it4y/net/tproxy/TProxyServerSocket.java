@@ -43,25 +43,20 @@ public class TProxyServerSocket extends ServerSocket {
         linuxutils.setbooleanSockOption(this, SocketOptions.SOL_IP, SocketOptions.IP_TRANSPARENT, true);
     }
 
-
-    public void initTProxy(InetAddress address, int port) throws Exception {
+    public void initTProxy(InetAddress address, int port,int backlog) throws libc.ErrnoException,IOException {
         setIPTransparentOption();
         setReuseAddress(true);
         //bind to localhost interface
         InetSocketAddress local = new InetSocketAddress(address, port);
-        bind(local, 500);
+        bind(local, backlog);
     }
 
-    public TProxyClientSocket accepProxy() throws IOException {
+    public TProxyInterceptedSocket accepProxy() throws IOException,libc.ErrnoException {
         tproxy proxy = new tproxy();
         Socket c = accept();
         //get original destination address stored in client socket structure
-        try {
-            libc.sockaddr_in remote = linuxutils.getsockname(c);
-            return new TProxyClientSocket(c, remote);
-        } catch (libc.ErrnoException errno) {
-            throw new IOException("libc error", errno);
-        }
+        libc.sockaddr_in remote = linuxutils.getsockname(c);
+        return new TProxyInterceptedSocket(c, remote);
     }
 
 }

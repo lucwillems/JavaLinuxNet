@@ -2,7 +2,7 @@ package org.it4y.demo;
 
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
-import org.it4y.net.tproxy.TProxyClientSocket;
+import org.it4y.net.tproxy.TProxyInterceptedSocket;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -14,10 +14,10 @@ import java.util.StringTokenizer;
  * Created by luc on 12/30/13.
  */
 public class HttpProxyThread extends Thread {
-    private TProxyClientSocket tclient = null;
+    private TProxyInterceptedSocket tclient = null;
     private static final int BUFFER_SIZE = 32768;
 
-    public HttpProxyThread(TProxyClientSocket socket) {
+    public HttpProxyThread(TProxyInterceptedSocket socket) {
         super("ProxyThread");
         this.tclient = socket;
     }

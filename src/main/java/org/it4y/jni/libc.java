@@ -90,8 +90,8 @@ public final class libc {
         //cache this result as it is expensive
         private InetAddress cached_address = null;
 
-        public sockaddr_in() {
-        }
+        //Used by jni code
+        private sockaddr_in() {}
 
         public sockaddr_in(int address, int port, int family) {
             this.address = address;

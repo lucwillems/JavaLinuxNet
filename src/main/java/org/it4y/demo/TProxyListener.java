@@ -3,7 +3,7 @@ package org.it4y.demo;
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.net.linux.SocketOptions;
-import org.it4y.net.tproxy.TProxyClientSocket;
+import org.it4y.net.tproxy.TProxyInterceptedSocket;
 import org.it4y.net.tproxy.TProxyServerSocket;
 
 import java.net.InetAddress;
@@ -16,7 +16,7 @@ public class TProxyListener extends TestRunner {
     private InetAddress listenIp;
     private int listenPort;
     private TProxyServerSocket server;
-    private TProxyClientSocket lastclient = null;
+    private TProxyInterceptedSocket lastclient = null;
     private libc.tcp_info info = new libc.tcp_info();
 
     public TProxyListener() {
@@ -36,9 +36,9 @@ public class TProxyListener extends TestRunner {
     public void run() {
         try {
             server = new TProxyServerSocket();
-            server.initTProxy(listenIp, listenPort);
+            server.initTProxy(listenIp, listenPort,500);
             while (true) {
-                TProxyClientSocket client = server.accepProxy();
+                TProxyInterceptedSocket client = server.accepProxy();
 
                 //set client user transmit timeout
                 linuxutils.setintSockOption(client.getSocket(), SocketOptions.SOL_TCP, SocketOptions.TCP_USER_TIMEOUT, 10000);
