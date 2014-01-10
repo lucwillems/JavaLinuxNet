@@ -1,10 +1,15 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
 package org.it4y.util;
 
 import java.nio.ByteBuffer;
 
-/**
- * Created by luc on 12/28/13.
- */
 public class Hexdump {
     final protected static char[] hexArray = "0123456789ABCDEF ".toCharArray();
 

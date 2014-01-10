@@ -2,7 +2,7 @@ package org.it4y.demo;
 
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
-import org.it4y.net.linux.SocketOptions;
+import org.it4y.jni.SocketOptions;
 import org.it4y.net.tproxy.TProxyInterceptedSocket;
 import org.it4y.net.tproxy.TProxyServerSocket;
 

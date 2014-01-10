@@ -1,8 +1,12 @@
+/*
+ * This file is derived from Linux kernel headers
+ * All copyrights preserved to original kernel author.
+ *
+ * more info see https://www.kernel.org/pub/linux/kernel/COPYING
+ */
+
 package org.it4y.jni;
 
-/**
- * Created by luc on 12/28/13.
- */
 public class tproxy {
     //Load our native JNI lib
     static {

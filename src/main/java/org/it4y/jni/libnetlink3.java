@@ -1,10 +1,15 @@
+
+/*
+ * This file is derived from Linux kernel headers
+ * All copyrights preserved to original kernel author.
+ *
+ * more info see https://www.kernel.org/pub/linux/kernel/COPYING
+ */
+
 package org.it4y.jni;
 
 import java.nio.ByteBuffer;
 
-/**
- * Created by luc on 1/7/14.
- */
 public class libnetlink3 {
 
     //Load our native JNI lib

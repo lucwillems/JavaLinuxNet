@@ -1,10 +1,19 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
+
 package org.it4y.net.tproxy;
 
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.jni.tproxy;
 import org.it4y.net.SocketUtils;
-import org.it4y.net.linux.SocketOptions;
+import org.it4y.jni.SocketOptions;
 
 import java.io.FileDescriptor;
 import java.io.IOException;

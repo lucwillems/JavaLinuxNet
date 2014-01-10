@@ -1,4 +1,4 @@
-package org.it4y.net.linux;
+package org.it4y.jni;
 
 /**
  * Created by luc on 12/28/13.

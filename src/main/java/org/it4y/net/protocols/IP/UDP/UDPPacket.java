@@ -1,3 +1,12 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
+
 package org.it4y.net.protocols.IP.UDP;
 
 import org.it4y.net.protocols.IP.IpPacket;
@@ -5,9 +14,6 @@ import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
 
-/**
- * Created by luc on 12/26/13.
- */
 public class UDPPacket extends IpPacket {
 
     private static final int UDP_HEADER_SIZE = 4;

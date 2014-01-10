@@ -1,3 +1,11 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
 #include <sys/socket.h>
 #include <errno.h>
 #include <netinet/in.h>

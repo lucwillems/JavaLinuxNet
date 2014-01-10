@@ -1,3 +1,12 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
+
 package org.it4y.net;
 
 import java.io.*;
@@ -9,9 +18,6 @@ import java.net.SocketImpl;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-/**
- * Created by luc on 12/27/13.
- */
 public class SocketUtils {
 
     public static SocketImpl getImplementation(ServerSocket socket) {

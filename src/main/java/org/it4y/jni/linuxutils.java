@@ -1,3 +1,10 @@
+/*
+ * This file is derived from Linux kernel headers
+ * All copyrights preserved to original kernel author.
+ *
+ * more info see https://www.kernel.org/pub/linux/kernel/COPYING
+ */
+
 package org.it4y.jni;
 
 import org.it4y.net.SocketUtils;
@@ -9,9 +16,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-/**
- * Created by luc on 12/28/13.
- */
 public class linuxutils {
     //Load our native JNI lib
     static {

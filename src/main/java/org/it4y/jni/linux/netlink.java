@@ -1,8 +1,14 @@
+
+/*
+ * This file is derived from Linux kernel headers
+ * All copyrights preserved to original kernel author.
+ *
+ * more info see https://www.kernel.org/pub/linux/kernel/COPYING
+ */
+
 package org.it4y.jni.linux;
 
-/**
- * Created by luc on 1/4/14.
- */
+//based on include <linux/netlink.h>
 public final class netlink {
 
         public static final int NLMSGHDR_SIZE = 16;

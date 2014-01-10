@@ -1,3 +1,12 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
+
 package org.it4y.net.link;
 
 import org.it4y.jni.libc;
@@ -9,7 +18,6 @@ import java.net.InetAddress;
  * Network interface class
  * Holds all information retrieved from netlink interface
  *
- * Created by luc on 1/3/14.
  */
 public class NetworkInterface {
     private String name;

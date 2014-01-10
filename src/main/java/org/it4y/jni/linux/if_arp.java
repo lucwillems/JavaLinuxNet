@@ -1,3 +1,10 @@
+/*
+ * This file is derived from Linux kernel headers
+ * All copyrights preserved to original kernel author.
+ *
+ * more info see https://www.kernel.org/pub/linux/kernel/COPYING
+ */
+
 package org.it4y.jni.linux;
 
 import org.it4y.util.IndexNameMap;
@@ -5,9 +12,6 @@ import org.it4y.util.IndexNameMap;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * Created by luc on 1/4/14.
- */
 //from include <linux/if_arp.h>
 public final class if_arp {
     public static final Map<Integer, String> ARPHDR_NAMES =

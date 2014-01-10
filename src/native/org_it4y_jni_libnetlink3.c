@@ -1,3 +1,12 @@
+/*
+ *
+ *  * Copyright (C) 2014  Luc.Willems @ T.M.M.
+ *  *
+ *  * This file is released under the LGPL.
+ *  * see license.txt for terms and conditions
+ *
+ */
+
 #include <sys/socket.h>
 #include <errno.h>
 #include <netinet/in.h>
@@ -7,7 +16,6 @@
 //libnet
 #include <libnetlink.h>
 #include <netlink/cache.h>
-
 #include "org_it4y_jni_libnetlink3.h"
  /* Amount of characters in the error message buffer */
 #define ERROR_SIZE 254

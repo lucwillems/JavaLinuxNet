@@ -1,3 +1,9 @@
+/*
+ * This file is derived from GNU libc headers
+ * All copyrights preserved to original kernel author.
+ *
+ * more info see http://www.gnu.org/software/libc/
+ */
 package org.it4y.jni;
 
 import java.net.Inet4Address;
@@ -5,10 +11,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
-
-/**
- * Created by luc on 12/30/13.
- */
 
 public final class libc {
 
