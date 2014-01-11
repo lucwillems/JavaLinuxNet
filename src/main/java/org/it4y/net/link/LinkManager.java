@@ -115,7 +115,7 @@ public class LinkManager extends Thread {
                  rtnetlink.RTMGRP_IPV4_ROUTE |
                  rtnetlink.RTMGRP_IPV4_MROUTE |
                  rtnetlink.RTMGRP_LINK;
-        linuxutils.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
+        libnetlink3.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
         log.debug("linkmanager started");
     }
 
@@ -144,17 +144,17 @@ public class LinkManager extends Thread {
                 switch (initstate) {
                     case 0:
                         log.debug("dump link");
-                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
+                        libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
                         initstate++;
                         break;
                     case 1:
                         log.debug("dump addresses");
-                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
+                        libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
                         initstate++;
                         break;
                     case 2:
                         log.debug("dump routing");
-                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
+                        libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
                         initstate++;
                         break;
                     default:
@@ -166,7 +166,7 @@ public class LinkManager extends Thread {
             //when stop, the listen will return and thread can continue...
             messageBuffer.rewind();
             messageBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
+            libnetlink3.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
 
                 @Override
                 public int accept(ByteBuffer message) {

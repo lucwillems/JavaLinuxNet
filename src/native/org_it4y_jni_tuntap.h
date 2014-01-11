@@ -33,27 +33,11 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_tuntap_close
 
 /*
  * Class:     org_it4y_jni_tuntap
- * Method:    write
- * Signature: ([BI)V
- */
-JNIEXPORT void JNICALL Java_org_it4y_jni_tuntap_write
-  (JNIEnv *, jobject, jbyteArray, jint);
-
-/*
- * Class:     org_it4y_jni_tuntap
  * Method:    writeByteBuffer
  * Signature: (Ljava/nio/ByteBuffer;I)V
  */
 JNIEXPORT void JNICALL Java_org_it4y_jni_tuntap_writeByteBuffer
   (JNIEnv *, jobject, jobject, jint);
-
-/*
- * Class:     org_it4y_jni_tuntap
- * Method:    read
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_read
-  (JNIEnv *, jobject, jbyteArray);
 
 /*
  * Class:     org_it4y_jni_tuntap

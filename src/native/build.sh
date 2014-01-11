@@ -17,6 +17,8 @@ gcc -I$JAVA_HOME/include/linux -I$JAVA_HOME/include $(pkg-config --cflags --libs
 gcc -I$JAVA_HOME/include/linux -I$JAVA_HOME/include $(pkg-config --cflags --libs libnl-3.0) -lnetlink\
     -shared -o libjninetlink3.so -Wl,-whole-archive /usr/lib/libnetlink.a -Wl,-no-whole-archive \
     org_it4y_jni_libnetlink3.c
-
+if [ ! -d ../../nlib ];then
+   mkdir ../../nlib
+fi
 cp libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so ../../nlib
 
