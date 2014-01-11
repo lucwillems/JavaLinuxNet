@@ -20,7 +20,7 @@ public class linuxutils {
     //Load our native JNI lib
     static {
         //THIS requires libnl3 !!!!
-        JNILoader.loadLibrary("liblinuxutils.so");
+        JNILoader.loadLibrary("libjnilinuxutils.so");
     }
 
     public static native void setbooleanSockOption(int fd, int level, int option, boolean booleanValue) throws libc.ErrnoException;
