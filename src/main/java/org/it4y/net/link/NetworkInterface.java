@@ -217,7 +217,7 @@ public class NetworkInterface {
         if(isUP()) { s.append(",UP");}
         if(isLowerUP()) { s.append(",LOWER_UP");}
         s.append("]");
-
+        s.append(isActive());
         return s.toString();
     }
 
