@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <jni.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 #include "org_it4y_jni_tproxy.h"
 
@@ -38,7 +39,6 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_tproxy_getOriginalDestination(JNIEnv *e
     jfieldID jremoteIp, jremotePort;
     jclass jclass;
     struct sockaddr_in orig_dst;
-    char orig_dst_str[INET6_ADDRSTRLEN];
     socklen_t addrlen = sizeof(orig_dst);
 
     memset(&orig_dst, 0, addrlen);
@@ -49,10 +49,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_tproxy_getOriginalDestination(JNIEnv *e
         return -1;
     } else {
         if(orig_dst.sin_family == AF_INET){
-            inet_ntop(AF_INET, &(orig_dst.sin_addr.s_addr),&orig_dst_str, INET_ADDRSTRLEN);
 	    uint16_t port=ntohs(orig_dst.sin_port);
-	    
-            //fprintf(stderr, "Original destination %s:%d\n", orig_dst_str,port);
 	    jclass = (*env)->GetObjectClass(env, this); 
             jremoteIp = (*env)->GetFieldID(env, jclass, "remoteIp", "I"); 
             (*env)->SetIntField(env, this, jremoteIp ,(jint)ntohl(orig_dst.sin_addr.s_addr));

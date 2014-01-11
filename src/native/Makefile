@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=
+CFLAGS=-Wall
 JDK_HOME=$(shell readlink -f `which javac` | sed "s:bin/javac::")
 INCLUDES = -I$(JDK_HOME)include/linux -I$(JDK_HOME)include
 LFLAGS = -shared

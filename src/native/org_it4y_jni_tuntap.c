@@ -10,12 +10,17 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <linux/ioctl.h>
 #include <linux/if.h>
 #include <linux/if_tun.h>
 #include <errno.h>
-#include <jni.h>
+#include <jni.h> 
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+
 #include "org_it4y_jni_tuntap.h"
 
 /*
