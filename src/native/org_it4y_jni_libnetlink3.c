@@ -14,7 +14,6 @@
 #include <string.h>
 #include <linux/tcp.h>
 //libnet
-#include <libnetlink.h>
 #include <netlink/cache.h>
 #include "org_it4y_jni_libnetlink3.h"
  /* Amount of characters in the error message buffer */
@@ -43,7 +42,7 @@ void tostring(JNIEnv *env, jobject obj) {
     const char* str = (*env)->GetStringUTFChars(env,strObj, NULL);
 
    // Print the class name
-   fprintf(stderr,"Calling class is: %s %x\n", str,obj);
+   fprintf(stderr,"Calling class is: %s %x\n", str,(u_int)obj);
 
    // Release the memory pinned char array
    (*env)->ReleaseStringUTFChars(env,strObj, str);
@@ -59,13 +58,13 @@ void tostring(JNIEnv *env, jobject obj) {
 jint throwErrnoExceptionfError(JNIEnv *env, int error) {
 
    jclass errnoexception_class = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
-   if((*env)->ExceptionOccurred(env)) { return;}
+   if((*env)->ExceptionOccurred(env)) { return -1;}
    jmethodID errnoexception_ctorID  = (*env)->GetMethodID(env, errnoexception_class, "<init>","(Ljava/lang/String;I)V");
-   if((*env)->ExceptionOccurred(env)) { return;}
+   if((*env)->ExceptionOccurred(env)) { return -1;}
    jstring jmessage = (*env)->NewStringUTF(env,strerror(error));
-   if((*env)->ExceptionOccurred(env)) { return;}
+   if((*env)->ExceptionOccurred(env)) { return -1;}
    jobject errnoexception_obj = (*env)->NewObject(env, errnoexception_class, errnoexception_ctorID,jmessage,error);
-   if((*env)->ExceptionOccurred(env)) { return;}
+   if((*env)->ExceptionOccurred(env)) { return -1;}
 
    //yes it did ;-)
    (*env)->Throw( env, errnoexception_obj );
@@ -202,7 +201,7 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    jlong capacity = (*jni->env)->GetDirectBufferCapacity(jni->env,jni->messageBuffer);
    //make sure our buffer is big enough
    if  (n->nlmsg_len > capacity) {
-       fprintf(stderr,"rtnl_listen.accept() : buffer to small , need %d , have %d\n",n->nlmsg_len,capacity);
+       fprintf(stderr,"rtnl_listen.accept() : buffer to small , need %d , have %d\n",n->nlmsg_len,(int)capacity);
        return -4;
    }
 
