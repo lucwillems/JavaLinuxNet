@@ -14,6 +14,7 @@
 #include <string.h>
 #include <linux/tcp.h>
 //libnet
+#include <libnetlink.h>
 #include <netlink/cache.h>
 #include "org_it4y_jni_libnetlink3.h"
  /* Amount of characters in the error message buffer */
@@ -202,7 +203,7 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    jlong capacity = (*jni->env)->GetDirectBufferCapacity(jni->env,jni->messageBuffer);
    //make sure our buffer is big enough
    if  (n->nlmsg_len > capacity) {
-       fprintf(stderr,"rtnl_listen.accept() : buffer to small , need %d , have %d\n",n->nlmsg_len,(int)capacity);
+       fprintf(stderr,"rtnl_listen.accept() : buffer to small , need %d , have %d\n",n->nlmsg_len,(u_int)capacity);
        return -4;
    }
 

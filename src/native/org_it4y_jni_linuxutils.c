@@ -12,6 +12,8 @@
 #include <jni.h>
 #include <string.h>
 #include <linux/tcp.h>
+//libnet
+#include <libnetlink.h>
 
 #include "org_it4y_jni_linuxutils.h"
  /* Amount of characters in the error message buffer */
