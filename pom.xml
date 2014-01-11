@@ -44,6 +44,7 @@
                     <excludes>
                         <exclude>org/it4y/integration/**</exclude>
                     </excludes>
+                    <!-- argLine>-Dorg.slf4j.simpleLogger.defaultLogLevel=debug</argLine -->
                 </configuration>
             </plugin>
             <plugin>
