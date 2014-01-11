@@ -80,11 +80,13 @@ public class LinkManagerTest {
         Assert.assertNotNull(lo.getIpv4AddressAsInetAddress());
         Assert.assertTrue(lo.getMtu() > 0);
         Assert.assertEquals("lo", lo.getName());
-        Assert.assertTrue(lo.isUP());
-        Assert.assertTrue(lo.isActive());
-        Assert.assertTrue(lo.isLoopBack());
+        Assert.assertEquals(0x0100007f,lo.getIpv4Address()&0xffffffff);
+        Assert.assertTrue(lo.getMtu()>0);
         Assert.assertTrue(lo.isLowerUP());
+        Assert.assertTrue(lo.isUP());
+        Assert.assertTrue(lo.isLoopBack());
         Assert.assertTrue(!lo.isPoint2Point());
+        Assert.assertTrue(lo.isActive());
         lm.halt();
     }
 
