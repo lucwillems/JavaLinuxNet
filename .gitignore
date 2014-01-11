@@ -2,3 +2,4 @@
 *.so
 *.class
 .idea/*
+src/native/*.h
