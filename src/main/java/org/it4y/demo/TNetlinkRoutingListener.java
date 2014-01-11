@@ -36,7 +36,7 @@ public class TNetlinkRoutingListener extends TestRunner {
                  rtnetlink.RTMGRP_IPV4_MROUTE |
                  rtnetlink.RTMGRP_LINK;
         System.out.println("Groups: 0x" + Integer.toHexString(groups));
-        linuxutils.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
+        libnetlink3.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
         System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         while (true) {
             if (initstate < 4) {
@@ -44,17 +44,17 @@ public class TNetlinkRoutingListener extends TestRunner {
                 switch (initstate) {
                     case 0:
                         System.out.println(new Date() + " Requesting link information...");
-                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
+                        libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
                         initstate++;
                         break;
                     case 1:
                         System.out.println(new Date() + " Requesting address information...");
-                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
+                        libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
                         initstate++;
                         break;
                     case 2:
                         System.out.println(new Date() + " Requesting routing information...");
-                        linuxutils.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
+                        libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
                         initstate++;
                         break;
                     default:
@@ -66,7 +66,7 @@ public class TNetlinkRoutingListener extends TestRunner {
             //when stop, the listen will return and thread can continue...
             messageBuffer.rewind();
             messageBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            linuxutils.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
+            libnetlink3.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
                 @Override
                 public int accept(ByteBuffer message) {
                     //make sure ByteBuffer mar/position are set correct.
@@ -81,6 +81,6 @@ public class TNetlinkRoutingListener extends TestRunner {
                 }
             });
         }
-        //linuxutils.rtnl_close(handle);
+        //libnetlink3.rtnl_close(handle);
     }
 }

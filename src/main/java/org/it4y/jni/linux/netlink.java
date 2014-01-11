@@ -1,4 +1,3 @@
-
 /*
  * This file is derived from Linux kernel headers
  * All copyrights preserved to original kernel author.
