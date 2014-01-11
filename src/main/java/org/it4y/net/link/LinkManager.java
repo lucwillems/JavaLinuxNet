@@ -272,24 +272,33 @@ public class LinkManager extends Thread {
         log.trace("interface {}", x);
         switch (msg.getNlMsgType()) {
             case rtnetlink.RTM_NEWADDR: //add or update interface to list
-                if (msg.getRTAMessage(if_address.IFA_ADDRESS) != null) {
-                    log.debug("set address");
-                    x.setIpv4Address(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
+                //IPV4 address ?
+                if ( msg.getAddresFamily() == 2) {
+                    if (msg.getRTAMessage(if_address.IFA_ADDRESS) != null) {
+                        log.debug("set address");
+                        x.setIpv4Address(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
+                    }
+                    //a P2P link store other Peer address in IFA_BROADCAST so get it
+                    if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_BROADCAST) != null)  {
+                        log.debug("set P2P address");
+                        x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_BROADCAST).getInt());
+                    }
+                    sendLinkNotification(LinkNotification.EventAction.Update, LinkNotification.EventType.Address, x);
+                } else {
+                    log.trace("ignoring");
                 }
-                //a P2P link store other Peer address in IFA_BROADCAST so get it
-                if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_BROADCAST) != null) {
-                    log.debug("set P2P address");
-                    x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_BROADCAST).getInt());
-                }
-                sendLinkNotification(LinkNotification.EventAction.Update, LinkNotification.EventType.Address, x);
                 break;
             case rtnetlink.RTM_DELADDR: //remove interface from list
-                log.trace("unset P2P address");
-                x.setIpv4Address(0);
-                x.setIpv4P2Paddress(0);
-                sendLinkNotification(LinkNotification.EventAction.Remove, LinkNotification.EventType.Address, x);
+                //IPV4 address ?
+                if ( msg.getAddresFamily() == 2) {
+                    log.trace("unset P2P address");
+                    x.setIpv4Address(0);
+                    x.setIpv4P2Paddress(0);
+                    sendLinkNotification(LinkNotification.EventAction.Remove, LinkNotification.EventType.Address, x);
+                } else {
+                    log.trace("ignoring");
+                }
                 break;
-
         }
     }
 
