@@ -1,10 +1,11 @@
+
 package org.it4y.jni.linux;
 
 /**
  * Created by luc on 1/10/14.
  */
 //from include<bits/socket.h>
-public class socket {
+public final class socket {
     public final static int AF_UNSPEC=0;
     public final static int AF_LOCAL=1;
     public final static int AF_UNIX=AF_LOCAL;

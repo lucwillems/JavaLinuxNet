@@ -10,10 +10,7 @@
 package org.it4y.net.link;
 
 import org.it4y.jni.libnetlink3;
-import org.it4y.jni.linux.if_address;
-import org.it4y.jni.linux.if_link;
-import org.it4y.jni.linux.netlink;
-import org.it4y.jni.linux.rtnetlink;
+import org.it4y.jni.linux.*;
 import org.it4y.jni.linuxutils;
 import org.it4y.net.netlink.*;
 import org.slf4j.Logger;
@@ -273,7 +270,7 @@ public class LinkManager extends Thread {
         switch (msg.getNlMsgType()) {
             case rtnetlink.RTM_NEWADDR: //add or update interface to list
                 //IPV4 address ?
-                if ( msg.getAddresFamily() == 2) {
+                if ( msg.getAddresFamily() == socket.AF_INET) {
                     if (msg.getRTAMessage(if_address.IFA_ADDRESS) != null) {
                         log.debug("set address");
                         x.setIpv4Address(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
@@ -290,7 +287,7 @@ public class LinkManager extends Thread {
                 break;
             case rtnetlink.RTM_DELADDR: //remove interface from list
                 //IPV4 address ?
-                if ( msg.getAddresFamily() == 2) {
+                if ( msg.getAddresFamily() == socket.AF_INET) {
                     log.trace("unset P2P address");
                     x.setIpv4Address(0);
                     x.setIpv4P2Paddress(0);
