@@ -76,6 +76,7 @@ public class LinkManagerTest {
         //Get lo interface
         NetworkInterface lo=lm.findByInterfaceName("lo");
         Assert.assertNotNull(lo);
+        log.info("{}",lo);
         //this is only correct for lo interface
         Assert.assertNotNull(lo.getIpv4AddressAsInetAddress());
         Assert.assertTrue(lo.getMtu() > 0);
