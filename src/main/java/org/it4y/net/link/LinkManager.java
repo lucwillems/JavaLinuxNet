@@ -172,7 +172,7 @@ public class LinkManager extends Thread {
                 public int accept(ByteBuffer message) {
                     NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
                     if (msg != null) {
-                        log.debug("message:{} type={}", msg.getClass().getSimpleName(), msg.getNlMsgType());
+                        log.debug("message:{} type={} : {}", msg.getClass().getSimpleName(), msg.getNlMsgType(),msg);
                         log.trace("{}", msg);
 
                         //we are going to modify so set write lock here
