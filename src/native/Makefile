@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=
-JAVAHOME=/usr/java/jdk1.6.0_45
-INCLUDES = -I$(JAVAHOME)/include/linux -I$(JAVA_HOME)/include
+JDK_HOME=$(shell readlink -f `which javac` | sed "s:bin/javac::")
+INCLUDES = -I$(JDK_HOME)include/linux -I$(JDK_HOME)include
 LFLAGS = -shared
 JAVAH=javah
 CLASSPATH=../../target/classes
