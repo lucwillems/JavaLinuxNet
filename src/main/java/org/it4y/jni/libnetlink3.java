@@ -12,10 +12,24 @@ import java.nio.ByteBuffer;
 
 public class libnetlink3 {
 
+    //some errorcodes from our jni methods
+    public static final int JNI_OK=0;
+    public static final int JNI_ERROR=-1;
+    public static final int JNI_ERR_FIND_CLASS_FAILED=-2;
+    public static final int JNI_ERR_GET_METHOD_FAILED=-3;
+    public static final int JNI_ERR_CALL_METHOD_FAILED=-4;
+    public static final int JNI_ERR_BUFFER_TO_SMALL=-5;
+    public static final int JNI_ERR_EXCEPTION=-6;
+
+
     //Load our native JNI lib
     static {
         //THIS requires libnl3 !!!!
         JNILoader.loadLibrary("libjninetlink3.so");
+        int initResult=initlib();
+        if (initResult != JNI_OK) {
+            throw new RuntimeException("Failed to initialize libnet3 jni interface : "+initResult);
+        };
     }
 
 
@@ -58,6 +72,10 @@ public class libnetlink3 {
         }
 
     }
+
+    //This method should be called first before using the library
+    //it's used to initialize internal jni structure to speedup jni lookups
+    private static native int initlib();
 
     //libnet routing stuff
     /*

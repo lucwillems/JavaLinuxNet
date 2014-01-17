@@ -20,36 +20,49 @@
  /* Amount of characters in the error message buffer */
 #define ERROR_SIZE 254
 
+//some errorcodes
+#define OK 0;
+#define ERR_JNI_ERROR -1;
+#define ERR_FIND_CLASS_FAILED -2;
+#define ERR_GET_METHOD_FAILED -3;
+#define ERR_CALL_METHOD_FAILED -4;
+#define ERR_BUFFER_TO_SMALL -5;
+#define ERR_EXCEPTION -6;
 
-void tostring(JNIEnv *env, jobject obj) {
 
-  if ( obj > 0) {
-   jclass cls = (*env)->GetObjectClass(env,obj);
 
-   // First get the class object
-   jmethodID mid = (*env)->GetMethodID(env,cls, "getClass", "()Ljava/lang/Class;");
-   jobject clsObj = (*env)->CallObjectMethod(env,obj, mid);
+// Cached Object,Field,Method ID's needed
+jclass errnoexception_class;
+jclass rtnl_accept_class;
+jmethodID errnoexception_ctorID;
+jmethodID rtnl_accept_acceptID;
+/*
+ * Initialize JNI interfaces for fast lookup. this method must be called first before anything will work
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_initlib  (JNIEnv *env, jclass obj) {
+   fprintf(stderr,"libjninetlink3 init...\n");
 
-   // Now get the class object's class descriptor
-   cls = (*env)->GetObjectClass(env,clsObj);
+   //ErrnoException class
+   errnoexception_class = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
+   if((*env)->ExceptionOccurred(env))
+      return ERR_FIND_CLASS_FAILED;
 
-   // Find the getName() method on the class object
-   mid = (*env)->GetMethodID(env,cls, "getName", "()Ljava/lang/String;");
+   errnoexception_ctorID  = (*env)->GetMethodID(env, errnoexception_class, "<init>","(Ljava/lang/String;I)V");
+   if((*env)->ExceptionOccurred(env))
+      return ERR_GET_METHOD_FAILED;
 
-   // Call the getName() to get a jstring object back
-   jstring strObj = (jstring)(*env)->CallObjectMethod(env,clsObj, mid);
+   //rtln_accept interface class
+   rtnl_accept_class = (*env)->FindClass( env, "org/it4y/jni/libnetlink3$rtnl_accept");
+   if((*env)->ExceptionOccurred(env))
+      return ERR_FIND_CLASS_FAILED;
 
-    // Now get the c string from the java jstring object
-    const char* str = (*env)->GetStringUTFChars(env,strObj, NULL);
+   //rtl_accept.accept(ByteBuffer) method
+   rtnl_accept_acceptID = (*env)->GetMethodID(env,rtnl_accept_class, "accept", "(Ljava/nio/ByteBuffer;)I");
+   if((*env)->ExceptionOccurred(env))
+      return ERR_GET_METHOD_FAILED;
 
-   // Print the class name
-   fprintf(stderr,"Calling class is: %s %x\n", str,(u_int)obj);
-
-   // Release the memory pinned char array
-   (*env)->ReleaseStringUTFChars(env,strObj, str);
-   } else {
-     fprintf(stderr,"Calling class is: null\n");
-   }
+  //init ok
+  return OK;
 }
 
 /*
@@ -58,18 +71,13 @@ void tostring(JNIEnv *env, jobject obj) {
  */
 jint throwErrnoExceptionfError(JNIEnv *env, int error) {
 
-   jclass errnoexception_class = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
-   if((*env)->ExceptionOccurred(env)) { return -1;}
-   jmethodID errnoexception_ctorID  = (*env)->GetMethodID(env, errnoexception_class, "<init>","(Ljava/lang/String;I)V");
-   if((*env)->ExceptionOccurred(env)) { return -1;}
    jstring jmessage = (*env)->NewStringUTF(env,strerror(error));
-   if((*env)->ExceptionOccurred(env)) { return -1;}
    jobject errnoexception_obj = (*env)->NewObject(env, errnoexception_class, errnoexception_ctorID,jmessage,error);
-   if((*env)->ExceptionOccurred(env)) { return -1;}
+   if((*env)->ExceptionOccurred(env)) { return ERR_JNI_ERROR;}
 
    //yes it did ;-)
    (*env)->Throw( env, errnoexception_obj );
-   return 0;
+   return OK;
 }
 
 /*
@@ -81,20 +89,23 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open(JNIEnv *env, jcl
   struct rtnl_handle *rth;
   jbyte *b;
 
-  struct nl_cache_mngr *mngr;
-  int len=sizeof(mngr);
-  fprintf(stderr,"cache manager: %d\n",len);
+//  struct nl_cache_mngr *mngr;
+//  int len=sizeof(mngr);
+//  fprintf(stderr,"cache manager: %d\n",len);
 
   //get pointer to handler byte[] structure
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open(rth,subscriptions);
-  //fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
-  //fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
-  //fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
 
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+
+  //exception handling
+  if ((*env)->ExceptionCheck(env))
+      return ERR_EXCEPTION;
+
+  //ok
   return result;
 }
 
@@ -111,11 +122,15 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open_1byproto(JNIEnv 
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open_byproto(rth,subscriptions,protocol);
-  //fprintf(stderr,"rtnl_handle: %d\n",rth->fd);
-  //fprintf(stderr,"rtnl_handle: local %d\n",rth->local.nl_pid);
-  //fprintf(stderr,"rtnl_handle: peer %d\n",rth->peer.nl_pid);
+
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+
+  //exception handling
+  if ((*env)->ExceptionCheck(env))
+     return ERR_EXCEPTION;
+
+  //ok
   return result;
 }
 
@@ -133,9 +148,13 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1close(JNIEnv *env , j
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   rtnl_close(rth);
+
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
-}
+
+  //exception handling
+  ((*env)->ExceptionCheck(env));
+ }
 
  /*
   * Class:     org_it4y_jni_linuxutils
@@ -151,8 +170,15 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1wilddump_1request(JNI
   b = (*env)->GetByteArrayElements(env, handle, NULL);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_wilddump_request(rth,family,type);
+
   //release it before it leaks ...
   (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+
+  //exception handling
+  if ((*env)->ExceptionCheck(env))
+     return ERR_EXCEPTION;
+
+  //ok
   return result;
 }
 
@@ -162,7 +188,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1wilddump_1request(JNI
  * Signature: (Ljava/nio/ByteBuffer;I)I
  */
 JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_send(JNIEnv *env, jclass this, jobject bytebuffer, jint len) {
-  return -1;
+  return OK;
 }
 
 /*
@@ -171,7 +197,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_send(JNIEnv *env, jcla
  * Signature: (ILjava/nio/ByteBuffer;I)I
  */
 JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_dump_request(JNIEnv *env, jclass this , jint type , jobject req , jint len) {
-  return -1;
+  return OK;
 }
 
 
@@ -192,31 +218,24 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
 
    //get access to jni environment to implement callback to java
    struct listen_jni_callback* jni=(struct listen_jni_callback*)arg;
-   //fprintf(stderr,"accept_msg: %d %d\n",who->nl_pid,who->nl_groups);
-   //fprintf(stderr,"jni: %x %x %x %x\n",jni->env,jni->this,jni->messageBuffer,jni->listener);
-   //fprintf(stderr,"nl : size %d\n",n->nlmsg_len);
-   //tostring(jni->env,jni->messageBuffer);
-   //tostring(jni->env,jni->listener);
-
 
    char* b = (char *)(*jni->env)->GetDirectBufferAddress(jni->env,jni->messageBuffer);
    jlong capacity = (*jni->env)->GetDirectBufferCapacity(jni->env,jni->messageBuffer);
    //make sure our buffer is big enough
    if  (n->nlmsg_len > capacity) {
        fprintf(stderr,"rtnl_listen.accept() : buffer to small , need %d , have %d\n",n->nlmsg_len,(u_int)capacity);
-       return -4;
+       return ERR_BUFFER_TO_SMALL;
    }
 
-   //copy message into ByteBuffe
+   //copy message into ByteBuffer
    memcpy(b,n,MIN(n->nlmsg_len,capacity));
 
-   //do java callback
-   jclass cls = (*jni->env)->GetObjectClass(jni->env,jni->listener);
-   jmethodID acceptID = (*jni->env)->GetMethodID(jni->env,cls, "accept", "(Ljava/nio/ByteBuffer;)I");
-   if((*jni->env)->ExceptionOccurred(jni->env)) { return -5;}
    // Call the int accept(ByteBuffer)
-   jint result = (jint) (*jni->env)->CallIntMethod(jni->env, jni->listener, acceptID, jni->messageBuffer);
-   if((*jni->env)->ExceptionOccurred(jni->env)) { return -5;}
+   jint result = (jint) (*jni->env)->CallIntMethod(jni->env, jni->listener, rtnl_accept_acceptID, jni->messageBuffer);
+   if((*jni->env)->ExceptionOccurred(jni->env))
+      return ERR_CALL_METHOD_FAILED;
+
+   //all ok
    return result;
 }
 
@@ -233,22 +252,17 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    if (messageBuffer == 0) {
        //We ByteBuffer !!!
        fprintf(stderr,"rtln_listen : NO messageBuffer !!!!");
-       return -2;
+       return ERR_JNI_ERROR;
    }
    if (listener == 0) {
       //We need listener !!!
       fprintf(stderr,"rtln_listen : NO java callback listener !!!!");
-      return -3;
+      return ERR_JNI_ERROR;
    }
 
    //get pointer to handler byte[] structure
    jbyte *b = (*env)->GetByteArrayElements(env, handle, NULL);
-   if((*env)->ExceptionOccurred(env)) { return -1;}
    rth = (struct rtnl_handle *)b;
-
-   //char *buffer = (char*)(*env)->GetDirectBufferAddress(env,messageBuffer);
-   //jlong len = (*env)->GetDirectBufferCapacity(env,messageBuffer);
-   //if((*env)->ExceptionOccurred(env)) { return -1;}
 
    //java listener callback stuff
    callback.env=env;
@@ -260,6 +274,11 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
 
    //release it before it leaks ...
    (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+
+  //exception handling
+  if ((*env)->ExceptionCheck(env))
+     return ERR_EXCEPTION;
+
    return result;
 }
 
