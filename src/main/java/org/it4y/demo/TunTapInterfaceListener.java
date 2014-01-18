@@ -2,10 +2,8 @@ package org.it4y.demo;
 
 import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.*;
-import org.it4y.net.protocols.IP.TCP.TCPOption;
-import org.it4y.net.protocols.IP.TCP.TCPPacket;
 import org.it4y.net.protocols.IP.UDP.UDPPacket;
-import org.it4y.net.tuntap.TunTapDevice;
+import org.it4y.net.tuntap.TunDevice;
 import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
@@ -17,7 +15,7 @@ public class TunTapInterfaceListener extends TestRunner {
     private String dev = null;
     private int mtu = 0;
     private ByteBuffer bbuffer;
-    private TunTapDevice tundev;
+    private TunDevice tundev;
     private static long last = 0;
     private static long cnt = 0;
     private static long bits = 0;
@@ -28,7 +26,7 @@ public class TunTapInterfaceListener extends TestRunner {
         super("tuntapListener-" + name);
         this.dev = name;
         this.mtu = mtu;
-        tundev = new TunTapDevice(name);
+        tundev = new TunDevice(name);
         bbuffer = ByteBuffer.allocateDirect(mtu);
     }
 
