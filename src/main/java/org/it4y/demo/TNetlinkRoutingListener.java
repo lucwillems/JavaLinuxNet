@@ -35,30 +35,30 @@ public class TNetlinkRoutingListener extends TestRunner {
                  rtnetlink.RTMGRP_IPV4_ROUTE |
                  rtnetlink.RTMGRP_IPV4_MROUTE |
                  rtnetlink.RTMGRP_LINK;
-        System.out.println("Groups: 0x" + Integer.toHexString(groups));
+        //System.out.println("Groups: 0x" + Integer.toHexString(groups));
         libnetlink3.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
-        System.out.println(Hexdump.bytesToHex(handle.handle, 4));
+        //System.out.println(Hexdump.bytesToHex(handle.handle, 4));
         while (true) {
             if (initstate < 4) {
                 //we can handle only 1 wilddump at the same time, so we have a little stepping program here
                 switch (initstate) {
                     case 0:
-                        System.out.println(new Date() + " Requesting link information...");
+                        //System.out.println(new Date() + " Requesting link information...");
                         libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
                         initstate++;
                         break;
                     case 1:
-                        System.out.println(new Date() + " Requesting address information...");
+                        //System.out.println(new Date() + " Requesting address information...");
                         libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETADDR);
                         initstate++;
                         break;
                     case 2:
-                        System.out.println(new Date() + " Requesting routing information...");
+                        //System.out.println(new Date() + " Requesting routing information...");
                         libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETROUTE);
                         initstate++;
                         break;
                     default:
-                        System.out.println("Init finished");
+                        //System.out.println("Init finished");
                         initstate = 4; //finished
                 }
             }
@@ -73,7 +73,7 @@ public class TNetlinkRoutingListener extends TestRunner {
                     message.rewind();
                     NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
                     if (msg != null) {
-                        System.out.println(new Date() + " " + msg.toString());
+                        //System.out.println(new Date() + " " + msg.toString());
                         //continue or stop listening ?
                         return msg.moreMessages() ? libnetlink3.rtl_accept_CONTINUE : libnetlink3.rtl_accept_STOP;
                     }
