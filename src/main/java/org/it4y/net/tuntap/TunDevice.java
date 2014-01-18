@@ -9,30 +9,33 @@
 
 package org.it4y.net.tuntap;
 
+import org.it4y.jni.libc;
 import org.it4y.jni.tuntap;
 
-public class TunTapDevice extends tuntap {
+public class TunDevice extends tuntap {
 
-    public TunTapDevice(String device) {
+    public TunDevice() {
+        super();
+    }
+
+    public TunDevice(String device) {
         super();
         this.device = device;
     }
 
-    public void open() throws Exception {
+    public void open() throws libc.ErrnoException {
         int errno;
         //open on name or let kernel chouse
         if (device != null) {
-            errno = openTunDevice(device);
+            openTunDevice(device);
         } else {
-            errno = openTun();
-        }
-        if (errno != 0) {
-            throw new Exception("Could not open '/dev/net/tun!'\n" + "errno=" + errno);
+            openTun();
         }
     }
 
     public String getDevice() {
         return device;
     }
+    public int getFd() {return fd;}
 
 }
