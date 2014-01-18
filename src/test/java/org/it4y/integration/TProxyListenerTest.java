@@ -275,7 +275,7 @@ public class TProxyListenerTest {
             }
         });
         // Start the client.
-        int nrOfConnections=4096;
+        int nrOfConnections=4000;
         log.info("Starting {} connections ....",nrOfConnections);
         long start=System.currentTimeMillis();
         retry=0;
