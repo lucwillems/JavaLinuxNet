@@ -74,6 +74,8 @@ public class LinkManager extends Thread {
      *     0=init
      *     ..
      *     4=initialization done, all information is known.
+     *     5=halt in progress
+     *     6=halted
      *</pre>
      */
     private int initstate = 0;
@@ -119,12 +121,29 @@ public class LinkManager extends Thread {
     public void halt() {
         wlock.lock();
         try {
+            log.info("halting link manager state: {}",initstate);
             running=false;
             initstate=5;
+            //We trigger a dump,which will cause the blocking listen call to exit so we can exit the the thread cleanly
+            libnetlink3.rtnl_wilddump_request(handle, 0, rtnetlink.RTM_GETLINK);
         } finally {
             wlock.unlock();
         }
     }
+
+    public boolean isHalted() {
+        return initstate==6;
+    }
+
+    public void shutDown() {
+        if (initstate != 6) {
+            throw new RuntimeException("netlink manager not halted");
+        }
+        //close our handle
+        listeners.clear();
+        libnetlink3.rtnl_close(handle);
+    }
+
     /**
      * start the main link manager thread which listen to netlink messages and process them
      */
@@ -192,7 +211,8 @@ public class LinkManager extends Thread {
                 }
             });
         }
-
+        log.info("halted.");
+        initstate=6;
     }
 
     /**

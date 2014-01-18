@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -41,23 +42,33 @@ public class LinkManagerTest {
         Assert.assertTrue("Timeout waiting link manager",lm.isReady());
         return lm;
     }
+
     private LinkManager startLinkManager()  throws Exception {
         return startLinkManager(null,null,null);
     }
 
     private void stopLinkManager(LinkManager lm) throws Exception {
-        lm.halt();
-        //wait so thread can start
-        Thread.sleep(200);
-        Assert.assertTrue(!lm.isReady());
-        Assert.assertTrue(!lm.isRunning());
+        if (lm != null) {
+            lm.halt();
+            //wait so thread can stop
+            Thread.sleep(10);
+            Assert.assertTrue("link manager must be stopped",lm.isHalted());
+            lm.shutDown();
+            Assert.assertTrue(!lm.isReady());
+            Assert.assertTrue(!lm.isRunning());
+            lm=null;
+        }
     }
 
 
     @Test
     public void testLinkManager() throws Exception {
         LinkManager lm=startLinkManager();
-        stopLinkManager(lm);
+        try {
+          Assert.assertNotNull(lm);
+        } finally {
+            stopLinkManager(lm);
+        }
     }
 
     @Test
@@ -65,73 +76,83 @@ public class LinkManagerTest {
         //this test should always work when there is a normal network setup
         LinkManager lm=startLinkManager();
         //Get default gateway
-        Assert.assertNotNull(lm.getDefaultGateway());
-        lm.halt();
+        try {
+            Assert.assertNotNull(lm.getDefaultGateway());
+        } finally {
+            stopLinkManager(lm);
+        }
     }
 
     @Test
     public void testfindbyInterfaceName() throws Exception {
         //this test should always work when there is a normal network setup
         LinkManager lm=startLinkManager();
-        //Get lo interface
-        NetworkInterface lo=lm.findByInterfaceName("lo");
-        Assert.assertNotNull(lo);
-        log.info("{}",lo);
-        //this is only correct for lo interface
-        Assert.assertNotNull(lo.getIpv4AddressAsInetAddress());
-        Assert.assertTrue(lo.getMtu() > 0);
-        Assert.assertEquals("lo", lo.getName());
-        Assert.assertEquals(0x0100007f,lo.getIpv4Address()&0xffffffff);
-        Assert.assertTrue(lo.getMtu()>0);
-        Assert.assertTrue(lo.isLowerUP());
-        Assert.assertTrue(lo.isUP());
-        Assert.assertTrue(lo.isLoopBack());
-        Assert.assertTrue(!lo.isPoint2Point());
-        Assert.assertTrue(lo.isActive());
-        lm.halt();
+        try {
+            //Get lo interface
+            NetworkInterface lo=lm.findByInterfaceName("lo");
+            Assert.assertNotNull(lo);
+            log.info("{}",lo);
+            //this is only correct for lo interface
+            Assert.assertNotNull(lo.getIpv4AddressAsInetAddress());
+            Assert.assertTrue(lo.getMtu() > 0);
+            Assert.assertEquals("lo", lo.getName());
+            Assert.assertEquals(0x0100007f,lo.getIpv4Address()&0xffffffff);
+            Assert.assertTrue(lo.getMtu()>0);
+            Assert.assertTrue(lo.isLowerUP());
+            Assert.assertTrue(lo.isUP());
+            Assert.assertTrue(lo.isLoopBack());
+            Assert.assertTrue(!lo.isPoint2Point());
+            Assert.assertTrue(lo.isActive());
+        } finally {
+            stopLinkManager(lm);
+        }
     }
 
     @Test
     public void testfindbyInterfaceIndex() throws Exception {
         //this test should always work when there is a normal network setup
         LinkManager lm=startLinkManager();
-        //Get lo interface
-        NetworkInterface lo=lm.findByInterfaceIndex(1);
-        Assert.assertNotNull(lo);
-        Assert.assertEquals(1,lo.getIndex());
-        lm.halt();
+        try {
+            //Get lo interface
+            NetworkInterface lo=lm.findByInterfaceIndex(1);
+            Assert.assertNotNull(lo);
+            Assert.assertEquals(1,lo.getIndex());
+        } finally {
+            stopLinkManager(lm);
+        }
     }
 
     @Test
     public void testConcurrentFindbyName() throws Exception{
-        final LinkManager lm=startLinkManager();
         final Counter readcnt=new Counter();
         final Counter wrtcnt=new Counter();
+        final LinkManager lm=startLinkManager();
+        final ExecutorService es= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*4);
 
-        //we need access to internal wlock lock for simulating write locks
-        Field privateLock = LinkManager.class.getDeclaredField("wlock");
-        privateLock.setAccessible(true);
-        final Lock wlock=(Lock)privateLock.get(lm);
+        try {
+            //we need access to internal wlock lock for simulating write locks
+            Field privateLock = LinkManager.class.getDeclaredField("wlock");
+            privateLock.setAccessible(true);
+            final Lock wlock=(Lock)privateLock.get(lm);
 
-        log.info("running concurrent access...");
-        log.info("# of cpu: {}",Runtime.getRuntime().availableProcessors());
-        ExecutorService es= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*4);
-        //Run 40 jobs on the linkmanager requesting all links concurrently
-        for (int i=0;i<100;i++) {
-            //start some read access
-            for (final String net : lm.getInterfaceList()) {
-                es.submit(new Runnable() {
+            log.info("running concurrent access...");
+            log.info("# of cpu: {}",Runtime.getRuntime().availableProcessors());
+            //Run 40 jobs on the linkmanager requesting all links concurrently
+            for (int i=0;i<100;i++) {
+                //start some read access
+                for (final String net : lm.getInterfaceList()) {
+                    es.submit(new Runnable() {
                     @Override
                     public void run() {
                         readcnt.inc();
                         NetworkInterface x=lm.findByInterfaceName(net);
                         Assert.assertNotNull(x);
                         Assert.assertEquals(net,x.getName());
-                    }
+                         }
                 });
-                //and long locking write access
-                if ((i % 3) == 0) {
-                 es.submit(new Runnable() {
+                 //and long locking write access
+                 if ((i % 3) == 0) {
+                    es.submit(new Runnable() {
                     @Override
                     public void run() {
                         wrtcnt.inc();
@@ -143,20 +164,22 @@ public class LinkManagerTest {
                         } finally {
                             wlock.unlock();
                         }
-                    }
+                        }
                 });
-               }
+                   }
+                }
             }
-
+            Thread.sleep(500);
+            //All read/write locks are executed multible times
+            log.info("Read locks: {}",readcnt.getCount());
+            log.info("Write locks: {}",wrtcnt.getCount());
+            Assert.assertTrue(readcnt.getCount()>1);
+            Assert.assertTrue(wrtcnt.getCount()>1);
+        } finally {
+            es.shutdown();
+            es.awaitTermination(10,TimeUnit.SECONDS);
+            stopLinkManager(lm);
         }
-        Thread.sleep(500);
-        //All read/write locks are executed multible times
-        log.info("Read locks: {}",readcnt.getCount());
-        log.info("Write locks: {}",wrtcnt.getCount());
-        Assert.assertTrue(readcnt.getCount()>1);
-        Assert.assertTrue(wrtcnt.getCount()>1);
-        //if it is not thread save, we don't get here
-        lm.halt();
     }
 
     @Test
@@ -177,9 +200,11 @@ public class LinkManagerTest {
                     cnt.inc();
             }
         });
-        Assert.assertTrue(cnt.getCount() > 0);
-        //if it is not thread save, we don't get here
-        lm.halt();
+        try {
+            Assert.assertTrue(cnt.getCount() > 0);
+        } finally {
+           stopLinkManager(lm);
+        }
     }
 
     @Test
@@ -200,9 +225,11 @@ public class LinkManagerTest {
                 cnt.inc();
             }
         });
-        Assert.assertTrue(cnt.getCount() > 0);
-        //if it is not thread save, we don't get here
-        lm.halt();
+        try {
+            Assert.assertTrue(cnt.getCount() > 0);
+        } finally {
+            stopLinkManager(lm);
+        }
     }
 
     @Test
@@ -222,9 +249,12 @@ public class LinkManagerTest {
             public void onStateChanged(NetworkInterface network) {
             }
         });
-        Assert.assertTrue(cnt.getCount() > 0);
-        //if it is not thread save, we don't get here
-        lm.halt();
+        try {
+            Assert.assertTrue(cnt.getCount() > 0);
+            //if it is not thread save, we don't get here
+        } finally {
+            lm.halt();
+        }
     }
 
     @Test
@@ -245,10 +275,13 @@ public class LinkManagerTest {
                 Assert.assertTrue(network.isActive());
             }
         });
-        //we should always have lo up
-        Assert.assertTrue(cnt.getCount() >= 1);
-        //if it is not thread save, we don't get here
-        lm.halt();
+        try {
+            //we should always have lo up
+            Assert.assertTrue(cnt.getCount() >= 1);
+        } finally {
+            //if it is not thread save, we don't get here
+            stopLinkManager(lm);
+        }
     }
 
     @Test
@@ -264,9 +297,12 @@ public class LinkManagerTest {
             public void onStateChanged(NetworkInterface network) {
             }
         };
-        lm.registerListener(LinkNotification.EventAction.All, LinkNotification.EventType.All, noti);
-        lm.unRegisterListener(noti);
-
+        try {
+            lm.registerListener(LinkNotification.EventAction.All, LinkNotification.EventType.All, noti);
+            lm.unRegisterListener(noti);
+        } finally {
+            stopLinkManager(lm);
+        }
     }
 
 }
