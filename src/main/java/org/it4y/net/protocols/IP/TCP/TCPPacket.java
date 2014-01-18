@@ -9,16 +9,39 @@
 
 package org.it4y.net.protocols.IP.TCP;
 
+import org.it4y.jni.linux.jhash;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.net.protocols.IP.TCP.*;
 import org.it4y.util.Hexdump;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
 public class TCPPacket extends IpPacket {
+    private Logger log= LoggerFactory.getLogger(TCPPacket.class);
+
+    private int ip_header_size;
+
+    public static final int header_tcp_sport=0;
+    public static final int header_tcp_dport=2;
+    public static final int header_tcp_sequence_number=4;
+    public static final int header_tcp_ack_number=8;
+    public static final int header_tcp_data_offset=12;
+    public static final int header_tcp_flags1=12;
+    public static final int header_tcp_flags2=13;
+    public static final int header_tcp_window=14;
+    public static final int header_tcp_checksum=16;
+    public static final int header_tcp_urgentpointer=18;
 
     public TCPPacket(ByteBuffer buffer, int size) {
         super(buffer, size);
+        ip_header_size=super.getIpHeaderSize();
+    }
+
+    public TCPPacket(IpPacket ip) {
+        super(ip.getRawPacket(),ip.getRawSize());
+        ip_header_size=ip.getIpHeaderSize();
     }
 
     @Override
@@ -29,84 +52,105 @@ public class TCPPacket extends IpPacket {
 
     @Override
     public int getPayLoadSize() {
-        return getIPLenght() - getIpHeaderSize() - getHeaderSize();
+        return getIPLenght() - ip_header_size - getHeaderSize();
     }
 
     public void swapSourceDestinationPort() {
-        final int ipheadersize = getIpHeaderSize();
-        final short srcPort = rawPacket.getShort(ipheadersize);
-        rawPacket.putInt(ipheadersize, rawPacket.getInt(ipheadersize + 2));
-        rawPacket.putInt(ipheadersize + 2, srcPort);
+        final short srcPort = rawPacket.getShort(ip_header_size);
+        rawPacket.putInt(ip_header_size, rawPacket.getInt(ip_header_size + header_tcp_dport));
+        rawPacket.putInt(ip_header_size + header_tcp_dport, srcPort);
     }
 
     public short getSourcePort() {
-        return rawPacket.getShort(getIpHeaderSize());
+        return rawPacket.getShort(ip_header_size);
+    }
+    public void getSourcePort(short port) {
+        rawPacket.putShort(ip_header_size, port);
     }
 
     public short getDestinationPort() {
-        return rawPacket.getShort(getIpHeaderSize() + 2);
+        return rawPacket.getShort(ip_header_size + header_tcp_dport);
+    }
+    public void setDestinationPort(short port) {
+       rawPacket.putShort(ip_header_size + header_tcp_dport, port);
     }
 
     public int getSequenceNumber() {
-        return rawPacket.getInt(getIpHeaderSize() + 4);
+        return rawPacket.getInt(ip_header_size + header_tcp_sequence_number);
+    }
+    public void setSequenceNumber(int seq) {
+       rawPacket.putInt(ip_header_size + header_tcp_sequence_number, seq);
     }
 
     public int getAckNumber() {
-        return rawPacket.getInt(getIpHeaderSize() + 8);
+        return rawPacket.getInt(ip_header_size + header_tcp_ack_number);
+    }
+    public void setAckNumber(int ack) {
+        rawPacket.putInt(ip_header_size + header_tcp_ack_number, ack);
     }
 
     public int getDataOffset() {
-        //first 4bits=number of 4bytes header size
-         int size=(((int)rawPacket.getShort(getIpHeaderSize() + 12) &0xf000) >>10);
-        return size;
+       //first 4bits=number of 4bytes header size
+       int size=(((int)rawPacket.getShort(ip_header_size + header_tcp_data_offset) &0xf000) >>10);
+       return size;
     }
 
     public boolean isNS() {
-        return ((rawPacket.get(getIpHeaderSize() + 12) & (byte) 0x01) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags1) & (byte) 0x01) > (byte) 0);
     }
 
     public boolean isCWR() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x80) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x80) > (byte) 0);
     }
 
     public boolean isECE() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x40) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x40) > (byte) 0);
     }
 
     public boolean isURG() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x20) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x20) > (byte) 0);
     }
 
     public boolean isACK() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x10) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x10) > (byte) 0);
     }
 
     public boolean isPSH() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x08) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x08) > (byte) 0);
     }
 
     public boolean isRST() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x04) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x04) > (byte) 0);
     }
 
     public boolean isSYN() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x02) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x02) > (byte) 0);
     }
 
     public boolean isFIN() {
-        return ((rawPacket.get(getIpHeaderSize() + 13) & (byte) 0x01) > (byte) 0);
+        return ((rawPacket.get(ip_header_size + header_tcp_flags2) & (byte) 0x01) > (byte) 0);
     }
 
     public short getWindowSize() {
-        return rawPacket.getShort(getIpHeaderSize() + 14);
+        return rawPacket.getShort(ip_header_size + header_tcp_window);
+    }
+
+    public void setWindowSize(short window) {
+        rawPacket.putShort(ip_header_size + header_tcp_window, window);
     }
 
     public short getChecksumSize() {
-        return rawPacket.getShort(getIpHeaderSize() + 16);
+        return rawPacket.getShort(ip_header_size + header_tcp_checksum);
+    }
+    public void setChecksumSize(short checksum) {
+        rawPacket.putShort(ip_header_size + header_tcp_checksum, checksum);
     }
 
     public short getUrgentPointer() {
-        return rawPacket.getShort(getIpHeaderSize() + 18);
+        return rawPacket.getShort(ip_header_size+header_tcp_urgentpointer);
+    }
+    public void setUrgentPointer(short pointer) {
+        rawPacket.putShort(ip_header_size + header_tcp_urgentpointer, pointer);
     }
 
     public boolean hasOptions() {
@@ -127,7 +171,7 @@ public class TCPPacket extends IpPacket {
         } else if (type == TCPOption.TIMESTAMP) {
             return new TCPoptionTimeStamp(rawPacket.getInt(i + 2), rawPacket.getInt(i + 6));
         } else {
-            System.out.println("Ignoring tcp option " + ((int) type));
+            log.debug("Ignoring tcp option {}", ((int) type));
         }
         return null;
     }
@@ -135,8 +179,8 @@ public class TCPPacket extends IpPacket {
     public TCPOption getOptionByType(byte type) {
         resetBuffer();
         //position first option byte
-        int i = getIpHeaderSize() + 20;
-        while (i < getIpHeaderSize() + getHeaderSize()) {
+        int i = ip_header_size + 20;
+        while (i < ip_header_size + getHeaderSize()) {
             TCPOption option = null;
             byte optionId = rawPacket.get(i);
             byte length = rawPacket.get(i + 1);
@@ -160,8 +204,8 @@ public class TCPPacket extends IpPacket {
         resetBuffer();
         //position first option byte
         int cnt = 0;
-        int i = getIpHeaderSize() + 20;
-        while (i < getIpHeaderSize() + getHeaderSize()) {
+        int i = ip_header_size + 20;
+        while (i < ip_header_size + getHeaderSize()) {
             TCPOption option = null;
             byte optionId = rawPacket.get(i);
             byte length = rawPacket.get(i + 1);
@@ -217,4 +261,25 @@ public class TCPPacket extends IpPacket {
         }
         return s.toString();
     }
+
+    @Override
+    public int getDstRoutingHash() {
+            int dst=rawPacket.getInt(header_dst);  //32 dest address
+            int src=rawPacket.getInt(header_src);  //32 src address
+            int port=(int)rawPacket.getShort(ip_header_size+header_tcp_sport)<<16 + (int)rawPacket.getShort(ip_header_size+header_tcp_dport);
+            int proto=(int)rawPacket.get(header_protocol);
+            return jhash.jhash_3words(dst, port, proto, src);
+    }
+
+    @Override
+    public int getFlowHash() {
+        int dst=rawPacket.getInt(header_dst);  //32 dest address
+        int src=rawPacket.getInt(header_src);  //32 src address
+        int proto=((int)rawPacket.get(header_protocol)&0xff)<<16;
+        int sport=((int)rawPacket.getShort(ip_header_size+header_tcp_sport)) &0xffff;
+        int dport=((int)rawPacket.getShort(ip_header_size+header_tcp_dport)) &0xffff;
+        int port=sport<<16+dport;
+        return jhash.jhash_3words(dst, src, port,proto);
+    }
+
 }

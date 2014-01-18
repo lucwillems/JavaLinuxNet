@@ -3,6 +3,7 @@
 #
 # Note we abuse 8.8.4.4 as test IP
 TESTIP=8.8.4.4
+TESTNET=8.8.4.0/24
 TUNDEV=test
 USER=luc
 GROUP=users
@@ -12,7 +13,7 @@ ip tuntap del dev $TUNDEV mode tun
 ip tuntap add dev $TUNDEV mode tun user $USER group $GROUP
 ip addr add 127.0.0.2/32 dev $TUNDEV
 ip link set dev $TUNDEV up
-ip route add $TESTIP dev $TUNDEV
+ip route add $TESTNET dev $TUNDEV
 
 #route all redirected traffic to lo
 ip rule del priority 2000
@@ -32,3 +33,8 @@ iptables -t mangle -A PREROUTING -p tcp -m tcp --destination $TESTIP --dport 80 
 
 #for local traffic
 iptables -t mangle -A OUTPUT -p tcp -m tcp --destination $TESTIP --dport 80 -j MARK --set-mark 0x01
+
+#get some packet loss and delay
+tc qdisc del dev lo root netem
+tc qdisc add dev lo root netem loss 1% delay 100ms 20ms
+

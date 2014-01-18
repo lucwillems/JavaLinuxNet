@@ -11,7 +11,7 @@ package org.it4y.net;
 
 import java.nio.ByteBuffer;
 
-public class RawPacket {
+public abstract class RawPacket {
 
     protected ByteBuffer rawPacket = null;
     protected int rawSize = -1;
@@ -53,4 +53,9 @@ public class RawPacket {
         rawPacket.position(0);
         return rawPacket.slice();
     }
+
+    public abstract int getDstRoutingHash();
+    public abstract int getFlowHash();
+
+
 }

@@ -9,6 +9,7 @@
 
 package org.it4y.net.protocols.IP.UDP;
 
+import org.it4y.jni.linux.jhash;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.util.Hexdump;
 
@@ -17,9 +18,21 @@ import java.nio.ByteBuffer;
 public class UDPPacket extends IpPacket {
 
     private static final int UDP_HEADER_SIZE = 4;
+    private int ip_header_size;
+
+    public static final int header_udp_sport=0;
+    public static final int header_udp_dport=2;
+    public static final int header_udp_length=4;
+    public static final int header_udp_checksum=6;
 
     public UDPPacket(ByteBuffer buffer, int size) {
         super(buffer, size);
+        ip_header_size=super.getHeaderSize();
+    }
+
+    public UDPPacket(IpPacket ip) {
+        super(ip.getRawPacket(),ip.getRawSize());
+        ip_header_size=ip.getHeaderSize();
     }
 
     public int getHeaderSize() {
@@ -31,14 +44,12 @@ public class UDPPacket extends IpPacket {
     }
 
     public ByteBuffer getHeader() {
-        //get IP header size
-        int headersize = getIpHeaderSize();
         resetBuffer();
         int oposition=rawPacket.position();
         int olimit=rawPacket.limit();
         try {
-            rawPacket.position(headersize);
-            rawPacket.limit(headersize + UDP_HEADER_SIZE);
+            rawPacket.position(ip_header_size);
+            rawPacket.limit(ip_header_size + UDP_HEADER_SIZE);
             return rawPacket.slice();
         } finally {
             rawPacket.limit(olimit);
@@ -47,13 +58,11 @@ public class UDPPacket extends IpPacket {
     }
 
     public ByteBuffer getPayLoad() {
-        //get IP header size
-        int headersize = getIpHeaderSize() + UDP_HEADER_SIZE;
         resetBuffer();
         int oposition=rawPacket.position();
         int olimit=rawPacket.limit();
         try {
-            rawPacket.position(headersize);
+            rawPacket.position(ip_header_size);
             return rawPacket.slice();
         } finally {
             rawPacket.limit(olimit);
@@ -62,39 +71,46 @@ public class UDPPacket extends IpPacket {
     }
 
     public short getLength() {
-        return rawPacket.getShort(super.getIpHeaderSize() + 4);
+        return rawPacket.getShort(ip_header_size + header_udp_length);
+    }
+    public void setLength(short length) {
+        rawPacket.putShort(ip_header_size + header_udp_length, length);
     }
 
     public short getChecksum() {
-        return rawPacket.getShort(super.getIpHeaderSize() + 6);
+        return rawPacket.getShort(ip_header_size + header_udp_checksum);
     }
 
     public void resetChecksum() {
-        rawPacket.putShort(super.getHeaderSize() + 6, (short) 0x0000); //16checksum must be 0 before calculation
+        rawPacket.putShort(ip_header_size + header_udp_checksum, (short) 0x0000); //16checksum must be 0 before calculation
     }
 
     @Override
     public short updateChecksum() {
-        final int ipheadersize = getIpHeaderSize();
-        rawPacket.putShort(ipheadersize + 6, (short) 0x0000); //16checksum must be 0 before calculation
-        final short checksum = rfc1071Checksum(ipheadersize, rawLimit - ipheadersize);
-        rawPacket.putShort(ipheadersize + 6, checksum);
+        rawPacket.putShort(ip_header_size + header_udp_checksum, (short) 0x0000); //16checksum must be 0 before calculation
+        final short checksum = rfc1071Checksum(ip_header_size, rawLimit - ip_header_size);
+        rawPacket.putShort(ip_header_size + header_udp_checksum, checksum);
         return checksum;
     }
 
     public void swapSourceDestinationPort() {
-        final int ipheadersize = getIpHeaderSize();
-        final short srcPort = rawPacket.getShort(ipheadersize);
-        rawPacket.putShort(ipheadersize, rawPacket.getShort(ipheadersize + 2));
-        rawPacket.putShort(ipheadersize + 2, srcPort);
+        final short srcPort = rawPacket.getShort(ip_header_size);
+        rawPacket.putShort(ip_header_size, rawPacket.getShort(ip_header_size + header_udp_dport));
+        rawPacket.putShort(ip_header_size + header_udp_dport, srcPort);
     }
 
     public short getSourcePort() {
-        return rawPacket.getShort(getIpHeaderSize());
+        return rawPacket.getShort(ip_header_size);
+    }
+    public void setSourcePort(short port) {
+        rawPacket.putShort(ip_header_size, port);
     }
 
     public short getDestinationPort() {
-        return rawPacket.getShort(getIpHeaderSize() + 2);
+        return rawPacket.getShort(ip_header_size + header_udp_dport);
+    }
+    public void setDestinationPort(short port) {
+        rawPacket.putShort(ip_header_size + header_udp_dport, port);
     }
 
     public String toString() {
@@ -109,4 +125,25 @@ public class UDPPacket extends IpPacket {
         s.append(Hexdump.bytesToHex(getPayLoad(),Math.min(getLength(),128)));
         return s.toString();
     };
+
+    @Override
+    public int getDstRoutingHash() {
+        int dst=rawPacket.getInt(header_dst);  //32 dest address
+        int src=rawPacket.getInt(header_src);  //32 src address
+        int port=(int)rawPacket.getShort(ip_header_size+header_udp_sport)<<16 + (int)rawPacket.getShort(ip_header_size+header_udp_dport);
+        int proto=(int)rawPacket.get(header_protocol);
+        return jhash.jhash_3words(dst, port, proto, src);
+    }
+
+    @Override
+    public int getFlowHash() {
+        int dst=rawPacket.getInt(header_dst);  //32 dest address
+        int src=rawPacket.getInt(header_src);  //32 src address
+        int proto=((int)rawPacket.get(header_protocol)&0xff)<<16;
+        int sport=((int)rawPacket.getShort(ip_header_size+header_udp_sport)) &0xffff;
+        int dport=((int)rawPacket.getShort(ip_header_size+header_udp_dport)) &0xffff;
+        int port=sport<<16+dport;
+        return jhash.jhash_3words(dst, src, port,proto);
+    }
+
 }

@@ -59,6 +59,7 @@ public class TunTapInterfaceListener extends TestRunner {
                 hexDumpIn(bbuffer, size);
                 IpPacket ip = IPFactory.processRawPacket(bbuffer, size);
                 if (ip != null) {
+                    ip.getDstRoutingHash();//whats my hash
                     bits = bits + size;
                     cnt++;
                     ByteBuffer data = ip.getPayLoad();
@@ -74,14 +75,14 @@ public class TunTapInterfaceListener extends TestRunner {
                         }
                     } else if (ip.getProtocol() == ip.UDP) {
                         //we must reset Buffer before manipulating it !!
-                        System.out.println("IP: " + ip.toString());
+                        //System.out.println("IP: " + ip.toString());
                         ip.resetBuffer();
                         //echo packet back to owner
                         ((UDPPacket) ip).swapSourceDestination();
                         ((UDPPacket) ip).updateChecksum();
                         ((UDPPacket) ip).swapSourceDestinationPort();
                         tundev.writeByteBuffer(ip.getRawPacket(), ip.getRawSize());
-                        hexDumpOut(ip.getRawPacket(), ip.getRawSize());
+                        //hexDumpOut(ip.getRawPacket(), ip.getRawSize());
                     } else if (ip.getProtocol() == ip.TCP) {
                         //we must reset Buffer before manipulating it !!
                         System.out.println(ip.toString());
