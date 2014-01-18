@@ -93,8 +93,9 @@ public class tunDeviceTest {
     public void testIsDataReady() throws Exception {
             TunDevice tun=null;
             try {
+                tun=openTun(null);
                 try {
-                    tun=openTun(null);
+                    tun.open();
                     tun.isDataReady(100);
                 } catch (libc.ErrnoException errno) {
                     //must be "Operation not permitted
