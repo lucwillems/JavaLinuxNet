@@ -284,6 +284,7 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_tuntap_isDataReady(JNIEnv *env, job
  * Method:    enableQueue
  * Signature: (Z)Z
  */
+/* not supported in kernel 3.5
 JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_enableQueue(JNIEnv *env, jobject this, jboolean enable) {
    int fd = getFd(env, this);
 
@@ -296,3 +297,4 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_tuntap_enableQueue(JNIEnv *env, jobject
 
     return ioctl(fd, TUNSETQUEUE, (void *)&ifr);
 }
+*/

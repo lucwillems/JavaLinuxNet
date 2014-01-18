@@ -99,6 +99,8 @@ public class tuntap {
      * @param timeout
      * @return
      */
+    /* not supported until 3.12 kernel
     public native int enableQueue(boolean enabled);
+    */
 
 }

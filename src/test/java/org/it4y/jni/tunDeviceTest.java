@@ -108,22 +108,4 @@ public class tunDeviceTest {
             }
     }
 
-    @Test
-    public void testEnableQueue() throws Exception {
-        TunDevice tun=null;
-        try {
-            try {
-                tun=openTun(null);
-                tun.enableQueue(false);
-            } catch (libc.ErrnoException errno) {
-                //must be "Operation not permitted
-                Assert.assertEquals(1,errno.getErrno());
-            }
-        } finally {
-            if (tun != null) {
-                tun.close();
-                Assert.assertEquals(0,tun.getFd());
-            }
-        }
-    }
 }
