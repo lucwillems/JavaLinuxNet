@@ -4,18 +4,15 @@ package org.it4y.demo;
  * Created by luc on 12/28/13.
  */
 public abstract class TestRunner extends Thread {
-    protected boolean running = false;
+    protected boolean running;
 
     public TestRunner() {
-        super();
-        running = false;
-        this.setDaemon(true);
+        setDaemon(true);
     }
 
-    public TestRunner(String name) {
+    public TestRunner(final String name) {
         super(name);
-        running = false;
-        this.setDaemon(true);
+        setDaemon(true);
     }
 
     public void halt() {

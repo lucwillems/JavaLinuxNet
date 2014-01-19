@@ -8,15 +8,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by luc on 12/25/13.
- * run this to have the tun device ready (as root):
- * ip tuntap add dev luc mode tun user luc group users
- * ip addr add 127.0.0.2/32 dev luc
- * ip link set dev luc up
- * ip route add 8.8.4.4/32 via luc
- * and now ping to 8.8.4.4
+ * run src/test/scripts/setup-test.sh before running this app. this will setup correct tun device and routing.
+ * and than ping to 8.8.4.4
  */
 public class DemoTestApp {
-    private static Logger log= LoggerFactory.getLogger("Demo");
+    private final static Logger log= LoggerFactory.getLogger("Demo");
 
     public static void main(String[] args) throws Exception {
         System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
@@ -39,7 +35,7 @@ public class DemoTestApp {
                 log.info("onStateChanged : "+network+" active:"+network.isActive());
             }
         });
-        lnkMng.start();
+        lnkMng.interrupt();
         Thread.sleep(500);
         log.info("ready to rock and roll");
         while (true) {

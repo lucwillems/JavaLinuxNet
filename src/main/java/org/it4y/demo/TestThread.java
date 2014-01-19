@@ -12,18 +12,19 @@ public class TestThread extends TestRunner {
     LinkManager lnkMng;
     Logger log= LoggerFactory.getLogger(TestThread.class);
 
-    public TestThread(LinkManager lnkMng) {
+    public TestThread(final LinkManager lnkMng) {
         this.lnkMng=lnkMng;
     }
-    @Override
+
     public void run() {
-        while(true) {
+        running=true;
+        while(running) {
             lnkMng.ReadLock();
             try {
-                for (String name:lnkMng.getInterfaceList()) {
-                    NetworkInterface x=lnkMng.findByInterfaceName(name);
+                for (final String name:lnkMng.getInterfaceList()) {
+                    final NetworkInterface x=lnkMng.findByInterfaceName(name);
                     if(!log.isTraceEnabled()) {
-                        log.trace("{}",x.toString());
+                        log.trace("{}",x);
                     }
                 }
             } finally {

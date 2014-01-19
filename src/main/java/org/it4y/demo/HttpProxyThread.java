@@ -3,23 +3,27 @@ package org.it4y.demo;
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.net.tproxy.TProxyInterceptedSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Created by luc on 12/30/13.
  */
 public class HttpProxyThread extends Thread {
+    private static final Pattern spaceSplit = Pattern.compile(" ");
+    private final Logger log= LoggerFactory.getLogger(HttpProxyThread.class);
     private TProxyInterceptedSocket tclient = null;
     private static final int BUFFER_SIZE = 32768;
 
     public HttpProxyThread(TProxyInterceptedSocket socket) {
         super("ProxyThread");
-        this.tclient = socket;
+        tclient = socket;
     }
 
     public void run() {
@@ -29,17 +33,17 @@ public class HttpProxyThread extends Thread {
         //send response to user
 
         try {
-            DataOutputStream out = new DataOutputStream(tclient.getSocket().getOutputStream());
-            BufferedReader in = new BufferedReader(new InputStreamReader(tclient.getSocket().getInputStream()));
+            final DataOutputStream out = new DataOutputStream(tclient.getSocket().getOutputStream());
+            final BufferedReader in = new BufferedReader(new InputStreamReader(tclient.getSocket().getInputStream()));
 
-            String inputLine, outputLine;
+            String inputLine;
             int cnt = 0;
             String urlToCall = "";
             ///////////////////////////////////
             //begin get request from client
             while ((inputLine = in.readLine()) != null) {
                 try {
-                    System.out.println(inputLine);
+                    log.info(">{}", inputLine);
                     StringTokenizer tok = new StringTokenizer(inputLine);
                     tok.nextToken();
                 } catch (Exception e) {
@@ -47,7 +51,7 @@ public class HttpProxyThread extends Thread {
                 }
                 //parse the first line of the request to find the url
                 if (cnt == 0) {
-                    String[] tokens = inputLine.split(" ");
+                    final String[] tokens = spaceSplit.split(inputLine);
                     urlToCall = tokens[1];
                 }
                 cnt++;
@@ -56,15 +60,12 @@ public class HttpProxyThread extends Thread {
             ///////////////////////////////////
             //urlToCall="http://www.google.com"+urlToCall;
             urlToCall = "http://noc.21net.com/traintest/100m-random.dat";
-            System.out.println("Request for : " + urlToCall);
+            log.info("Request for : {}", urlToCall);
 
             libc.tcp_info info = new libc.tcp_info();
 
             BufferedReader rd = null;
             try {
-                //System.out.println("sending request
-                //to real server for url: "
-                //        + urlToCall);
                 ///////////////////////////////////
                 //begin send request to server, get response from server
                 URL url = new URL(urlToCall);
@@ -72,62 +73,56 @@ public class HttpProxyThread extends Thread {
                 conn.setDoInput(true);
                 //not doing HTTP posts
                 conn.setDoOutput(false);
-                System.out.println("Type is: "
-                        + conn.getContentType());
-                System.out.println("content length: "
-                        + conn.getContentLength());
-                System.out.println("allowed user interaction: "
-                        + conn.getAllowUserInteraction());
-                System.out.println("content encoding: "
-                        + conn.getContentEncoding());
-                System.out.println("content type: "
-                        + conn.getContentType());
+                log.info("Content-Type is: {}", conn.getContentType());
+                log.info("Content-length: {}", conn.getContentLength());
+                log.info("Content-encoding: {}", conn.getContentEncoding());
+                log.info("allowed user interaction: {}", conn.getAllowUserInteraction());
 
                 // Get the response
                 InputStream is = null;
-                HttpURLConnection huc = (HttpURLConnection) conn;
                 try {
                     is = conn.getInputStream();
                     rd = new BufferedReader(new InputStreamReader(is));
-                } catch (IOException ioe) {
-                    System.out.println(
-                            "********* IO EXCEPTION **********: " + ioe);
+                } catch (final IOException ioe) {
+                    log.error("oeps: io error", ioe);
                 }
                 //end send request to server, get response from server
-                ///////////////////////////////////
-                System.out.println("request send...");
+                log.info("request sended.");
                 ///////////////////////////////////
                 //begin send response to client
-                byte by[] = new byte[BUFFER_SIZE];
+                final byte[] by = new byte[BUFFER_SIZE];
                 int index = is.read(by, 0, BUFFER_SIZE);
+                cnt = 0;
                 while (index != -1) {
                     out.write(by, 0, index);
                     index = is.read(by, 0, BUFFER_SIZE);
-                    try {
-                        linuxutils.gettcpinfo(tclient.getSocket(), info);
-                        System.out.println(info);
-                    } catch (libc.ErrnoException errno) {
+                    if (cnt % 16 == 0) {
+                        try {
+                            linuxutils.gettcpinfo(tclient.getSocket(), info);
+                            log.info("tcpinfo: {}",info);
+                        } catch (libc.ErrnoException ignore) {
+                        }
                     }
-
+                    cnt++;
                 }
                 out.flush();
-                System.out.println("response send...");
+                log.info("response send...");
 
                 //end send response to client
                 ///////////////////////////////////
             } catch (Exception e) {
                 //can redirect this to error log
-                System.err.println("Encountered exception: " + e);
+                log.error("Encountered exception: ", e);
                 //encountered error - just send nothing back, so
                 //processing can continue
                 out.writeBytes("");
             }
-            System.out.println("done");
+            log.info("done");
 
-            //Dump some tcp info
+            //Dump some final tcp info
             try {
-                System.out.println(linuxutils.gettcpinfo(tclient.getSocket(), info));
-                System.out.println(info);
+                linuxutils.gettcpinfo(tclient.getSocket(), info);
+                log.info("Final tcp info: ", info);
             } catch (libc.ErrnoException errno) {
             }
 
@@ -146,7 +141,7 @@ public class HttpProxyThread extends Thread {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("oeps ", e);
         }
     }
 }

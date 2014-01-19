@@ -3,23 +3,19 @@ package org.it4y.demo;
 import org.it4y.jni.libnetlink3;
 import org.it4y.jni.linux.netlink;
 import org.it4y.jni.linux.rtnetlink;
-import org.it4y.jni.linuxutils;
 import org.it4y.net.netlink.NetlinkMsgFactory;
 import org.it4y.net.netlink.NlMessage;
-import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Date;
 
 /**
  * Created by luc on 1/1/14.
  */
 public class TNetlinkRoutingListener extends TestRunner {
-    private libnetlink3.rtnl_handle handle;
-    private ByteBuffer messageBuffer = ByteBuffer.allocateDirect(8129);
-    private int groups = 0;
-    private int initstate = 0;
+    private final libnetlink3.rtnl_handle handle;
+    private final ByteBuffer messageBuffer = ByteBuffer.allocateDirect(8129);
+    private int initstate;
 
 
     public TNetlinkRoutingListener() {
@@ -28,17 +24,17 @@ public class TNetlinkRoutingListener extends TestRunner {
 
     }
 
-    @Override
     public void run() {
-        //we are intrested in Routing/link/address events
-        groups = rtnetlink.RTMGRP_IPV4_IFADDR |
-                 rtnetlink.RTMGRP_IPV4_ROUTE |
-                 rtnetlink.RTMGRP_IPV4_MROUTE |
-                 rtnetlink.RTMGRP_LINK;
+        //we are interested in Routing/link/address events
+        final int groups = rtnetlink.RTMGRP_IPV4_IFADDR |
+                           rtnetlink.RTMGRP_IPV4_ROUTE |
+                           rtnetlink.RTMGRP_IPV4_MROUTE |
+                           rtnetlink.RTMGRP_LINK;
         //System.out.println("Groups: 0x" + Integer.toHexString(groups));
         libnetlink3.rtnl_open_byproto(handle, groups, netlink.NETLINK_ROUTE);
         //System.out.println(Hexdump.bytesToHex(handle.handle, 4));
-        while (true) {
+        running=true;
+        while (running) {
             if (initstate < 4) {
                 //we can handle only 1 wilddump at the same time, so we have a little stepping program here
                 switch (initstate) {
@@ -67,11 +63,10 @@ public class TNetlinkRoutingListener extends TestRunner {
             messageBuffer.rewind();
             messageBuffer.order(ByteOrder.LITTLE_ENDIAN);
             libnetlink3.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
-                @Override
-                public int accept(ByteBuffer message) {
+                public int accept(final ByteBuffer message) {
                     //make sure ByteBuffer mar/position are set correct.
                     message.rewind();
-                    NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
+                    final NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
                     if (msg != null) {
                         //System.out.println(new Date() + " " + msg.toString());
                         //continue or stop listening ?
