@@ -25,12 +25,12 @@ public abstract class RTAMessage {
     short type;
     ByteBuffer data;
 
-    public RTAMessage(int pos, ByteBuffer buffer) {
+    public RTAMessage(final int pos, final ByteBuffer buffer) {
         size = buffer.getShort(pos);
         type = buffer.getShort(pos + 2);
         //get size bytes from buffer for data
-        int old_position = buffer.position();
-        int old_limit = buffer.limit();
+        final int old_position = buffer.position();
+        final int old_limit = buffer.limit();
         buffer.position(pos + 4);
         buffer.limit(pos + size);
         data = buffer.slice();
@@ -57,15 +57,15 @@ public abstract class RTAMessage {
     public abstract String getRTAName();
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
-        s.append("RTA[").append(size).append("(").append(getPaddedSize()).append("):");
+        final StringBuilder s = new StringBuilder(128);
+        s.append("RTA[").append(size).append('(').append(getPaddedSize()).append("):");
         s.append(type);
         try {
             if (getRTAName() != null) {
-                s.append(" ").append(getRTAName());
+                s.append(' ').append(getRTAName());
             }
-        } catch (IndexOutOfBoundsException oeps) {
-            s.append(" ").append("???? unknown");
+        } catch (final IndexOutOfBoundsException oeps) {
+            s.append(' ').append("???? unknown");
         }
         s.append("] ");
         s.append(Hexdump.bytesToHex(data, size));
@@ -86,11 +86,10 @@ public abstract class RTAMessage {
 
     public String getString() {
         //Strings are always UTF-8 null terminated string so convert it that way
-        byte[] result = new byte[data.capacity() - 1];
+        final byte[] result = new byte[data.capacity() - 1];
         data.rewind();
         data.get(result, 0, result.length);
-        String s = new String(result, Charset.forName("UTF-8"));
-        return s;
+        return new String(result, Charset.forName("UTF-8"));
     }
 
     public String getHexString() {

@@ -25,7 +25,7 @@ public class interfaceInfoMsg extends NlMessage {
     int ifi_flags;
     int ifi_changed;
 
-    public interfaceInfoMsg(ByteBuffer msg) {
+    public interfaceInfoMsg(final ByteBuffer msg) {
         super(msg);
         //get ifinfomsg header
         msg.get(); //dummy byte
@@ -38,8 +38,8 @@ public class interfaceInfoMsg extends NlMessage {
     }
 
     @Override
-    public int getRTAIndex(String name) {
-        for (Integer i : if_link.IFLA_NAMES.keySet()) {
+    public int getRTAIndex(final String name) {
+        for (final int i : if_link.IFLA_NAMES.keySet()) {
             if (name.equals(if_link.IFLA_NAMES.get(i))) {
                 return i;
             }
@@ -48,25 +48,25 @@ public class interfaceInfoMsg extends NlMessage {
     }
 
     @Override
-    public RTAMessage createRTAMessage(int position, ByteBuffer msg) {
+    public RTAMessage createRTAMessage(final int position, final ByteBuffer msg) {
         return new InterfaceRTAMessages(position, msg);
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        final StringBuilder s = new StringBuilder(128);
         s.append(super.toString());
         s.append("fam: ").append(ifi_family);
-        s.append(" type:").append((if_arp.ARPHDR_NAMES.get((int)ifi_type&0xffff)));
+        s.append(" type:").append(if_arp.ARPHDR_NAMES.get((int)ifi_type&0xffff));
         s.append(" idx:").append(ifi_index);
         s.append(" flags:0x").append(Integer.toHexString(ifi_flags));
         s.append(" changed:0x").append(Integer.toHexString(ifi_changed));
-        s.append("\n");
+        s.append('\n');
         //dump rta messages
-        for (RTAMessage r : rtaMessages.values()) {
+        for (final RTAMessage r : rtaMessages.values()) {
             if (r.getType() == 3) {
-                s.append(" ").append(r.toString()).append(" ").append(r.getString()).append("\n");
+                s.append(' ').append(r.toString()).append(' ').append(r.getString()).append('\n');
             } else {
-                s.append(" ").append(r.toString()).append("\n");
+                s.append(' ').append(r.toString()).append('\n');
             }
         }
         return s.toString();

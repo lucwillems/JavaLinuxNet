@@ -16,22 +16,22 @@ import java.nio.ByteBuffer;
  */
 public class NlErrorMessage extends NlMessage {
 
-    public NlErrorMessage(ByteBuffer msg) {
+    public NlErrorMessage(final ByteBuffer msg) {
         super(msg);
     }
 
     @Override
-    public int getRTAIndex(String name) {
+    public int getRTAIndex(final String name) {
         return -1;
     }
 
     @Override
-    public RTAMessage createRTAMessage(int position, ByteBuffer msg) {
+    public RTAMessage createRTAMessage(final int position, final ByteBuffer msg) {
         return null;
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        final StringBuilder s = new StringBuilder(128);
         s.append(super.toString());
         s.append("netlink ERROR ");
         return s.toString();

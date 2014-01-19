@@ -9,11 +9,11 @@ import java.nio.ByteBuffer;
  */
 public class InterfaceRTAMessages extends RTAMessage {
 
-    public InterfaceRTAMessages(int pos, ByteBuffer buffer) {
+    public InterfaceRTAMessages(final int pos, final ByteBuffer buffer) {
         super(pos, buffer);
     }
 
     public String getRTAName() {
-        return if_link.IFLA_NAMES.get(type);
+        return if_link.IFLA_NAMES.get((int)type&0xffff);
     }
 }

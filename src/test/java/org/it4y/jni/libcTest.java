@@ -65,20 +65,20 @@ public class libcTest {
     public void testSockaddr_in() throws Exception {
         libc.sockaddr_in sa;
 
-        sa=new libc.sockaddr_in(0,(short)0, socket.AF_INET);
+        sa=new libc.sockaddr_in(0,0, socket.AF_INET);
         Assert.assertNotNull(sa);
         Assert.assertEquals(0, sa.address);
         Assert.assertEquals(0, sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
-        sa=new libc.sockaddr_in(0x01020304,(short)0x1234,socket.AF_INET);
+        sa=new libc.sockaddr_in(0x01020304,0x1234,socket.AF_INET);
         Assert.assertEquals(0x01020304, sa.address);
         Assert.assertEquals(0x1234,sa.port);
         Assert.assertEquals(10,socket.AF_INET6);
 
-        sa=new libc.sockaddr_in(0x7f000001,(short)0xffff,socket.AF_INET);
+        sa=new libc.sockaddr_in(0x7f000001,0xffff,socket.AF_INET);
         Assert.assertEquals(0x7f000001, sa.address);
-        Assert.assertEquals((short)0xffff,sa.port);
+        Assert.assertEquals(0xffff,sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
         InetSocketAddress isa=sa.toInetSocketAddress();
@@ -87,9 +87,9 @@ public class libcTest {
         Assert.assertEquals("0x7f000001:65535",sa.toString());
 
 
-        sa=new libc.sockaddr_in(0xAABBCCDD,(short)0xffff,socket.AF_INET);
+        sa=new libc.sockaddr_in(0xAABBCCDD,0xffff,socket.AF_INET);
         Assert.assertEquals(0xAABBCCDD, sa.address);
-        Assert.assertEquals((short)0xffff,sa.port);
+        Assert.assertEquals(0xffff,sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
         isa=sa.toInetSocketAddress();
@@ -97,9 +97,9 @@ public class libcTest {
         Assert.assertEquals("/170.187.204.221:65535",isa.toString());
         Assert.assertEquals("0xaabbccdd:65535",sa.toString());
 
-        sa=new libc.sockaddr_in(0xfffffffe,(short)0xffff,socket.AF_INET);
+        sa=new libc.sockaddr_in(0xfffffffe,0xffff,socket.AF_INET);
         Assert.assertEquals(0xfffffffe, sa.address);
-        Assert.assertEquals((short)0xffff,sa.port);
+        Assert.assertEquals(0xffff,sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
         isa=sa.toInetSocketAddress();

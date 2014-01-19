@@ -25,7 +25,7 @@ public class neighbourMsg extends NlMessage {
     byte ndm_flags;
     byte ndm_type;
 
-    public neighbourMsg(ByteBuffer msg) {
+    public neighbourMsg(final ByteBuffer msg) {
         super(msg);
         ndm_family = msg.get();
         ndm_pad1 = msg.get();
@@ -40,8 +40,8 @@ public class neighbourMsg extends NlMessage {
     }
 
     @Override
-    public int getRTAIndex(String name) {
-        for (int i  : if_neighbour.NDA_NAMES.keySet()) {
+    public int getRTAIndex(final String name) {
+        for (final int i  : if_neighbour.NDA_NAMES.keySet()) {
             if (name.equals(if_neighbour.NDA_NAMES.get(i))) {
                 return i;
             }
@@ -50,25 +50,25 @@ public class neighbourMsg extends NlMessage {
     }
 
     @Override
-    public RTAMessage createRTAMessage(int position, ByteBuffer msg) {
+    public RTAMessage createRTAMessage(final int position, final ByteBuffer msg) {
         return new neighbourRTAMessages(position, msg);
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        final StringBuilder s = new StringBuilder(128);
         s.append(super.toString());
         s.append("fam: ").append(ndm_family);
         s.append(" ifindex:").append(ndm_ifindex);
-        s.append(" state:0x").append(Integer.toHexString(((int) ndm_state) & 0xff));
-        s.append(" flags:0x").append(Integer.toHexString(((int) ndm_state) & 0xff));
-        s.append(" type:0x").append(Integer.toHexString(((int) ndm_type) & 0xff));
-        s.append("\n");
+        s.append(" state:0x").append(Integer.toHexString((int) ndm_state & 0xff));
+        s.append(" flags:0x").append(Integer.toHexString((int) ndm_state & 0xff));
+        s.append(" type:0x").append(Integer.toHexString((int) ndm_type & 0xff));
+        s.append('\n');
         //dump rta messages
-        for (RTAMessage r : rtaMessages.values()) {
+        for (final RTAMessage r : rtaMessages.values()) {
             if (r.getType() == if_neighbour.NDA_DST) {
-                s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
+                s.append(' ').append(r.toString()).append(' ').append(r.getInetAddress()).append('\n');
             } else {
-                s.append(" ").append(r.toString()).append("\n");
+                s.append(' ').append(r.toString()).append('\n');
             }
         }
         return s.toString();

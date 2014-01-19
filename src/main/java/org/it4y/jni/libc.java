@@ -86,8 +86,8 @@ public final class libc {
      */
     public static class sockaddr_in {
         //Note : storage is based on libc structure !!!
-        public short family;
-        public short port;
+        public int family;
+        public int port;
         public int address;
 
         //cache this result as it is expensive
@@ -96,7 +96,7 @@ public final class libc {
         //Used by jni code
         private sockaddr_in() {}
 
-        public sockaddr_in(final int address, final short port, final short family) {
+        public sockaddr_in(final int address, final int port, final int family) {
             this.address = address;
             this.port = port;
             this.family = family;
@@ -117,11 +117,11 @@ public final class libc {
         }
 
         public InetSocketAddress toInetSocketAddress() {
-            return new InetSocketAddress(toInetAddress(), (int)port&0xffff);
+            return new InetSocketAddress(toInetAddress(), port);
         }
 
         public String toString() {
-            return String.format("0x%08x:%d", (long)address & 0xffffffffL, (int)port & 0xffff);
+            return String.format("0x%08x:%d", (long)address & 0xffffffffL,port);
         }
 
 

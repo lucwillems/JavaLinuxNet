@@ -12,6 +12,8 @@ package org.it4y.net.netlink;
 import org.it4y.jni.linux.netlink;
 import org.it4y.jni.linux.rtnetlink;
 import org.it4y.util.Hexdump;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
@@ -19,11 +21,12 @@ import java.nio.ByteBuffer;
  * Created by luc on 1/2/14.
  */
 public class NetlinkMsgFactory {
-    public static final NlMessage processRawPacket(ByteBuffer buffer) {
+    private static final Logger log = LoggerFactory.getLogger(NetlinkMsgFactory.class);
+    public static NlMessage processRawPacket(final ByteBuffer buffer) {
 
         //Read nlmsg header
-        int nlmsg_len = buffer.getInt(0);
-        short nlmsg_type = buffer.getShort(4);
+        final int nlmsg_len = buffer.getInt(0);
+        final short nlmsg_type = buffer.getShort(4);
         //to make sure position is pointed to begin of data
         buffer.position(0);
         NlMessage result = null;
@@ -69,25 +72,26 @@ public class NetlinkMsgFactory {
                 result = new NlErrorMessage(buffer);
                 break;
             default:
-                System.out.println("UNKNOWN Netlink message type:" + nlmsg_type + " len:" + nlmsg_len + " [" + Hexdump.bytesToHex(buffer, nlmsg_len) + "]");
+                if (log.isDebugEnabled()) {
+                    log.debug("UNKNOWN Netlink message type: {} len:{} [{}]",nlmsg_type,nlmsg_len,Hexdump.bytesToHex(buffer, nlmsg_len));
+                }
         }
-
         return result;
     }
 
-    private static NlMessage handleRoutingMsg(int nlmsg_len, short nlmsg_type, ByteBuffer buffer) {
+    private static NlMessage handleRoutingMsg(final int nlmsg_len, final short nlmsg_type, final ByteBuffer buffer) {
         return new routeMsg(buffer);
     }
 
-    private static NlMessage handleLinkMsg(int nlmsg_len, short nlmsg_type, ByteBuffer buffer) {
+    private static NlMessage handleLinkMsg(final int nlmsg_len, final short nlmsg_type, final ByteBuffer buffer) {
         return new interfaceInfoMsg(buffer);
     }
 
-    private static NlMessage handleAddressMsg(int nlmsg_len, short nlmsg_type, ByteBuffer buffer) {
+    private static NlMessage handleAddressMsg(final int nlmsg_len, final short nlmsg_type, final ByteBuffer buffer) {
         return new interfaceAddressMsg(buffer);
     }
 
-    private static NlMessage handleNeighbourMsg(int nlmsg_len, short nlmsg_type, ByteBuffer buffer) {
+    private static NlMessage handleNeighbourMsg(final int nlmsg_len, final short nlmsg_type, final ByteBuffer buffer) {
         return new neighbourMsg(buffer);
     }
 

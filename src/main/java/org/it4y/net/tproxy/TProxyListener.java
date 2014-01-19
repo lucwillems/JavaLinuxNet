@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 
 /**
  * TProxyListener is single threaded listener that will handle TProxy redirected connections
@@ -58,6 +59,8 @@ public abstract class TProxyListener extends Thread {
      */
     private boolean halted=false;
 
+    private boolean init=false;
+
     /***
      * Create a TProxy enabled Listener
      * @param bind : ip address to bind to
@@ -68,7 +71,8 @@ public abstract class TProxyListener extends Thread {
         this.port = port;
         this.backlog = backlog;
         this.bind = bind;
-        this.setDaemon(true);
+        setDaemon(true);
+        setName("TProxy-listener-"+bind.toString()+":"+port);
     }
 
     /***
@@ -90,40 +94,45 @@ public abstract class TProxyListener extends Thread {
             socket.close();
         } catch (IOException ignore) {};
     }
+    /***
+     * Gently stop listener thread
+     */
+    public boolean isHalted() {
+        return halted;
+    }
+
+
+    public ServerSocket getSocket() {
+        return socket;
+    }
 
     /***
      * internal initialization of server
      * @throws libc.ErrnoException
      * @throws IOException
      */
-    private void initServer() throws libc.ErrnoException,IOException {
+    public void initServer() throws libc.ErrnoException,IOException {
         //Init TProxy socket
+        log.info("init tproxy listener: {}:{}",bind,port);
         socket = new TProxyServerSocket();
         socket.initTProxy(bind, port, backlog);
+        init=true;
     }
 
     /***
      * Thread run method
      */
     public void run() {
+        if (!init) {
+            throw new RuntimeException("Must call initServer() first!!!");
+        }
+       //set some important socket options
+       log.info("tproxy listener started...");
 
-            try {
-                initServer();
-            } catch (libc.ErrnoException errno) {
-                log.error("Fatal: Could not initialize TProxy: ", errno);
-                return;
-            } catch (IOException io) {
-                log.error("Fatal IO: Could not initialize TProxy: ", io);
-                return;
-            }
-
-            //now we are running
-            running = true;
-
-            //set some important socket options
-            log.info("TProxy Listener running");
-            while (!halted) {
-                try {
+       //we are running until halted is signalled
+       running = true;
+       while (!halted) {
+          try {
                   //don't trust my users ;-)
                   TProxyInterceptedSocket client = socket.accepProxy();
                   log.debug("accepted client: {}", client);
@@ -137,9 +146,17 @@ public abstract class TProxyListener extends Thread {
                 } catch (Throwable oeps) {
                   log.error("Unexpected error:", oeps);
                 }
-            }
-            running = false;
-            log.info("listener halted");
+       }
+       //close server socket
+       if (socket != null & !socket.isClosed()) {
+           try {
+               socket.close();
+           } catch (IOException ignore) {}
+       }
+       socket=null;
+       running = false;
+       halted=false;
+       log.info("TProxy listener halted");
     }
 
     /***

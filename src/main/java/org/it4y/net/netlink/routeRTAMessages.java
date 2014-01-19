@@ -18,12 +18,12 @@ import java.nio.ByteBuffer;
  */
 public class routeRTAMessages extends RTAMessage {
 
-    public routeRTAMessages(int pos, ByteBuffer buffer) {
+    public routeRTAMessages(final int pos, final ByteBuffer buffer) {
         super(pos, buffer);
     }
 
     @Override
     public String getRTAName() {
-        return rtnetlink.RTA_NAMES.get(type);
+        return rtnetlink.RTA_NAMES.get((int)type&0xffff);
     }
 }

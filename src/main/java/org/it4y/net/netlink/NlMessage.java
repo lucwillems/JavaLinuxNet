@@ -26,14 +26,14 @@ public abstract class NlMessage {
     protected int nlmsg_pid;
     protected HashMap<Integer, RTAMessage> rtaMessages;
 
-    public NlMessage(ByteBuffer msg) {
+    public NlMessage(final ByteBuffer msg) {
         //Read nlmsg header
-        this.nlmsg_len = msg.getInt();
-        this.nlmsg_type = msg.getShort();
-        this.nlmsg_flags = msg.getShort();
-        this.nlmsg_seq = msg.getInt();
-        this.nlmsg_pid = msg.getInt();
-        rtaMessages = new HashMap<Integer, RTAMessage>();
+        nlmsg_len = msg.getInt();
+        nlmsg_type = msg.getShort();
+        nlmsg_flags = msg.getShort();
+        nlmsg_seq = msg.getInt();
+        nlmsg_pid = msg.getInt();
+        rtaMessages = new HashMap<Integer, RTAMessage>(10);
     }
 
     public int getNlMsgLen() {
@@ -56,7 +56,7 @@ public abstract class NlMessage {
         return nlmsg_pid;
     }
 
-    public RTAMessage getRTAMessage(int index) {
+    public RTAMessage getRTAMessage(final int index) {
         return rtaMessages.get(index);
     }
 
@@ -64,7 +64,7 @@ public abstract class NlMessage {
         return (nlmsg_flags & (short) 0x02) > 0;
     }
 
-    public RTAMessage getRTAMessage(String name) {
+    public RTAMessage getRTAMessage(final String name) {
         return getRTAMessage(getRTAIndex(name));
     }
 
@@ -72,19 +72,19 @@ public abstract class NlMessage {
 
     public abstract RTAMessage createRTAMessage(int position, ByteBuffer msg);
 
-    protected void parseRTAMessages(ByteBuffer msg) {
+    protected void parseRTAMessages(final ByteBuffer msg) {
         while (msg.position() < nlmsg_len) {
-            int position = msg.position();
-            RTAMessage rta = createRTAMessage(position, msg);
+            final int position = msg.position();
+            final RTAMessage rta = createRTAMessage(position, msg);
             msg.position(position + rta.getPaddedSize());
-            rtaMessages.put(new Integer(rta.getType()), rta);
+            rtaMessages.put((int) rta.getType()&0xffff, rta);
         }
 
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
-        s.append(this.getClass().getSimpleName()).append(" ");
+        final StringBuilder s = new StringBuilder(128);
+        s.append(getClass().getSimpleName()).append(' ');
         s.append("nlmg[size:").append(nlmsg_len).append(",type:").append(nlmsg_type).append(",flags:0x").append(Integer.toHexString(nlmsg_flags)).append("]\n");
         return s.toString();
     }

@@ -19,12 +19,12 @@ import java.nio.ByteBuffer;
  */
 public class AddressRTAMessages extends RTAMessage {
 
-    public AddressRTAMessages(int pos, ByteBuffer buffer) {
+    public AddressRTAMessages(final int pos, final ByteBuffer buffer) {
         super(pos, buffer);
     }
 
     @Override
     public String getRTAName() {
-        return if_address.IFA_NAMES.get(type);
+        return if_address.IFA_NAMES.get((int)type&0xffff);
     }
 }

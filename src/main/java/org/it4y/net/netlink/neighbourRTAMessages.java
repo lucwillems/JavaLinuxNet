@@ -17,12 +17,12 @@ import java.nio.ByteBuffer;
  * Created by luc on 1/2/14.
  */
 public class neighbourRTAMessages extends RTAMessage {
-    public neighbourRTAMessages(int pos, ByteBuffer buffer) {
+    public neighbourRTAMessages(final int pos, final ByteBuffer buffer) {
         super(pos, buffer);
     }
 
     @Override
     public String getRTAName() {
-        return if_neighbour.NDA_NAMES.get(type);
+        return if_neighbour.NDA_NAMES.get((int)type&0xffff);
     }
 }

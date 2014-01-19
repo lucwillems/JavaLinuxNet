@@ -77,10 +77,10 @@ public class TProxyInterceptedSocket {
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
-        s.append("local:").append(socket.getInetAddress()).append(":").append(socket.getPort()).append(" ");
+        final StringBuilder s = new StringBuilder(128);
+        s.append("local:").append(socket.getInetAddress()).append(':').append(socket.getPort()).append(' ');
         if (remote != null) {
-            s.append("remote:").append(remote.toInetAddress()).append(":").append(remote.port);
+            s.append("remote:").append(remote.toInetAddress()).append(':').append(remote.port);
         }
         return s.toString();
     }

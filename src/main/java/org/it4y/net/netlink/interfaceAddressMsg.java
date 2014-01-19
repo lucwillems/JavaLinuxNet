@@ -23,7 +23,7 @@ public class interfaceAddressMsg extends NlMessage {
     byte ifa_scope;      /* Address scope                */
     byte ifa_index;      /* Link index                   */
 
-    public interfaceAddressMsg(ByteBuffer msg) {
+    public interfaceAddressMsg(final ByteBuffer msg) {
         super(msg);
         //dummy
         ifa_family = msg.get();
@@ -39,8 +39,8 @@ public class interfaceAddressMsg extends NlMessage {
     }
 
     @Override
-    public int getRTAIndex(String name) {
-        for (int key :  if_address.IFA_NAMES.keySet()) {
+    public int getRTAIndex(final String name) {
+        for (final int key :  if_address.IFA_NAMES.keySet()) {
             if (name.equals(if_address.IFA_NAMES.get(key))) {
                 return key;
             }
@@ -49,30 +49,30 @@ public class interfaceAddressMsg extends NlMessage {
     }
 
     @Override
-    public RTAMessage createRTAMessage(int position, ByteBuffer msg) {
+    public RTAMessage createRTAMessage(final int position, final ByteBuffer msg) {
         return new AddressRTAMessages(position, msg);
     }
 
     @Override
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        final StringBuilder s = new StringBuilder(128);
         s.append(super.toString());
         s.append("fam: ").append(ifa_family);
-        s.append(" flags:0x").append(Integer.toHexString(((int) ifa_flags) & 0xff));
+        s.append(" flags:0x").append(Integer.toHexString((int) ifa_flags & 0xff));
         s.append(" idx:").append(ifa_index);
-        s.append(" scope:0x").append(Integer.toHexString(((int) ifa_scope) & 0xff));
+        s.append(" scope:0x").append(Integer.toHexString((int) ifa_scope & 0xff));
         s.append(" prefixlen:").append(ifa_prefixlen);
-        s.append("\n");
+        s.append('\n');
         //dump rta messages
-        for (RTAMessage r : rtaMessages.values()) {
+        for (final RTAMessage r : rtaMessages.values()) {
             if (r.getType() == if_address.IFA_LABEL) {
-                s.append(" ").append(r.toString()).append(" ").append(r.getString()).append("\n");
+                s.append(' ').append(r.toString()).append(' ').append(r.getString()).append('\n');
             } else if (r.getType() == if_address.IFA_BROADCAST) {
-                s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
+                s.append(' ').append(r.toString()).append(' ').append(r.getInetAddress()).append('\n');
             } else if (r.getType() == if_address.IFA_ADDRESS) {
-                s.append(" ").append(r.toString()).append(" ").append(r.getInetAddress()).append("\n");
+                s.append(' ').append(r.toString()).append(' ').append(r.getInetAddress()).append('\n');
             } else {
-                s.append(" ").append(r.toString()).append("\n");
+                s.append(' ').append(r.toString()).append('\n');
             }
         }
         return s.toString();
