@@ -20,7 +20,7 @@ public class tuntap {
     /* Load libjnituntap.so */
     static {
         JNILoader.loadLibrary("libjnituntap.so");
-        int initResult=initLib();
+        final int initResult=initLib();
         if (initResult != 0) {
             throw new RuntimeException("Error initialiaze libjnituntap.so: "+initResult);
         }
@@ -28,7 +28,7 @@ public class tuntap {
 
 
     protected int fd = -1;
-    protected String device = null;
+    protected String device;
 
     /***
      * Init JNI library
@@ -75,7 +75,7 @@ public class tuntap {
      * @param buffer
      * @return number of bytes read
      */
-    public int readByteBuffer(ByteBuffer buffer) throws ErrnoException {
+    public int readByteBuffer(final ByteBuffer buffer) throws ErrnoException {
         return readByteBuffer(buffer,false);
     }
 

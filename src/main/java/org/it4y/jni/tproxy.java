@@ -16,9 +16,6 @@ public class tproxy {
     public int remoteIp;
     public int remotePort;
 
-    public tproxy() {
-    }
-
     public native int setIPTransparant(int fd);
 
     public native int getOriginalDestination(int fd);
