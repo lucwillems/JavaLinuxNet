@@ -17,7 +17,7 @@ public class TProxyClientSocketTest {
     @Test
     public void testTPRoxyClientSocket() throws Exception {
         Socket client=new Socket();
-        libc.sockaddr_in remote=new libc.sockaddr_in(0x01020304,0x1234, socket.AF_INET);
+        libc.sockaddr_in remote=new libc.sockaddr_in(0x01020304,(short)0x1234, socket.AF_INET);
         TProxyInterceptedSocket tps=new TProxyInterceptedSocket(client,remote);
         Assert.assertNotNull(tps);
         Assert.assertEquals(client, tps.getSocket());

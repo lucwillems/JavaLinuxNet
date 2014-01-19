@@ -18,8 +18,8 @@ import org.junit.Test;
 public class tunDeviceTest {
 
     /* create and open a tunnel device */
-    private TunDevice openTun(String device) throws libc.ErrnoException {
-        TunDevice tun=null;
+    private TunDevice openTun(final String device) throws libc.ErrnoException {
+        final TunDevice tun;
         if (device != null) {
             tun=new TunDevice(device);
         } else {
@@ -36,7 +36,7 @@ public class tunDeviceTest {
             tun=openTun("test");
             try {
                 tun.open();
-            } catch (libc.ErrnoException errno) {
+            } catch (final libc.ErrnoException errno) {
                 //must be "Operation not permitted
                 Assert.assertEquals(1,errno.getErrno());
             }
@@ -55,7 +55,7 @@ public class tunDeviceTest {
             tun=openTun(null);
             try {
                 tun.open();
-            } catch (libc.ErrnoException errno) {
+            } catch (final libc.ErrnoException errno) {
                 //must be "Operation not permitted
                 Assert.assertEquals(1,errno.getErrno());
             }
@@ -76,7 +76,7 @@ public class tunDeviceTest {
             try {
                 tun.open();
                 tun.setNonBlocking(true);
-             } catch (libc.ErrnoException errno) {
+             } catch (final libc.ErrnoException errno) {
                 //must be "Operation not permitted
                 Assert.assertEquals(1,errno.getErrno());
             }
@@ -97,7 +97,7 @@ public class tunDeviceTest {
                 try {
                     tun.open();
                     tun.isDataReady(100);
-                } catch (libc.ErrnoException errno) {
+                } catch (final libc.ErrnoException errno) {
                     //must be "Operation not permitted
                     Assert.assertEquals(1,errno.getErrno());
                 }

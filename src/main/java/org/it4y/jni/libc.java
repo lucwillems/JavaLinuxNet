@@ -22,42 +22,42 @@ public final class libc {
      *
      */
 
-    public static int ntol(int address) {
-        int[] ab=new int[4];
+    public static int ntol(final int address) {
+        final int[] ab=new int[4];
         if (isLittleEndian) {
-            ab[0] = ((address >> 24) & 0x00ff);
-            ab[1] = ((address >> 16) & 0x00ff);
-            ab[2] = ((address >> 8) & 0x00ff);
-            ab[3] = (address & 0x00ff);
-            return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+(ab[0]);
+            ab[0] = address >> 24 & 0x00ff;
+            ab[1] = address >> 16 & 0x00ff;
+            ab[2] = address >> 8 & 0x00ff;
+            ab[3] = address & 0x00ff;
+            return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+ ab[0];
         } else {
            return address;
         }
     }
 
-    public static InetAddress toInetAddress(int address) {
+    public static InetAddress toInetAddress(final int address) {
         InetAddress x = null;
-        byte[] ab = new byte[4];
-        ab[0] = (byte) ((address >> 24) & 0x00ff);
-        ab[1] = (byte) ((address >> 16) & 0x00ff);
-        ab[2] = (byte) ((address >> 8) & 0x00ff);
+        final byte[] ab = new byte[4];
+        ab[0] = (byte) (address >> 24 & 0x00ff);
+        ab[1] = (byte) (address >> 16 & 0x00ff);
+        ab[2] = (byte) (address >> 8 & 0x00ff);
         ab[3] = (byte) (address & 0x00ff);
         //Why throw this will it is not going to happen ?
         try {
             x = Inet4Address.getByAddress(ab);
-        } catch (UnknownHostException ignore) {
+        } catch (final UnknownHostException ignore) {
         }
         return x;
     }
 
     public static class in_addr {
-        public int address = 0;
-        private InetAddress cached_address = null;
+        public int address;
+        private InetAddress cached_address;
 
         public in_addr() {
         }
 
-        public in_addr(int address) {
+        public in_addr(final int address) {
             this.address = address;
         }
 
@@ -76,7 +76,7 @@ public final class libc {
         }
 
         public String toString() {
-            return String.format("0x%08x",(address & 0xffffffff));
+            return String.format("0x%08x", (long)address & 0xffffffffL);
         }
     }
 
@@ -85,17 +85,18 @@ public final class libc {
      *
      */
     public static class sockaddr_in {
-        public int family;
-        public int port;
+        //Note : storage is based on libc structure !!!
+        public short family;
+        public short port;
         public int address;
 
         //cache this result as it is expensive
-        private InetAddress cached_address = null;
+        private InetAddress cached_address;
 
         //Used by jni code
         private sockaddr_in() {}
 
-        public sockaddr_in(int address, int port, int family) {
+        public sockaddr_in(final int address, final short port, final short family) {
             this.address = address;
             this.port = port;
             this.family = family;
@@ -116,11 +117,11 @@ public final class libc {
         }
 
         public InetSocketAddress toInetSocketAddress() {
-            return new InetSocketAddress(toInetAddress(), port);
+            return new InetSocketAddress(toInetAddress(), (int)port&0xffff);
         }
 
         public String toString() {
-            return String.format("0x%08x:%d",(address & 0xffffffff),(port &0xffff));
+            return String.format("0x%08x:%d", (long)address & 0xffffffffL, (int)port & 0xffff);
         }
 
 
@@ -128,7 +129,7 @@ public final class libc {
 
     /* based on kernel 3.12 */
     public static class tcp_info {
-        public static final int struct_size_latest = 104; //todo check this in 2.6 kernels
+        public static final int struct_size_latest = 104; //check this in 2.6 kernels
 
         public byte tcpi_state;        //u8
         public byte tcpi_ca_state;     //u8
@@ -170,45 +171,42 @@ public final class libc {
         /* counters */
         int tcpi_total_retrans;           //u32
 
-        public tcp_info() {
-        }
-
         /* this method is called by jni code to set data */
         /*            Signature: (BBBBBBBBIIIIIIIIIIIIIIIIIIIIIIII)V */
 
-        private void setdata(
-                byte tcpi_state,
-                byte tcpi_ca_state,
-                byte tcpi_retransmits,
-                byte tcpi_probes,
-                byte tcpi_backoff,
-                byte tcpi_options,
-                byte tcpi_snd_wscale,
-                byte tcpi_rcv_wscale,
-                int tcpi_rto,
-                int tcpi_ato,
-                int tcpi_snd_mss,
-                int tcpi_rcv_mss,
-                int tcpi_unacked,
-                int tcpi_sacked,
-                int tcpi_lost,
-                int tcpi_retrans,
-                int tcpi_fackets,
-                int tcpi_last_data_sent,
-                int tcpi_last_ack_sent,
-                int tcpi_last_data_recv,
-                int tcpi_last_ack_recv,
-                int tcpi_pmtu,
-                int tcpi_rcv_ssthresh,
-                int tcpi_rtt,
-                int tcpi_rttvar,
-                int tcpi_snd_ssthresh,
-                int tcpi_snd_cwnd,
-                int tcpi_advmss,
-                int tcpi_reordering,
-                int tcpi_rcv_rtt,
-                int tcpi_rcv_space,
-                int tcpi_total_retrans
+        public void setdata(
+                final byte tcpi_state,
+                final byte tcpi_ca_state,
+                final byte tcpi_retransmits,
+                final byte tcpi_probes,
+                final byte tcpi_backoff,
+                final byte tcpi_options,
+                final byte tcpi_snd_wscale,
+                final byte tcpi_rcv_wscale,
+                final int tcpi_rto,
+                final int tcpi_ato,
+                final int tcpi_snd_mss,
+                final int tcpi_rcv_mss,
+                final int tcpi_unacked,
+                final int tcpi_sacked,
+                final int tcpi_lost,
+                final int tcpi_retrans,
+                final int tcpi_fackets,
+                final int tcpi_last_data_sent,
+                final int tcpi_last_ack_sent,
+                final int tcpi_last_data_recv,
+                final int tcpi_last_ack_recv,
+                final int tcpi_pmtu,
+                final int tcpi_rcv_ssthresh,
+                final int tcpi_rtt,
+                final int tcpi_rttvar,
+                final int tcpi_snd_ssthresh,
+                final int tcpi_snd_cwnd,
+                final int tcpi_advmss,
+                final int tcpi_reordering,
+                final int tcpi_rcv_rtt,
+                final int tcpi_rcv_space,
+                final int tcpi_total_retrans
         ) {
             //System.out.print("setData");
             this.tcpi_state = tcpi_state;
@@ -247,39 +245,39 @@ public final class libc {
         }
 
         public String toString() {
-            StringBuffer s = new StringBuffer();
-            s.append("state:").append(tcpi_state).append(" ");
-            s.append("ca_state:").append(tcpi_ca_state).append("\n ");
-            s.append("retransmits:").append(tcpi_retransmits).append(" ");
-            s.append("probes:").append(tcpi_probes).append(" ");
-            s.append("backoff:").append(tcpi_backoff).append(" ");
-            s.append("options:").append(tcpi_options).append("\n ");
-            s.append("snd_wscale:").append(tcpi_snd_wscale).append(" ");
-            s.append("rcv_wscale:").append(tcpi_rcv_wscale).append(" ");
-            s.append("rto:").append(tcpi_rto).append(" ");
-            s.append("ato:").append(tcpi_ato).append(" ");
-            s.append("snd_mss:").append(tcpi_snd_mss).append(" ");
-            s.append("rcv_mss:").append(tcpi_rcv_mss).append("\n ");
-            s.append("unacked:").append(tcpi_unacked).append(" ");
-            s.append("sacked:").append(tcpi_sacked).append(" ");
-            s.append("lost:").append(tcpi_lost).append(" ");
-            s.append("retrans:").append(tcpi_retrans).append(" ");
-            s.append("fackets:").append(tcpi_fackets).append("\n ");
-            s.append("last_data_sent:").append(tcpi_last_data_sent).append(" ");
-            s.append("last_ack_sent:").append(tcpi_last_ack_sent).append("\n ");
-            s.append("last_data_recv:").append(tcpi_last_data_recv).append(" ");
-            s.append("last_ack_recv:").append(tcpi_last_ack_recv).append("\n ");
-            s.append("pmtu:").append(tcpi_pmtu).append(" ");
-            s.append("rcv_ssthresh:").append(tcpi_rcv_ssthresh).append(" ");
-            s.append("rtt:").append(tcpi_rtt).append(" ");
-            s.append("rttvar:").append(tcpi_rttvar).append(" ");
-            s.append("snd_ssthresh:").append(tcpi_snd_ssthresh).append(" ");
-            s.append("snd_cwnd:").append(tcpi_snd_cwnd).append(" ");
-            s.append("advmss:").append(tcpi_advmss).append("\n ");
-            s.append("reordering:").append(tcpi_reordering).append(" ");
-            s.append("rcv_rtt:").append(tcpi_rcv_rtt).append(" ");
-            s.append("rcv_space:").append(tcpi_rcv_space).append("\n ");
-            s.append("total_retrans:").append(tcpi_total_retrans);
+            final StringBuilder s = new StringBuilder(1024);
+            s.append("state:").append((short)tcpi_state & (short)0xff).append(' ');
+            s.append("ca_state:").append((short)tcpi_ca_state & (short)0xff).append("\n ");
+            s.append("retransmits:").append((short)tcpi_retransmits & (short)0xff).append(' ');
+            s.append("probes:").append((short)tcpi_probes & (short)0xff).append(' ');
+            s.append("backoff:").append((short)tcpi_backoff & (short)0xff).append(' ');
+            s.append("options:").append((short)tcpi_options & (short)0xff).append("\n ");
+            s.append("snd_wscale:").append((short)tcpi_snd_wscale & (short)0xff).append(' ');
+            s.append("rcv_wscale:").append((short)tcpi_rcv_wscale & (short)0xff).append(' ');
+            s.append("rto:").append((long)tcpi_rto & 0xffffffffL).append(' ');
+            s.append("ato:").append((long)tcpi_ato & 0xffffffffL).append(' ');
+            s.append("snd_mss:").append((long)tcpi_snd_mss & 0xffffffffL).append(' ');
+            s.append("rcv_mss:").append((long)tcpi_rcv_mss & 0xffffffffL).append("\n ");
+            s.append("unacked:").append((long)tcpi_unacked & 0xffffffffL).append(' ');
+            s.append("sacked:").append((long)tcpi_sacked & 0xffffffffL).append(' ');
+            s.append("lost:").append((long)tcpi_lost & 0xffffffffL).append(' ');
+            s.append("retrans:").append((long)tcpi_retrans & 0xffffffffL).append(' ');
+            s.append("fackets:").append((long)tcpi_fackets & 0xffffffffL).append("\n ");
+            s.append("last_data_sent:").append((long)tcpi_last_data_sent & 0xffffffffL).append(' ');
+            s.append("last_ack_sent:").append((long)tcpi_last_ack_sent & 0xffffffffL).append("\n ");
+            s.append("last_data_recv:").append((long)tcpi_last_data_recv & 0xffffffffL).append(' ');
+            s.append("last_ack_recv:").append((long)tcpi_last_ack_recv & 0xffffffffL).append("\n ");
+            s.append("pmtu:").append((long)tcpi_pmtu & 0xffffffffL).append(' ');
+            s.append("rcv_ssthresh:").append((long)tcpi_rcv_ssthresh & 0xffffffffL).append(' ');
+            s.append("rtt:").append((long)tcpi_rtt & 0xffffffffL).append(' ');
+            s.append("rttvar:").append((long)tcpi_rttvar & 0xffffffffL).append(' ');
+            s.append("snd_ssthresh:").append((long)tcpi_snd_ssthresh & 0xffffffffL).append(' ');
+            s.append("snd_cwnd:").append((long)tcpi_snd_cwnd & 0xffffffffL).append(' ');
+            s.append("advmss:").append((long)tcpi_advmss & 0xffffffffL).append("\n ");
+            s.append("reordering:").append((long)tcpi_reordering & 0xffffffffL).append(' ');
+            s.append("rcv_rtt:").append((long)tcpi_rcv_rtt & 0xffffffffL).append(' ');
+            s.append("rcv_space:").append((long)tcpi_rcv_space & 0xffffffffL).append("\n ");
+            s.append("total_retrans:").append((long)tcpi_total_retrans & 0xffffffffL);
             return s.toString();
         }
     }
@@ -289,24 +287,25 @@ public final class libc {
      */
     public static class ErrnoException extends Exception {
 
-        private int errno;
+        private final int errno;
 
-        public ErrnoException(int errno) {
-            super();
+        public ErrnoException(final int errno) {
             this.errno = errno;
         }
 
-        public ErrnoException(String message, int errno) {
+        public ErrnoException(final String message, final int errno) {
             super(message);
             this.errno = errno;
         }
 
         public int getErrno() {
-            return this.errno;
+            return errno;
         }
 
         public String toString() {
-            return this.getMessage() + " errno: " + Integer.toString(errno);
+            final StringBuilder s= new StringBuilder(100);
+            s.append(getMessage()).append(" errno: ").append(errno);
+            return s.toString();
         }
     }
 

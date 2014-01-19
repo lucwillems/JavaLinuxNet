@@ -16,12 +16,12 @@ public class JNILoader {
     /**
      * Load a libary from well known locations
      */
-    public static void loadLibrary(String lib) {
+    public static void loadLibrary(final String lib) {
         final Logger log = LoggerFactory.getLogger(JNILoader.class);
-        for (String path : libpath) {
-            File f = new File(path + "/" + lib);
+        for (final String path : libpath) {
+            final File f = new File(path + '/' + lib);
             try {
-            String fname = f.getCanonicalPath();
+            final String fname = f.getCanonicalPath();
             if (f.exists()) {
                 System.load(fname);
                 log.info("native lib loaded: {}", fname);
@@ -29,7 +29,7 @@ public class JNILoader {
             } else {
                 log.debug("{} not found", fname);
             }
-            }catch(IOException io) {
+            }catch(final IOException io) {
                 log.error("IO issue ",io);
             }
         }

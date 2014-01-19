@@ -19,11 +19,11 @@ public class jhash {
      * @word: value to rotate
      * @shift: bits to roll
      */
-    public static final int rol32(int word, int shift) {
-        return (word << shift) | (word >> (32 - shift));
+    public static int rol32(final int word, final int shift) {
+        return word << shift | word >> 32 - shift;
     }
 
-    public static final int jhash_3words(int a, int b, int c, int initval) {
+    public static int jhash_3words(int a, int b, int c, final int initval) {
       a += JHASH_INITVAL;
       b += JHASH_INITVAL;
       c += initval;

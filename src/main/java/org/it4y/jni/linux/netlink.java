@@ -12,42 +12,42 @@ public final class netlink {
 
         public static final int NLMSGHDR_SIZE = 16;
         public static final int NETLINK_ROUTE = 0;
-        ;	/* Routing/device hook				*/
+        /* Routing/device hook				*/
         public static final int NETLINK_UNUSED = 1;
-        ;	/* Unused number				*/
+        /* Unused number				*/
         public static final int NETLINK_USERSOCK = 2;
-        ;	/* Reserved for user mode socket protocols 	*/
+        /* Reserved for user mode socket protocols 	*/
         public static final int NETLINK_FIREWALL = 3;
-        ;	/* Unused number, formerly ip_queue		*/
+        /* Unused number, formerly ip_queue		*/
         public static final int NETLINK_SOCK_DIAG = 4;
-        ;	/* socket monitoring				*/
+        /* socket monitoring				*/
         public static final int NETLINK_NFLOG = 5;
-        ;	/* netfilter/iptables ULOG */
+        /* netfilter/iptables ULOG */
         public static final int NETLINK_XFRM = 6;
-        ;	/* ipsec */
+        /* ipsec */
         public static final int NETLINK_SELINUX = 7;
-        ;	/* SELinux event notifications */
+        /* SELinux event notifications */
         public static final int NETLINK_ISCSI = 8;
-        ;	/* Open-iSCSI */
+        /* Open-iSCSI */
         public static final int NETLINK_AUDIT = 9;
-        ;	/* auditing */
+        /* auditing */
         public static final int NETLINK_FIB_LOOKUP = 10;
         public static final int NETLINK_CONNECTOR = 11;
         public static final int NETLINK_NETFILTER = 12;
-        ;	/* netfilter subsystem */
+        /* netfilter subsystem */
         public static final int NETLINK_IP6_FW = 13;
         public static final int NETLINK_DNRTMSG = 14;
-        ;	/* DECnet routing messages */
+        /* DECnet routing messages */
         public static final int NETLINK_KOBJECT_UEVENT = 15;
-        ;	/* Kernel messages to userspace */
+        /* Kernel messages to userspace */
         public static final int NETLINK_GENERIC = 16;
         /* leave room for NETLINK_DM (DM Events) */
         public static final int NETLINK_SCSITRANSPORT = 18;
-        ;	/* SCSI Transports */
+        /* SCSI Transports */
         public static final int NETLINK_ECRYPTFS = 19;
         public static final int NETLINK_RDMA = 20;
         public static final int NETLINK_CRYPTO = 21;
-        ;	/* Crypto layer */
+        /* Crypto layer */
         public static final int NETLINK_INET_DIAG = NETLINK_SOCK_DIAG;
 
         /* Flags values */
@@ -60,7 +60,7 @@ public final class netlink {
         public static final int NLM_F_ROOT = 0x100;	/* specify tree	root	*/
         public static final int NLM_F_MATCH = 0x200;	/* return all matching	*/
         public static final int NLM_F_ATOMIC = 0x400;	/* atomic GET		*/
-        public static final int NLM_F_DUMP = (NLM_F_ROOT | NLM_F_MATCH);
+        public static final int NLM_F_DUMP = NLM_F_ROOT | NLM_F_MATCH;
         /* Modifiers to NEW request */
         public static final int NLM_F_REPLACE = 0x100;	/* Override existing		*/
         public static final int NLM_F_EXCL = 0x200;	/* Do not touch, if it exists	*/
