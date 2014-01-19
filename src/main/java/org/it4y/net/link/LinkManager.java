@@ -11,7 +11,6 @@ package org.it4y.net.link;
 
 import org.it4y.jni.libnetlink3;
 import org.it4y.jni.linux.*;
-import org.it4y.jni.linuxutils;
 import org.it4y.net.netlink.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,31 +42,31 @@ public class LinkManager extends Thread {
     /**
      * our internal logger
      */
-    private Logger log = LoggerFactory.getLogger(LinkManager.class);
+    private final Logger log = LoggerFactory.getLogger(LinkManager.class);
     /**
      * A map of known interface, using name as key
      */
-    private HashMap<String, NetworkInterface> interfaceList;
+    private final HashMap<String, NetworkInterface> interfaceList;
 
     /**
      * A list of LinkNotification listeners
      */
-    private ArrayList<NotificationRegister> listeners;
+    private final ArrayList<NotificationRegister> listeners;
 
     /**
      * our netlink rtnl_handle handle
      */
-    private libnetlink3.rtnl_handle handle;
+    private final libnetlink3.rtnl_handle handle;
 
     /**
      * Byte buffer we use to retrieve the socket data from netlink
      */
-    private ByteBuffer messageBuffer = ByteBuffer.allocateDirect(8129);
+    private final ByteBuffer messageBuffer = ByteBuffer.allocateDirect(8129);
 
     /**
      * netlink multicast groups we are intrested in
      */
-    private int groups = 0;
+    private int groups;
     /**
      * During startup , initstate keeps track of the current init state
      *<pre>
@@ -78,17 +77,17 @@ public class LinkManager extends Thread {
      *     6=halted
      *</pre>
      */
-    private int initstate = 0;
+    private int initstate;
 
     /**
      * internal flag of runnig thread
      */
-    private boolean running=false;
+    private boolean running;
 
     /**
      * previous active state to detect state changes (interface ready/not ready)
      */
-    private boolean prevActiveState = false;
+    private boolean prevActiveState;
 
     /**
      * LinkManager keeps track of active network interfaces and collect basic interface information.
@@ -98,10 +97,10 @@ public class LinkManager extends Thread {
     public LinkManager() {
         super("netlink-manager");
         log.debug("init netlink-manager");
-        interfaceList = new HashMap<String, NetworkInterface>();
-        listeners=new ArrayList<NotificationRegister>();
+        interfaceList = new HashMap<String, NetworkInterface>(10);
+        listeners=new ArrayList<NotificationRegister>(10);
         handle = new libnetlink3.rtnl_handle();
-        this.setDaemon(true);
+        setDaemon(true);
     }
 
     /**
@@ -185,8 +184,8 @@ public class LinkManager extends Thread {
             libnetlink3.rtnl_listen(handle, messageBuffer, new libnetlink3.rtnl_accept() {
 
                 @Override
-                public int accept(ByteBuffer message) {
-                    NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
+                public int accept(final ByteBuffer message) {
+                    final NlMessage msg = NetlinkMsgFactory.processRawPacket(message);
                     if (msg != null) {
                         log.debug("message:{} type={} : {}", msg.getClass().getSimpleName(), msg.getNlMsgType(),msg);
                         log.trace("{}", msg);
@@ -219,9 +218,9 @@ public class LinkManager extends Thread {
      * Handle netlink link messages
      * @param msg
      */
-    private void handleLinkMessages(interfaceInfoMsg msg) {
+    private void handleLinkMessages(final interfaceInfoMsg msg) {
         //get interface name
-        String name = msg.getRTAMessage("ifname") != null ? msg.getRTAMessage("ifname").getString() : null;
+        final String name = msg.getRTAMessage("ifname") != null ? msg.getRTAMessage("ifname").getString() : null;
         if (name == null)
             return;
         //do we know this interface ?
@@ -249,7 +248,7 @@ public class LinkManager extends Thread {
                     prevActiveState=x.isActive();
                     boolean doNotification=false;
                     if (msg.getRTAMessage("operstate") != null) {
-                        int newState = (int) msg.getRTAMessage(if_link.IFLA_OPERSTATE).getByte() & 0xff;
+                        final int newState = (int) msg.getRTAMessage(if_link.IFLA_OPERSTATE).getByte() & 0xff;
                         if (x.getState() != newState) {
                             x.setState(newState);
                             doNotification=true;
@@ -278,9 +277,9 @@ public class LinkManager extends Thread {
      * Handle netlink address messages
      * @param msg
      */
-    private void handleAddressMessages(interfaceAddressMsg msg) {
+    private void handleAddressMessages(final interfaceAddressMsg msg) {
         //get interface name
-        NetworkInterface x = findByInterfaceIndex(msg.getInterfaceIndex());
+        final NetworkInterface x = findByInterfaceIndex(msg.getInterfaceIndex());
         if (x == null) {
             log.debug("no interface found.");
             return;
@@ -324,10 +323,10 @@ public class LinkManager extends Thread {
      *
      * @param msg
      */
-    private void handleRoutingMessage(routeMsg msg) {
+    private void handleRoutingMessage(final routeMsg msg) {
         //get interface name
         if (msg.getRTAMessage(rtnetlink.RTA_OIF) != null) {
-            NetworkInterface x = findByInterfaceIndex(msg.getRTAMessage(rtnetlink.RTA_OIF).getInt());
+            final NetworkInterface x = findByInterfaceIndex(msg.getRTAMessage(rtnetlink.RTA_OIF).getInt());
             //log.debug(msg.toString());
             if (x == null) {
                 log.debug("no interface found");
@@ -336,11 +335,11 @@ public class LinkManager extends Thread {
             prevActiveState=x.isActive();
             log.trace("interface {}", x);
             //log.info(msg.toString());
-            boolean isLinkLocal = ((int) msg.getRouteScope()  & 0xff) == rtnetlink.RT_SCOPE_LINK & ((int)msg.getRouteDestLen() &0xff)>0 && msg.getRouteType()==rtnetlink.RTN_UNICAST;
-            boolean isLocalHost = ((int) msg.getRouteScope()  & 0xff) == rtnetlink.RT_SCOPE_HOST &
+            final boolean isLinkLocal = ((int) msg.getRouteScope()  & 0xff) == rtnetlink.RT_SCOPE_LINK & ((int)msg.getRouteDestLen() &0xff)>0 && msg.getRouteType()==rtnetlink.RTN_UNICAST;
+            final boolean isLocalHost = ((int) msg.getRouteScope()  & 0xff) == rtnetlink.RT_SCOPE_HOST &
                                   ((int)msg.getRouteDestLen() & 0xff)>0 && msg.getRouteType()==rtnetlink.RTN_LOCAL &&
                                   ((int)msg.getRouteDestLen() & 0xff)<32;
-            boolean isDefaultGateway = msg.getRTAMessage(rtnetlink.RTA_GATEWA) != null &&
+            final boolean isDefaultGateway = msg.getRTAMessage(rtnetlink.RTA_GATEWA) != null &&
                     msg.getRTAMessage(rtnetlink.RTA_DST) == null;
             //log.info("{} {}",isLocal,isDefaultGateway);
             switch (msg.getNlMsgType()) {
@@ -372,8 +371,8 @@ public class LinkManager extends Thread {
     public NetworkInterface getDefaultGateway() {
         rlock.lock();
         try {
-            for (String name : interfaceList.keySet()) {
-                NetworkInterface x = interfaceList.get(name);
+            for (final String name : interfaceList.keySet()) {
+                final NetworkInterface x = interfaceList.get(name);
                 if (x.getIpv4Gateway() != 0) {
                     return x;
                 }
@@ -391,11 +390,11 @@ public class LinkManager extends Thread {
      * @param index
      * @return NetworkInterface
      */
-    public NetworkInterface findByInterfaceIndex(int index) {
+    public NetworkInterface findByInterfaceIndex(final int index) {
         rlock.lock();
         try {
-            for (String name : interfaceList.keySet()) {
-                NetworkInterface x = interfaceList.get(name);
+            for (final String name : interfaceList.keySet()) {
+                final NetworkInterface x = interfaceList.get(name);
                 if (x.getIndex() == index)
                     return x;
             }
@@ -411,7 +410,7 @@ public class LinkManager extends Thread {
      * @param name
      * @return NetworkInterface
      */
-    public NetworkInterface findByInterfaceName(String name) {
+    public NetworkInterface findByInterfaceName(final String name) {
         rlock.lock();
         try {
             return interfaceList.get(name);
@@ -477,24 +476,24 @@ public class LinkManager extends Thread {
     /**
      * notification register entry
      */
-    class NotificationRegister {
+    static class NotificationRegister {
         LinkNotification.EventType type;
         LinkNotification.EventAction action;
         LinkNotification listener;
 
-        public NotificationRegister(LinkNotification.EventAction action,LinkNotification.EventType type,LinkNotification listener) {
+        public NotificationRegister(final LinkNotification.EventAction action, final LinkNotification.EventType type, final LinkNotification listener) {
             this.type=type;
             this.action=action;
             this.listener=listener;
         }
 
-        public boolean isIntrestedIn(LinkNotification.EventType aType,LinkNotification.EventAction aAction) {
-            return (this.action== LinkNotification.EventAction.All||this.action==aAction) &&
-                   (this.type== LinkNotification.EventType.All || this.type==aType);
+        public boolean isIntrestedIn(final LinkNotification.EventType aType, final LinkNotification.EventAction aAction) {
+            return (action == LinkNotification.EventAction.All|| action ==aAction) &&
+                   (type == LinkNotification.EventType.All || type ==aType);
         }
     }
 
-    public LinkNotification registerListener(LinkNotification.EventAction aAction,LinkNotification.EventType aType,LinkNotification aListener) {
+    public LinkNotification registerListener(final LinkNotification.EventAction aAction, final LinkNotification.EventType aType, final LinkNotification aListener) {
         wlock.lock();
         try {
             listeners.add(new NotificationRegister(aAction,aType,aListener));
@@ -505,12 +504,12 @@ public class LinkManager extends Thread {
         }
     }
 
-    public void unRegisterListener(LinkNotification aListener) {
+    public void unRegisterListener(final LinkNotification aListener) {
         wlock.lock();
         try {
-            Iterator<NotificationRegister> i=listeners.iterator();
+            final Iterator<NotificationRegister> i=listeners.iterator();
             while(i.hasNext()) {
-                NotificationRegister x=i.next();
+                final NotificationRegister x=i.next();
                 if (x.listener.equals(aListener)) {
                     i.remove();
                     log.info("removed listener {}",x);
@@ -529,8 +528,8 @@ public class LinkManager extends Thread {
      * @param event
      * @param x
      */
-    private void sendLinkNotification(LinkNotification.EventAction action, LinkNotification.EventType event, NetworkInterface x) {
-        for (NotificationRegister listener : listeners) {
+    private void sendLinkNotification(final LinkNotification.EventAction action, final LinkNotification.EventType event, final NetworkInterface x) {
+        for (final NotificationRegister listener : listeners) {
             if (listener.isIntrestedIn(event,action)) {
                 //call the listener
                 log.debug("onEvent {}",listener.listener);
@@ -550,7 +549,7 @@ public class LinkManager extends Thread {
      */
     public boolean isRunning() {
         return running;
-    };
+    }
 
 
 }

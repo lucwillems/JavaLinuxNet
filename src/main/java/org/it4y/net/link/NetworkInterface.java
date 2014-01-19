@@ -20,8 +20,8 @@ import java.net.InetAddress;
  *
  */
 public class NetworkInterface {
-    private String name;
-    private int index;
+    private final String name;
+    private final int index;
     private int state;
     private String macAddress = "";
     private int mtu;
@@ -30,9 +30,9 @@ public class NetworkInterface {
     private int ipv4P2Paddress;
     private int netmask;
     private int interfaceFlag;
-    private int interfaceType;
+    private final int interfaceType;
 
-    public NetworkInterface(String name, int index, int interfaceFlag,int interfaceType) {
+    public NetworkInterface(final String name, final int index, final int interfaceFlag, final int interfaceType) {
         this.name = name;
         this.index = index;
         this.interfaceFlag=interfaceFlag;
@@ -166,36 +166,36 @@ public class NetworkInterface {
         return (interfaceFlag & 0x10000)>0;
     }
 
-    protected void setIpv4Gateway(int address) {
+    protected void setIpv4Gateway(final int address) {
         this.ipv4Gateway = address;
     }
-    protected void setmtu(int mtu) {
+    protected void setmtu(final int mtu) {
         this.mtu = mtu;
     }
-    protected void setInterfaceFlag(int flags) {
+    protected void setInterfaceFlag(final int flags) {
         this.interfaceFlag=flags;
     }
-    protected void setNetmask(int mask) {
+    protected void setNetmask(final int mask) {
         this.netmask = mask;
     }
-    protected void setIpv4P2Paddress(int address) {
+    protected void setIpv4P2Paddress(final int address) {
         this.ipv4P2Paddress =address;
     }
-    protected void setIpv4Address(int address) {
+    protected void setIpv4Address(final int address) {
         this.ipv4Address = address;
     }
-    protected void setState(int state) {
+    protected void setState(final int state) {
         this.state = state;
     };
-    protected void setInterfaceFlags(int flags) {
+    protected void setInterfaceFlags(final int flags) {
         this.interfaceFlag=flags;
     }
-    protected void setMacAddress(String macAddress) {
+    protected void setMacAddress(final String macAddress) {
         this.macAddress = macAddress;
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        final StringBuffer s = new StringBuffer();
         s.append(name).append("[");
         s.append(if_arp.ARPHDR_NAMES.get(interfaceType)).append(",");
         s.append("idx:").append(index).append(",");
