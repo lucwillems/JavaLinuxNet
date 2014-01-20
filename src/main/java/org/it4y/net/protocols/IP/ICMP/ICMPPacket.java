@@ -85,8 +85,16 @@ public class ICMPPacket extends IpPacket {
     public short getICMPChecksum() {
         return rawPacket.getShort(ip_header_offset + header_icmp_checksum);
     }
+
     public void resetICMPChecksum() {
-       rawPacket.putShort(ip_header_offset + header_icmp_checksum, (short)0);
+       rawPacket.putShort(ip_header_offset + header_icmp_checksum, (short)0x0000);
+    }
+    public short updateICMPChecksum() {
+        resetICMPChecksum();
+        //checksum calculation for Ip header
+        final short checksum = rfc1071Checksum(ip_header_offset, ICMP_HEADER_SIZE + getPayLoadSize());
+        rawPacket.putShort(ip_header_offset + header_icmp_checksum,checksum);
+        return checksum;
     }
 
     public short getIdentifier() {
@@ -135,6 +143,7 @@ public class ICMPPacket extends IpPacket {
         updateChecksum();
         //change it to a reply, preserve data
         setType(ECHO_REPLY);
+        updateICMPChecksum();
     }
 
     @Override

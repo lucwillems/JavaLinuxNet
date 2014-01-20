@@ -14,7 +14,7 @@ import java.nio.ByteOrder;
 
 public final class libc {
 
-    /* i'm on littleendian ? */
+    /* i'm on little endian ? */
     static final boolean isLittleEndian=ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN);
 
     /*

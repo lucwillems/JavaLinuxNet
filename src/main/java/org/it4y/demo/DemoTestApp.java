@@ -24,7 +24,7 @@ public class DemoTestApp {
         tundev.start(); //this will bring interface luc UP
         log.info("tun interface listener running");
         LinkManager lnkMng=new LinkManager();
-        lnkMng.registerListener(LinkNotification.EventAction.None,LinkNotification.EventType.All, new LinkNotification() {
+        lnkMng.registerListener(LinkNotification.EventAction.All,LinkNotification.EventType.All, new LinkNotification() {
             @Override
             public void onEvent(EventAction action, EventType type, NetworkInterface network) {
                 log.info("onEvent : "+action+" "+type+" "+network);
@@ -35,7 +35,8 @@ public class DemoTestApp {
                 log.info("onStateChanged : "+network+" active:"+network.isActive());
             }
         });
-        lnkMng.interrupt();
+        //start link manager
+        lnkMng.start();
         Thread.sleep(500);
         log.info("ready to rock and roll");
         while (true) {
