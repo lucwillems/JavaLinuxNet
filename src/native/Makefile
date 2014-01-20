@@ -23,7 +23,7 @@ linuxutils.h: org_it4y_jni_linuxutils.c
 libnetlink3.h: org_it4y_jni_libnetlink3.c
 	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.libnetlink3
 
-build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so
+build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so testjhash
 
 libjnitproxy.so: org_it4y_jni_tproxy.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnitproxy.so org_it4y_jni_tproxy.c
@@ -41,10 +41,13 @@ libjninetlink3.so: org_it4y_jni_libnetlink3.c
 	$(CC) $(CFLAGS)  $(INCLUDES) `pkg-config --cflags --libs libnl-3.0` $(LFLAGS) \
 	 -o libjninetlink3.so -Wl,-whole-archive /usr/lib/libnetlink.a -Wl,-no-whole-archive org_it4y_jni_libnetlink3.c
 	 install libjninetlink3.so $(NLIB)
+testjhash: testjhash.c
+	$(CC) $(CFLAGS) $(INCLUDES) testjhash.c -o testjhash
 
 prepare:
 	install -d $(NLIB)
 
 clean:
 	rm -rf *.so
+	rm -rf testjhash
 	rm -rf $(NLIB)/*.so
