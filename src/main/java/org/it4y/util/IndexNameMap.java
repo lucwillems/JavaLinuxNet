@@ -12,13 +12,9 @@ import java.util.HashMap;
 
 public class IndexNameMap<K,V> extends HashMap<K,V>{
 
-    public IndexNameMap() {
-        super();
-    }
-
     @SuppressWarnings("unchecked")
-    public V get(Object k) {
-        V s=super.get(k);
-        return s==null ? (V) String.format("[%s]", k.toString()) : (V) s;
+    public V get(final Object k) {
+        final V s=super.get(k);
+        return s==null ? (V) String.format("[%s]", k.toString()) : s;
     }
 }

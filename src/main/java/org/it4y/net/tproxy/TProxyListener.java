@@ -27,12 +27,12 @@ import java.net.ServerSocket;
  */
 public abstract class TProxyListener extends Thread {
 
-    private Logger log = LoggerFactory.getLogger(TProxyListener.class);
+    private final Logger log = LoggerFactory.getLogger(TProxyListener.class);
 
     /***
      * local port of listening socket
      */
-    private int port = 0;
+    private final int port;
 
     /***
      * backlog of socket
@@ -42,7 +42,7 @@ public abstract class TProxyListener extends Thread {
     /***
      * address to bind the socket
      */
-    private InetAddress bind = null;
+    private final InetAddress bind;
 
     /***
      * our TProxy socket
@@ -52,14 +52,14 @@ public abstract class TProxyListener extends Thread {
     /***
      * Listener activated and running
      */
-    private boolean running = false;
+    private boolean running;
 
     /***
      * Listener halt requested
      */
-    private boolean halted=false;
+    private boolean halted;
 
-    private boolean init=false;
+    private boolean init;
 
     /***
      * Create a TProxy enabled Listener
@@ -67,12 +67,12 @@ public abstract class TProxyListener extends Thread {
      * @param port : port to use
      * @param backlog : socket backlog
      */
-    public TProxyListener(InetAddress bind, int port, int backlog) {
+    public TProxyListener(final InetAddress bind, final int port, final int backlog) {
         this.port = port;
         this.backlog = backlog;
         this.bind = bind;
         setDaemon(true);
-        setName("TProxy-listener-"+bind.toString()+":"+port);
+        setName("TProxy-listener-"+bind.toString()+ ':' +port);
     }
 
     /***
@@ -92,7 +92,7 @@ public abstract class TProxyListener extends Thread {
         //close socket, this will causes the running thread to stop
         try {
             socket.close();
-        } catch (IOException ignore) {};
+        } catch (final IOException ignore) {};
     }
     /***
      * Gently stop listener thread
@@ -134,24 +134,24 @@ public abstract class TProxyListener extends Thread {
        while (!halted) {
           try {
                   //don't trust my users ;-)
-                  TProxyInterceptedSocket client = socket.accepProxy();
+                  final TProxyInterceptedSocket client = socket.accepProxy();
                   log.debug("accepted client: {}", client);
                   newClient(client);
-                } catch (IOException io) {
+                } catch (final IOException io) {
                     if (!halted) {
                       onIOError(io);
                     }
-                } catch (libc.ErrnoException errno) {
+                } catch (final libc.ErrnoException errno) {
                     log.error("libc IO error:",errno);
-                } catch (Throwable oeps) {
+                } catch (final Throwable oeps) {
                   log.error("Unexpected error:", oeps);
                 }
        }
        //close server socket
-       if (socket != null & !socket.isClosed()) {
+       if (socket != null && !socket.isClosed()) {
            try {
                socket.close();
-           } catch (IOException ignore) {}
+           } catch (final IOException ignore) {}
        }
        socket=null;
        running = false;

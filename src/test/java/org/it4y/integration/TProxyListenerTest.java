@@ -71,6 +71,16 @@ public class TProxyListenerTest {
             retry++;
         }
         Assert.assertTrue(lm.isReady());
+
+        //get interface with default gateway. this will be our source IP
+        final NetworkInterface defaultGW = lm.getDefaultGateway();
+        Assert.assertNotNull(defaultGW);
+        log.info("Default GW: {}", defaultGW);
+
+        //our test device calls test
+        final NetworkInterface tunnel = lm.findByInterfaceName("test");
+        Assert.assertNotNull("Please run setup-test.sh",tunnel);
+
         return lm;
     }
 
@@ -115,15 +125,9 @@ public class TProxyListenerTest {
 
         try {
             linkManager = startLinkManager();
-            //lets use LinkManager to get information about our test tunnel
+
             //get interface with default gateway. this will be our source IP
             final NetworkInterface defaultGW = linkManager.getDefaultGateway();
-            Assert.assertNotNull(defaultGW);
-            log.info("Default GW: {}", defaultGW);
-
-            //our test device calls test
-            final NetworkInterface tunnel = linkManager.findByInterfaceName("test");
-            Assert.assertNotNull(tunnel);
 
             //Run a proxy to intercept port 80 . this requires setup-test.sh to setup iptables and routing
             proxy = startTProxyListener(new TProxyListener(InetAddress.getByName(bind), port, backlog) {
@@ -167,8 +171,10 @@ public class TProxyListenerTest {
             //we recieved 1 connection
             Assert.assertEquals(1, msgcnt.getCount());
         } finally {
-            stopLinkManager(linkManager);
-            stopTProxyListener(proxy);
+            if (linkManager!= null)
+                stopLinkManager(linkManager);
+            if (proxy != null)
+                stopTProxyListener(proxy);
         }
     }
 
@@ -184,15 +190,8 @@ public class TProxyListenerTest {
 
         try {
             linkManager = startLinkManager();
-
             //get interface with default gateway. this will be our source IP
             final NetworkInterface defaultGW = linkManager.getDefaultGateway();
-            Assert.assertNotNull(defaultGW);
-            log.info("Default GW: {}", defaultGW);
-
-            //our test device calls test
-            final NetworkInterface tunnel = linkManager.findByInterfaceName("test");
-            Assert.assertNotNull(tunnel);
 
             //Run a proxy to intercept port 80 . this requires setup-test.sh to setup iptables and routing
             proxy = startTProxyListener(new TProxyListener(InetAddress.getByName(bind), port, backlog) {
@@ -238,8 +237,10 @@ public class TProxyListenerTest {
             Assert.assertEquals(1, msgcnt.getCount());
             Assert.assertEquals(1, errcnt.getCount());
         } finally {
-            stopLinkManager(linkManager);
-            stopTProxyListener(proxy);
+            if (linkManager!= null)
+                stopLinkManager(linkManager);
+            if (proxy != null)
+                stopTProxyListener(proxy);
         }
     }
 
@@ -256,12 +257,7 @@ public class TProxyListenerTest {
             linkManager = startLinkManager();
             //get interface with default gateway. this will be our source IP
             final NetworkInterface defaultGW = linkManager.getDefaultGateway();
-            Assert.assertNotNull(defaultGW);
-            log.info("Default GW: {}", defaultGW);
 
-            //our test device calls test
-            final NetworkInterface tunnel = linkManager.findByInterfaceName("test");
-            Assert.assertNotNull(tunnel);
 
             //Run a proxy to intercept port 80 . this requires setup-test.sh to setup iptables and routing
             proxy = startTProxyListener(new TProxyListener(InetAddress.getByName(bind), port, backlog) {
@@ -325,8 +321,10 @@ public class TProxyListenerTest {
             Assert.assertEquals(nrOfConnections, msgcnt.getCount());
             Assert.assertEquals(0, errcnt.getCount());
         } finally {
-            stopLinkManager(linkManager);
-            stopTProxyListener(proxy);
+            if (linkManager!= null)
+                stopLinkManager(linkManager);
+            if (proxy != null)
+                stopTProxyListener(proxy);
         }
     }
 

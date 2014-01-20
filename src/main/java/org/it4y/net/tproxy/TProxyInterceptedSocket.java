@@ -22,8 +22,8 @@ import java.net.UnknownHostException;
  */
 public class TProxyInterceptedSocket {
 
-    private Socket socket = null;
-    private libc.sockaddr_in remote;
+    private final Socket socket;
+    private final libc.sockaddr_in remote;
 
     /**
      * create a client proxy Socket pair
@@ -31,7 +31,7 @@ public class TProxyInterceptedSocket {
      * @param remote : remote part of the connection
      * @throws UnknownHostException
      */
-    public TProxyInterceptedSocket(Socket socket, libc.sockaddr_in remote) throws UnknownHostException {
+    public TProxyInterceptedSocket(final Socket socket, final libc.sockaddr_in remote) throws UnknownHostException {
         this.socket = socket;
         this.remote = remote;
     }

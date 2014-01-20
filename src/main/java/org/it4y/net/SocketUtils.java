@@ -9,6 +9,9 @@
 
 package org.it4y.net;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,141 +22,142 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 public class SocketUtils {
+    private static final Logger log= LoggerFactory.getLogger(SocketUtils.class);
 
-    public static SocketImpl getImplementation(ServerSocket socket) {
+    public static SocketImpl getImplementation(final ServerSocket socket) {
         try {
-            Method method = ServerSocket.class.getDeclaredMethod("getImpl");
+            final Method method = ServerSocket.class.getDeclaredMethod("getImpl");
             method.setAccessible(true);
             return (SocketImpl) method.invoke(socket);
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+        } catch (final Exception jvmerror) {
+            log.error("ServerSocket:",jvmerror);
         }
         return null;
     }
 
-    public static SocketImpl getImplementation(Socket socket) {
+    public static SocketImpl getImplementation(final Socket socket) {
         try {
-            Method method = Socket.class.getDeclaredMethod("getImpl");
+            final Method method = Socket.class.getDeclaredMethod("getImpl");
             method.setAccessible(true);
             return (SocketImpl) method.invoke(socket);
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+        } catch (final Exception jvmerror) {
+            log.error("Socket:", jvmerror);
         }
         return null;
     }
 
-    public static FileDescriptor getFileDescriptor(ServerSocket socket) {
+    public static FileDescriptor getFileDescriptor(final ServerSocket socket) {
         try {
-            SocketImpl impl = getImplementation(socket);
-            Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
+            final SocketImpl impl = getImplementation(socket);
+            final Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
             method.setAccessible(true);
             return (FileDescriptor) method.invoke(impl);
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+        } catch (final Exception jvmerror) {
+            log.error("ServerSocket:", jvmerror);
         }
         return null;
     }
 
-    public static FileDescriptor getFileDescriptor(Socket socket) {
+    public static FileDescriptor getFileDescriptor(final Socket socket) {
         try {
-            SocketImpl impl = getImplementation(socket);
-            Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
+            final SocketImpl impl = getImplementation(socket);
+            final Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
             method.setAccessible(true);
             return (FileDescriptor) method.invoke(impl);
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+        } catch (final Exception jvmerror) {
+            log.error("Socket:", jvmerror);
         }
         return null;
     }
 
-    public static FileDescriptor getFileDescriptor(FileOutputStream stream) {
+    public static FileDescriptor getFileDescriptor(final FileOutputStream stream) {
         try {
-            Field privateFd = FileOutputStream.class.getDeclaredField("fd");
+            final Field privateFd = FileOutputStream.class.getDeclaredField("fd");
             privateFd.setAccessible(true);
-            return ((FileDescriptor) privateFd.get(stream));
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+            return (FileDescriptor) privateFd.get(stream);
+        } catch (final Exception jvmerror) {
+            log.error("FileOutputStream:", jvmerror);
         }
         return null;
     }
 
-    public static FileDescriptor getFileDescriptor(FileInputStream stream) {
+    public static FileDescriptor getFileDescriptor(final FileInputStream stream) {
         try {
-            Field privateFd = FileInputStream.class.getDeclaredField("fd");
+            final Field privateFd = FileInputStream.class.getDeclaredField("fd");
             privateFd.setAccessible(true);
-            return ((FileDescriptor) privateFd.get(stream));
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+            return (FileDescriptor) privateFd.get(stream);
+        } catch (final Exception jvmerror) {
+            log.error("FileOutputStream:", jvmerror);
         }
         return null;
     }
 
-    public static FileDescriptor getFileDescriptor(RandomAccessFile random) {
+    public static FileDescriptor getFileDescriptor(final RandomAccessFile random) {
         try {
-            Field privateFd = RandomAccessFile.class.getDeclaredField("fd");
+            final Field privateFd = RandomAccessFile.class.getDeclaredField("fd");
             privateFd.setAccessible(true);
-            return ((FileDescriptor) privateFd.get(random));
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+            return (FileDescriptor) privateFd.get(random);
+        } catch (final Exception jvmerror) {
+            log.error("RandomAccessFile:", jvmerror);
         }
         return null;
     }
 
-    public static int getFileHandle(FileDescriptor fd) {
+    public static int getFileHandle(final FileDescriptor fd) {
         //Get FD field value
         try {
-            Field privateFd = FileDescriptor.class.getDeclaredField("fd");
+            final Field privateFd = FileDescriptor.class.getDeclaredField("fd");
             privateFd.setAccessible(true);
             return ((Integer) privateFd.get(fd)).intValue();
-        } catch (Exception ignore) {
-            System.out.println(ignore);
+        } catch (final Exception jvmerror) {
+            log.error("RandomAccessFile:", jvmerror);
         }
         return -1;
     }
 
-    public static int getFd(ServerSocket socket) {
-        FileDescriptor fd = getFileDescriptor(socket);
-        if (fd == null) {
-            throw new RuntimeException("No FD found..");
-        }
-        return getFileHandle(fd);
-    }
-
-
-
-    public static int getFd(Socket socket) {
-        FileDescriptor fd = getFileDescriptor(socket);
+    public static int getFd(final ServerSocket socket) {
+        final FileDescriptor fd = getFileDescriptor(socket);
         if (fd == null) {
             return -1;
         }
         return getFileHandle(fd);
     }
 
-    public static int getFd(ServerSocketChannel socket ){
+
+
+    public static int getFd(final Socket socket) {
+        final FileDescriptor fd = getFileDescriptor(socket);
+        if (fd == null) {
+            return -1;
+        }
+        return getFileHandle(fd);
+    }
+
+    public static int getFd(final ServerSocketChannel socket ){
        return getFd(socket.socket());
     }
 
-    public static int getFd(SocketChannel socket ){
+    public static int getFd(final SocketChannel socket ){
         return getFd(socket.socket());
     }
 
-    public static int getFd(FileOutputStream stream ){
-        FileDescriptor fd = getFileDescriptor(stream);
+    public static int getFd(final FileOutputStream stream ){
+        final FileDescriptor fd = getFileDescriptor(stream);
         if (fd == null) {
             return -1;
         }
         return getFileHandle(fd);
     }
 
-    public static int getFd(FileInputStream stream ){
-        FileDescriptor fd = getFileDescriptor(stream);
+    public static int getFd(final FileInputStream stream ){
+        final FileDescriptor fd = getFileDescriptor(stream);
         if (fd == null) {
             return -1;
         }
         return getFileHandle(fd);
     }
-    public static int getFd(RandomAccessFile random ){
-        FileDescriptor fd = getFileDescriptor(random);
+    public static int getFd(final RandomAccessFile random ){
+        final FileDescriptor fd = getFileDescriptor(random);
         if (fd == null) {
             return -1;
         }

@@ -13,14 +13,14 @@ import java.nio.ByteBuffer;
 
 public abstract class RawPacket {
 
-    protected ByteBuffer rawPacket = null;
+    protected ByteBuffer rawPacket;
     protected int rawSize = -1;
     protected int rawLimit = -1;
 
-    public RawPacket(ByteBuffer bytes, int length) {
-        this.rawPacket = bytes;
-        this.rawSize = length;
-        this.rawLimit = bytes.limit();
+    public RawPacket(final ByteBuffer bytes, final int length) {
+        rawPacket = bytes;
+        rawSize = length;
+        rawLimit = bytes.limit();
     }
 
     public ByteBuffer getRawPacket() {
