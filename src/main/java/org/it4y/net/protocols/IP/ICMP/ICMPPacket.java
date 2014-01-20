@@ -9,11 +9,13 @@
 
 package org.it4y.net.protocols.IP.ICMP;
 
+import org.it4y.jni.libc;
 import org.it4y.jni.linux.jhash;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.util.Hexdump;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 public class ICMPPacket extends IpPacket {
 
@@ -113,11 +115,18 @@ public class ICMPPacket extends IpPacket {
     }
 
     public long getTimeStamp() {
+        System.out.println(Long.toHexString(System.currentTimeMillis()));
         return rawPacket.getLong(ip_header_offset + icmp_timestamp);
     }
 
     public void setTimeStamp(long epochTime) {
         rawPacket.putLong(ip_header_offset + icmp_timestamp, epochTime);
+    }
+    public Date getTimeStampAsDate() {
+        //linux ping store date as timeval , so convert it
+        int msec=libc.ntol(rawPacket.getInt(ip_header_offset + icmp_timestamp+4));
+        int sec=libc.ntol(rawPacket.getInt(ip_header_offset + icmp_timestamp));
+        return libc.Timeval2Date(sec,msec);
     }
 
     public boolean isEchoRequest() {
@@ -175,10 +184,11 @@ public class ICMPPacket extends IpPacket {
 
     @Override
     public String toString() {
-        StringBuilder s=new StringBuilder(128);
+        final StringBuilder s=new StringBuilder(128);
         s.append(super.toString()).append("[c:").append(getCode()).append("t:").append(getType()).append("]");
         if (getType() == ECHO_REQUEST || getType() == ECHO_REPLY) {
-          s.append("i: ").append(String.format("0x%04x",getIdentifier())).append(" c:").append((int)getSequenceNumber()&0xffff);
+          s.append("i: ").append(String.format("0x%04x", getIdentifier()))
+                  .append(" s:").append((int) getSequenceNumber() & 0xffff).append(" t:").append(getTimeStampAsDate());
         } else {
             if (getPayLoadSize()>0) {
                 s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 20)));

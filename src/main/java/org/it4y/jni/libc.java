@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
+import java.util.Date;
 
 public final class libc {
 
@@ -32,6 +33,23 @@ public final class libc {
             return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+ ab[0];
         } else {
            return address;
+        }
+    }
+
+    public static long ntol(final long address) {
+        final long[] ab= new long[8];
+        if (isLittleEndian) {
+            ab[0] = address >> 56 & 0x00ff;
+            ab[1] = address >> 48 & 0x00ff;
+            ab[2] = address >> 40  & 0x00ff;
+            ab[3] = address >> 32 & 0x00ff;
+            ab[4] = address >> 24 & 0x00ff;
+            ab[5] = address >> 16 & 0x00ff;
+            ab[6] = address >> 8  & 0x00ff;
+            ab[7] = address       & 0x00ff;
+            return (ab[6]<<52)+(ab[6]<<48)+(ab[5]<<40)+(ab[4]<<32)+(ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+ ab[0];
+        } else {
+            return address;
         }
     }
 
@@ -125,6 +143,11 @@ public final class libc {
         }
 
 
+    }
+
+    /* convert to java Date */
+    public static final Date Timeval2Date(int tv_sec,int tv_usec) {
+          return new Date(((long)tv_sec&0xffffffff)*1000L + (((long)tv_usec&0xffffffff)/1000L)); //java only has msec
     }
 
     /* based on kernel 3.12 */
