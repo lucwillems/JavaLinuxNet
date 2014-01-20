@@ -67,11 +67,15 @@ public class TunTapInterfaceListener extends TestRunner {
                     cnt++;
                     if (ip.getProtocol() == IpPacket.ICMP) {
                         if (((ICMPPacket) ip).isEchoRequest()) {
-                            ((ICMPPacket) ip).convertToEchoReply();
-                            //write raw packet back to network
-                            tundev.writeByteBuffer(ip.getRawPacket(), ip.getRawSize());
-                            //System.out.println(ip.toString());
-                            hexDumpOut(ip.getRawPacket(), ip.getRawSize());
+                            if (pktcnt % 100 != 0)  {
+                                ((ICMPPacket) ip).convertToEchoReply();
+                                //write raw packet back to network
+                                tundev.writeByteBuffer(ip.getRawPacket(), ip.getRawSize());
+                                //System.out.println(ip.toString());
+                                hexDumpOut(ip.getRawPacket(), ip.getRawSize());
+                            } else {
+                                //log.info("Dropping : {}",ip);
+                            }
                         }
                     } else if (ip.getProtocol() == IpPacket.UDP) {
                         //we must reset Buffer before manipulating it !!

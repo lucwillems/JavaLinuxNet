@@ -33,7 +33,7 @@ public class IpPacket extends RawPacket {
     public static final int header_src=12;
     public static final int header_dst=16;
 
-    public IpPacket(ByteBuffer buffer, int size) {
+    public IpPacket(final ByteBuffer buffer, final int size) {
         super(buffer, size);
     }
 
@@ -47,8 +47,8 @@ public class IpPacket extends RawPacket {
 
     public ByteBuffer getHeader() {
         resetBuffer();
-        int opositiorn=rawPacket.position();
-        int olimit=rawPacket.limit();
+        final int opositiorn=rawPacket.position();
+        final int olimit=rawPacket.limit();
         try {
             rawPacket.position(getIpHeaderSize());
             rawPacket.limit(getHeaderSize());
@@ -61,10 +61,10 @@ public class IpPacket extends RawPacket {
 
     public ByteBuffer getPayLoad() {
         resetBuffer();
-        int opositiorn=rawPacket.position();
-        int olimit=rawPacket.limit();
+        final int opositiorn=rawPacket.position();
+        final int olimit=rawPacket.limit();
         try {
-            int headerSize=getIpHeaderSize()+getHeaderSize();
+            final int headerSize=getIpHeaderSize()+getHeaderSize();
             rawPacket.position(headerSize);
             rawPacket.limit(getIPLenght()-headerSize);
             return rawPacket.slice();
@@ -76,8 +76,7 @@ public class IpPacket extends RawPacket {
 
     //IP specific header size
     public int getIpHeaderSize() {
-        int size= (int)((byte) ((rawPacket.get(header_version) & (byte) 0x0f) * (byte) 4) &0xff);
-        return size;
+        return (byte) ((rawPacket.get(header_version) & (byte) 0x0f) * (byte) 4) &0xff;
     }
 
     //IP specific header
@@ -100,7 +99,7 @@ public class IpPacket extends RawPacket {
         return rawPacket.get(header_tos);
     }
 
-    public void setTOS(byte tos) {
+    public void setTOS(final byte tos) {
         rawPacket.put(header_tos, tos);
     }
 
@@ -124,14 +123,14 @@ public class IpPacket extends RawPacket {
         return rawPacket.get(header_ttl);
     }
 
-    public void setTTL(byte ttl) {
+    public void setTTL(final byte ttl) {
         rawPacket.put(header_ttl, ttl);
     }
 
     public byte getProtocol() {
         return rawPacket.get(header_protocol);
     }
-    public void setProtocol(byte protocol) {
+    public void setProtocol(final byte protocol) {
         rawPacket.put(header_protocol, protocol);
     }
 
@@ -146,7 +145,7 @@ public class IpPacket extends RawPacket {
     public short updateChecksum() {
         resetChecksum();
         //checksum calculation for Ip header
-        short checksum = rfc1071Checksum(0, getIpHeaderSize());
+        final short checksum = rfc1071Checksum(0, getIpHeaderSize());
         rawPacket.putShort(header_checksum, checksum);
         return checksum;
     }
@@ -155,7 +154,7 @@ public class IpPacket extends RawPacket {
         return rawPacket.getInt(header_src);
     }
 
-    public void setSourceAddress(int address) {
+    public void setSourceAddress(final int address) {
         rawPacket.putInt(header_src, address);
     }
 
@@ -163,7 +162,7 @@ public class IpPacket extends RawPacket {
         return rawPacket.getInt(header_dst);
     }
 
-    public void setDestinationAddress(int address) {
+    public void setDestinationAddress(final int address) {
         rawPacket.putInt(header_dst, address);
     }
 
@@ -173,20 +172,20 @@ public class IpPacket extends RawPacket {
         rawPacket.putInt(header_dst, src);
     }
 
-    //TODO how to handle options ?
+    //how to handle options ?
     public boolean hasOptions() {
         return getHeaderSize() > 20;
     }
 
 
-    public short rfc1071Checksum(int offset, int size) {
+    public short rfc1071Checksum(final int offset, final int size) {
         int sum = 0;
         int data;
 
         // Handle all pairs
         for (int i = 0; i < size; i = i + 2) {
             // Corrected to include @Andy's edits and various comments on Stack Overflow
-            data = (((rawPacket.get(offset + i) << 8) & 0xFF00) | ((rawPacket.get(offset + i + 1)) & 0xFF));
+            data = rawPacket.get(offset + i) << 8 & 0xFF00 | rawPacket.get(offset + i + 1) & 0xFF;
             sum += data;
             // 1's complement carry bit correction in 16-bits (detecting sign extension)
             if ((sum & 0xFFFF0000) > 0) {
@@ -201,24 +200,24 @@ public class IpPacket extends RawPacket {
         return (short) sum;
     }
 
-    public static StringBuffer ipToString(int ip) {
-        StringBuffer s = new StringBuffer();
-        s.append((ip >> 24) & 0x00ff).append(".");
-        s.append((ip >> 16) & 0x00ff).append(".");
-        s.append((ip >> 8) & 0x00ff).append(".");
-        s.append((ip) & 0x00ff);
-        return s;
+    public static String ipToString(final int ip) {
+        final StringBuilder s = new StringBuilder(128);
+        s.append(ip >> 24 & 0x00ff).append('.');
+        s.append(ip >> 16 & 0x00ff).append('.');
+        s.append(ip >> 8 & 0x00ff).append('.');
+        s.append(ip & 0x00ff);
+        return s.toString();
     }
 
     @Override
     public String toString() {
-        StringBuffer s=new StringBuffer();
-        s.append("IP{").append(Integer.toHexString(getDstRoutingHash())).append("}");
-        s.append("[").append("len:").append(getRawSize()).append(",");
-        s.append("src:").append(ipToString(getSourceAddress())).append(",");
-        s.append("dst:").append(ipToString(getDestinationAddress())).append(",");
-        s.append("tos:").append(getTOS()).append(",");
-        s.append("ttl:").append(getTTL()).append("]");
+        final StringBuilder s=new StringBuilder(128);
+        s.append("IP@").append(String.format("%08x",getFlowHash()));
+        s.append('[').append("len:").append(getRawSize()).append(',');
+        s.append("src:").append(ipToString(getSourceAddress())).append(',');
+        s.append("dst:").append(ipToString(getDestinationAddress())).append(',');
+        s.append("tos:").append(getTOS()).append(',');
+        s.append("ttl:").append(getTTL()).append(']');
         return s.toString();
     }
 
@@ -234,18 +233,18 @@ public class IpPacket extends RawPacket {
 
     @Override
     public int getDstRoutingHash() {
-        int dst=rawPacket.getInt(header_dst);  //32 dest address
-        int src=rawPacket.getInt(header_src);  //32 src address
-        int port=0x0;
-        int proto=(int)rawPacket.get(header_protocol);
+        final int dst=rawPacket.getInt(header_dst);  //32 dest address
+        final int src=rawPacket.getInt(header_src);  //32 src address
+        final int port=0x0;
+        final int proto=(int)rawPacket.get(header_protocol);
         return jhash.jhash_3words(dst, port, proto, src);
     }
 
     @Override
     public int getFlowHash() {
-        int dst=rawPacket.getInt(header_dst);  //32 dest address
-        int src=rawPacket.getInt(header_src);  //32 src address
-        int proto=((int)rawPacket.get(header_protocol) &0xff)<<16;
+        final int dst=rawPacket.getInt(header_dst);  //32 dest address
+        final int src=rawPacket.getInt(header_src);  //32 src address
+        final int proto=((int)rawPacket.get(header_protocol) &0xff)<<16;
         return jhash.jhash_3words(dst, src, proto, 0);
     }
 
