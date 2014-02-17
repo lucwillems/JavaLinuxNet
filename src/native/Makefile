@@ -54,7 +54,7 @@ testjhash: testjhash.c
 bpf_compile: bpf_compile.c
 	$(CC) $(CFLAGS) $(INCLUDES) -L/usr/lib -lpcap bpf_compile.c -o bpf_compile
 
-build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash bpf_compile
+build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash
 
 prepare:
 	install -d $(NLIB)
