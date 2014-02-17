@@ -9,7 +9,7 @@ NLIB=../../nlib
 
 all: prepare javah build 
 
-javah: tproxy.h tuntap.h linuxutils.h libnetlink3.h
+javah: tproxy.h tuntap.h linuxutils.h libnetlink3.h libpcap.h
 
 tproxy.h: org_it4y_jni_tproxy.c
 	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.tproxy
@@ -23,7 +23,8 @@ linuxutils.h: org_it4y_jni_linuxutils.c
 libnetlink3.h: org_it4y_jni_libnetlink3.c
 	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.libnetlink3
 
-build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so testjhash
+libpcap.h: org_it4y_jni_libpcap.c
+	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.libpcap
 
 libjnitproxy.so: org_it4y_jni_tproxy.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnitproxy.so org_it4y_jni_tproxy.c
@@ -41,8 +42,19 @@ libjninetlink3.so: org_it4y_jni_libnetlink3.c
 	$(CC) $(CFLAGS)  $(INCLUDES) `pkg-config --cflags --libs libnl-3.0` $(LFLAGS) \
 	 -o libjninetlink3.so -Wl,-whole-archive /usr/lib/libnetlink.a -Wl,-no-whole-archive org_it4y_jni_libnetlink3.c
 	 install libjninetlink3.so $(NLIB)
+
+libjnipcap.so: org_it4y_jni_libpcap.c
+	$(CC) $(CFLAGS)  $(INCLUDES)  $(LFLAGS) -L/usr/lib -lpcap \
+	 -o libjnipcap.so org_it4y_jni_libpcap.c
+	 install libjnipcap.so $(NLIB)
+
 testjhash: testjhash.c
 	$(CC) $(CFLAGS) $(INCLUDES) testjhash.c -o testjhash
+
+bpf_compile: bpf_compile.c
+	$(CC) $(CFLAGS) $(INCLUDES) -L/usr/lib -lpcap bpf_compile.c -o bpf_compile
+
+build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash bpf_compile
 
 prepare:
 	install -d $(NLIB)
