@@ -1,6 +1,7 @@
 package org.it4y.jni;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Created by luc on 2/17/14.
@@ -27,18 +28,42 @@ public class libpcap {
         };
     }
 
+    //Class to hold a BPF instruction set in byte buffer
+    public static class bpfPprogram {
+        private ByteBuffer buffer=null;
+
+        public bpfPprogram() {}
+
+        public ByteBuffer init(int nrInstructions) {
+            buffer=ByteBuffer.allocateDirect(nrInstructions*8); //8bytes per instructions
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            return buffer;
+        }
+
+        public void clear() {
+            buffer.clear();
+        }
+
+        public boolean isValid() {
+            return  buffer !=null & buffer.capacity()>0;
+        }
+
+        public int getSize() {
+            return buffer.capacity();
+        }
+        public ByteBuffer getBuffer() { return buffer;}
+
+        public int getInstructionCnt() {
+            return getSize()/8;
+        }
+
+    }
+
     //This method should be called first before using the library
     //it's used to initialize internal jni structure to speedup jni lookups
     private static native int initlib();
-
-    //interface to accept messages from rtnl_listen()
-    public interface pcap_instruction {
-        public int bpf_instruction(int code,byte jt , byte jf , int k);
-    }
-
-
     public static native int pcap_datalink_name_to_val(String datalink);
-    public static native int pcap_compile_nopcap (int snaplen, int linktype, pcap_instruction callback , String filter, boolean optimize, int mask);
-    public static native int pcap_offline_filter(byte[] bpf,int snapLen,int pktLen, ByteBuffer pkt);
+    public static native int pcap_compile_nopcap (int snaplen, int linktype,bpfPprogram program, String filter, boolean optimize, int mask);
+    public static native int pcap_offline_filter(ByteBuffer bpf,int snapLen,int pktLen, ByteBuffer pkt);
 
 }

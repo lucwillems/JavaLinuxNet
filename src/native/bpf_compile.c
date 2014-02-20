@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	printf("byte[] bpf_bytes={\n");
 	printf("  //size opcode:16  jt:8  jf:8  k:32  (8 bytes)\n");
 	for (i = 0; i < program.bf_len-1; ++ins, ++i) {
-		printf("  //%04d : 0x%x 0x%x 0x%x 0x%x\n",
+		printf("  //%04d : 0x%x 0x%x 0x%x 0x%08x\n",
 		        i+1,
 		        ins->code,
 	                ins->jt, ins->jf, 
@@ -57,10 +57,10 @@ int main(int argc, char **argv)
 		printf("  (byte)0x%02x,(byte)0x%02x, (byte)0x%02x,(byte)0x%02x, (byte)0x%02x,(byte)0x%02x,(byte)0x%02x,(byte)0x%02x,\n",
 		        ins->code>>8, ins->code&0xff,
 	                ins->jt, ins->jf, 
-	                ins->k >>24 & 0xff,
+	                ins->k >>24,
 	                ins->k >>16 & 0xff,
-	                ins->k >>8 & 0xff,
-	                ins->k & 0xff
+	                ins->k >>8 &0xff,
+	                ins->k &0xff
 		      );
 	}
 	//last line
