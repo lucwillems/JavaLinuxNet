@@ -6,10 +6,10 @@ import org.it4y.net.protocols.IP.*;
 import org.it4y.net.protocols.IP.UDP.UDPPacket;
 import org.it4y.net.tuntap.TunDevice;
 import org.it4y.util.Hexdump;
-import org.jnetstream.filter.bpf.BPFProgram;
-import org.jnetstream.filter.bpf.BpfFactory;
-import org.jnetstream.filter.bpf.BpfVM;
-import org.jnetstream.filter.bpf.IllegalInstructionException;
+//import org.jnetstream.filter.bpf.BPFProgram;
+//import org.jnetstream.filter.bpf.BpfFactory;
+//import org.jnetstream.filter.bpf.BpfVM;
+//import org.jnetstream.filter.bpf.IllegalInstructionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +31,8 @@ public class TunTapInterfaceListener extends TestRunner {
     private long pktcnt = 0;
     private long bpfcount=0;
 
-    private BPFProgram program;
-    private BpfVM virtualMachine;
+    //private BPFProgram program;
+    //private BpfVM virtualMachine;
 
     //rate limit
     long rateInMbit=50000000; //100Mbit/sec
@@ -73,17 +73,17 @@ public class TunTapInterfaceListener extends TestRunner {
         this.mtu = mtu;
         tundev = new TunDevice(dev);
         bbuffer = ByteBuffer.allocateDirect(mtu);
-        try {
-            program=new BPFProgram(bpf_PING);
-        } catch (IllegalInstructionException e) {
-            e.printStackTrace();
-        }
-        virtualMachine= BpfFactory.getForThread();
+//        try {
+//            program=new BPFProgram(bpf_PING);
+//        } catch (IllegalInstructionException e) {
+//            e.printStackTrace();
+//        }
+//        virtualMachine= BpfFactory.getForThread();
     }
 
     public void hexDumpIn(final ByteBuffer buffer, final int size) {
         if (debug) {
-            System.out.println(System.currentTimeMillis() + " (" + size + ") >" + Hexdump.bytesToHex(buffer, size));
+            //System.out.println(System.currentTimeMillis() + " (" + size + ") >" + Hexdump.bytesToHex(buffer, size));
         }
     }
 
@@ -119,7 +119,8 @@ public class TunTapInterfaceListener extends TestRunner {
                     if (ip.getProtocol() == IpPacket.ICMP) {
                         icmplimiter.acquire(size);
                         //log.info("{}",ip);
-                        if (virtualMachine.execute(program,ip.getRawPacket(),ip.getRawSize(),ip.getRawSize()) == 0xffff) {
+                        if (((ICMPPacket) ip).isEchoRequest()) {
+                        //if (virtualMachine.execute(program,ip.getRawPacket(),ip.getRawSize(),ip.getRawSize()) == 0xffff) {
                             //if (pktcnt % 100 != 0)  {
                                 ((ICMPPacket) ip).convertToEchoReply();
                                 //write raw packet back to network
