@@ -44,17 +44,18 @@ libjninetlink3.so: org_it4y_jni_libnetlink3.c
 	 install libjninetlink3.so $(NLIB)
 
 libjnipcap.so: org_it4y_jni_libpcap.c
-	$(CC)   $(INCLUDES) `pcap-config --cflags --libs` $(LFLAGS) \
-	 -o libjnipcap.so org_it4y_jni_libpcap.c
-	 install libjnipcap.so $(NLIB)
+	$(CC)   $(INCLUDES) `pcap-config --cflags ` $(LFLAGS) \
+	org_it4y_jni_libpcap.c -lpcap -o libjnipcap.so
+	install libjnipcap.so $(NLIB)
 
 testjhash: testjhash.c
 	$(CC) $(CFLAGS) $(INCLUDES) testjhash.c -o testjhash
 
 bpf_compile: bpf_compile.c
-	$(CC) $(CFLAGS) $(INCLUDES) `pcap-config --cflags --libs` bpf_compile.c -o bpf_compile
+	$(CC) $(CFLAGS) $(INCLUDES) `pcap-config --cflags ` bpf_compile.c -lpcap -o bpf_compile
 
-build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash
+build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash bpf_compile
+
 
 prepare:
 	install -d $(NLIB)
