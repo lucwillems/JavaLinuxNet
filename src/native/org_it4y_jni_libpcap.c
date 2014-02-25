@@ -78,7 +78,6 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1datalink_1name_1to_1val(J
 JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1compile_1nopcap(JNIEnv *env, jclass this , jint snaplen , jint linktype , jobject bpf, jstring filter, jboolean optimize, jint mask) {
 
 	struct bpf_program program;
-	struct bpf_insn *ins;
 	int opt=0;
     const char *filterexpr;
     jfieldID bpfProgram_bufferFieldID;
@@ -101,18 +100,19 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1compile_1nopcap(JNIEnv *e
        return ERR_FIND_CLASS_FAILED;
 
     char* b = (char *)(*env)->GetDirectBufferAddress(env,(jobject)buffer);
-    memcpy(b, program.bf_insns, program.bf_len*8);
+    memcpy(b, program.bf_insns, program.bf_len*sizeof(struct bpf_insn));
 
-    int i;
-    ins = program.bf_insns;
-	for (i = 0; i < program.bf_len; ++ins, ++i) {
-		printf("  //%04d : 0x%x 0x%x 0x%x 0x%x\n",
-		        i,
-		        ins->code,
-	                ins->jt, ins->jf,
-	                ins->k
-		      );
-    }
+    //for testing
+    //int i;
+  	//struct bpf_insn *ins = program.bf_insns;
+	//for (i = 0; i < program.bf_len; ++ins, ++i) {
+	//	printf("  //%04d : 0x%x 0x%x 0x%x 0x%x\n",
+	//	        i,
+	//	        ins->code,
+	//               ins->jt, ins->jf,
+	//                ins->k
+	//	      );
+    //}
     return 0;
 }
 
@@ -121,8 +121,21 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1compile_1nopcap(JNIEnv *e
  * Method:    pcap_offline_filter
  * Signature: ([BIILjava/nio/ByteBuffer;)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1offline_1filter(JNIEnv *env, jclass this , jobject program, jint snaplen, jint pktlen, jobject pkt) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1offline_1filter(JNIEnv *env, jclass this , jobject program, jint snaplen, jint pktlen, jobject packet) {
+  struct pcap_pkthdr hdr;
+  struct bpf_insn *pc;
+  char* pkt;
 
-
-  return 0;
+  if (program != NULL) {
+      pc= (struct bpf_insn *)(*env)->GetDirectBufferAddress(env,(jobject)program);
+  } else {
+    return -1;
+  }
+  if (packet != NULL) {
+      pkt = (char *)(*env)->GetDirectBufferAddress(env,(jobject)packet);
+  } else {
+    return -2;
+  }
+  int result=bpf_filter(pc,pkt,snaplen,pktlen);
+  return result;
 }
