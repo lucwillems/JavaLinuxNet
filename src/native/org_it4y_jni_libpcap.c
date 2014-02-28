@@ -118,24 +118,34 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1compile_1nopcap(JNIEnv *e
 
 /*
  * Class:     org_it4y_jni_libpcap
- * Method:    pcap_offline_filter
+ * Method:    bpf_filter
  * Signature: ([BIILjava/nio/ByteBuffer;)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_pcap_1offline_1filter(JNIEnv *env, jclass this , jobject program, jint snaplen, jint pktlen, jobject packet) {
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_bpf_1filter(JNIEnv *env, jclass this , jobject program, jint snaplen, jint pktlen, jobject packet) {
   struct pcap_pkthdr hdr;
   struct bpf_insn *pc;
   char* pkt;
+
+  pc= (struct bpf_insn *)(*env)->GetDirectBufferAddress(env,(jobject)program);
+  pkt = (char *)(*env)->GetDirectBufferAddress(env,(jobject)packet);
+  int result=bpf_filter(pc,pkt,snaplen,pktlen);
+  return result;
+}
+
+/*
+ * Class:     org_it4y_jni_libpcap
+ * Method:    bpf_validate
+ * Signature: (Ljava/nio/ByteBuffer;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_libpcap_bpf_1validate(JNIEnv *env, jclass this, jobject program, jint size) {
+  struct bpf_insn *pc;
 
   if (program != NULL) {
       pc= (struct bpf_insn *)(*env)->GetDirectBufferAddress(env,(jobject)program);
   } else {
     return -1;
   }
-  if (packet != NULL) {
-      pkt = (char *)(*env)->GetDirectBufferAddress(env,(jobject)packet);
-  } else {
-    return -2;
-  }
-  int result=bpf_filter(pc,pkt,snaplen,pktlen);
+  int result=bpf_validate(pc,size);
   return result;
 }
+

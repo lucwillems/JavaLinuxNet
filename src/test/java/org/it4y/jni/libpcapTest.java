@@ -33,7 +33,7 @@ public class libpcapTest {
     }
 
     @Test
-    public void testPcap_compile_nopcap() throws Exception {
+    public void testPcap_compile() throws Exception {
         int linkType = pcap.DLT_IPV4;
         String filter = "host 8.8.8.8";
         libpcap.bpfPprogram program = new libpcap.bpfPprogram();
@@ -68,7 +68,29 @@ public class libpcapTest {
     }
 
     @Test
-    public void testPcap_offline_filter() throws Exception {
+    public void testPcap_compileBadFilter() throws Exception {
+        int linkType = pcap.DLT_IPV4;
+        String filter = "hostandshit 8.8.8.8";
+        libpcap.bpfPprogram program = new libpcap.bpfPprogram();
+        //compile
+        Assert.assertEquals(-1,libpcap.pcap_compile(linkType, program, filter));
+    }
+
+    @Test
+    public void testPcap_validate_filter() throws Exception {
+        int linkType = pcap.DLT_IPV4;
+        String filter = "host 8.8.8.8";
+        libpcap.bpfPprogram program = new libpcap.bpfPprogram();
+        //compile
+        Assert.assertEquals(0,libpcap.pcap_compile(linkType, program, filter));
+        //validate
+        Assert.assertEquals(true, libpcap.bpf_validate(program));
+        //validate
+        Assert.assertEquals(true,program.isValid());
+    }
+
+    @Test
+    public void testPcap_bpf_filter() throws Exception {
         int linkType = pcap.DLT_IPV4;
         ByteBuffer zerroPkt = ByteBuffer.allocateDirect(1500);
         zerroPkt.clear();
@@ -95,23 +117,27 @@ public class libpcapTest {
         Assert.assertEquals(0, result);
 
         //must be false
-        Assert.assertEquals(0,libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500, zerroPkt));
+        Assert.assertEquals(0,libpcap.bpf_filter(program.getBuffer(), 1500, 1500, zerroPkt));
 
         ByteBuffer pingPkt1=getPingPacket(100,0x08080808,0x08080808);
         ByteBuffer pingPkt2=getPingPacket(100,0x01020304,0x08080808);
         ByteBuffer pingPkt3=getPingPacket(100,0x08080808,0x01020304);
         ByteBuffer pingPkt4=getPingPacket(100,0x01020304,0x05060708);
-        Assert.assertEquals(65536,libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500, pingPkt1));//true
-        Assert.assertEquals(65536,libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500, pingPkt2));//true
-        Assert.assertEquals(65536,libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500, pingPkt3));//true
-        Assert.assertEquals(0,libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500, pingPkt4));//false
+        Assert.assertEquals(65536,libpcap.bpf_filter(program.getBuffer(), 1500, 1500, pingPkt1));//true
+        Assert.assertEquals(65536,libpcap.bpf_filter(program.getBuffer(), 1500, 1500, pingPkt2));//true
+        Assert.assertEquals(65536,libpcap.bpf_filter(program.getBuffer(), 1500, 1500, pingPkt3));//true
+        Assert.assertEquals(0,libpcap.bpf_filter(program.getBuffer(), 1500, 1500, pingPkt4));//false
 
     }
 
     @Test
     public void testPcap_offline_filterNullProgram() throws Exception {
         ByteBuffer pingPkt1=getPingPacket(100,0x08080808,0x08080808);
-        Assert.assertEquals(-1,libpcap.pcap_offline_filter(null, 1500, 1500, pingPkt1));//failure
+        try {
+            libpcap.bpf_filter(null, pingPkt1);
+        } catch (Throwable t) {
+            Assert.assertEquals(t.getClass(),AssertionError.class);//failure
+        }
 
     }
 
@@ -122,7 +148,11 @@ public class libpcapTest {
         libpcap.bpfPprogram program = new libpcap.bpfPprogram();
         //compile
         int result = libpcap.pcap_compile_nopcap(65536, linkType, program, filter, true, 0);
-        Assert.assertEquals(-2,libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500, null));//failure
+        try {
+            libpcap.bpf_filter(program.getBuffer(), null);//failure
+        } catch (Throwable t) {
+            Assert.assertEquals(t.getClass(),AssertionError.class);
+        }
     }
 
     @Test
@@ -136,7 +166,7 @@ public class libpcapTest {
         long start=System.currentTimeMillis();
         long total=100000000;
         for(int x=0;x<total;x++){
-            libpcap.pcap_offline_filter(program.getBuffer(), 1500, 1500,pingPkt1);//ok
+            libpcap.bpf_filter(program.getBuffer(), 1500, 1500,pingPkt1);//ok
         }
         long stop=System.currentTimeMillis();
         System.out.println("time: "+(stop-start)+"msec");
