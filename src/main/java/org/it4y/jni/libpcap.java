@@ -22,42 +22,62 @@ public class libpcap {
     static {
         //THIS requires libnl3 !!!!
         JNILoader.loadLibrary("libjnipcap.so");
-        int initResult = initlib();
+        final int initResult = initlib();
         if (initResult != JNI_OK) {
             throw new RuntimeException("Failed to initialize libpcap jni interface : " + initResult);
         }
-        ;
     }
 
     //Class to hold a BPF instruction set in byte buffer
     public static class bpfPprogram {
         private ByteBuffer buffer = null;
 
-        public bpfPprogram() {
-        }
-
-        public ByteBuffer init(final int nrInstructions) {
+        /**
+         * this method is called by jni code to initialize the bytebuffer
+         * @param nrInstructions
+         * @return
+         */
+        private ByteBuffer init(final int nrInstructions) {
             buffer = ByteBuffer.allocateDirect(nrInstructions * 8); //8bytes per instructions
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             return buffer;
         }
 
-        public void clear() {
-            buffer.clear();
+        /**
+         * release internal bytebuffer
+         */
+        public void release() {
+            buffer=null;
         }
 
+        /**
+         * Validate internal stored BPF program
+         * @return
+         */
         public boolean isValid() {
-            return buffer != null & buffer.capacity() > 0 & libpcap.bpf_validate(this);
+            return (buffer != null) & (buffer.capacity() > 0) & libpcap.bpf_validate(this);
         }
 
+        /**
+         * Total size of bpf program in bytes. must be multiple of 8
+         * @return
+         */
         public int getSize() {
             return buffer.capacity();
         }
 
+        /**
+         * Get access to BPF bytes
+         * @return
+         */
         public ByteBuffer getBuffer() {
             return buffer;
         }
 
+        /**
+         * Get number of instructions in bpf program
+         * @return
+         */
         public int getInstructionCnt() {
             return getSize() / 8;
         }

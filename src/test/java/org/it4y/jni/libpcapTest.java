@@ -147,10 +147,10 @@ public class libpcapTest {
         String filter = "host 8.8.8.8";
         libpcap.bpfPprogram program = new libpcap.bpfPprogram();
         //compile
-        int result = libpcap.pcap_compile_nopcap(65536, linkType, program, filter, true, 0);
+        final int result = libpcap.pcap_compile_nopcap(65536, linkType, program, filter, true, 0);
         try {
             libpcap.bpf_filter(program.getBuffer(), null);//failure
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             Assert.assertEquals(t.getClass(),AssertionError.class);
         }
     }
