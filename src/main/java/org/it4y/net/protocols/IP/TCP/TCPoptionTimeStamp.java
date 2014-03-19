@@ -9,8 +9,6 @@
 
 package org.it4y.net.protocols.IP.TCP;
 
-import org.it4y.net.protocols.IP.TCP.TCPOption;
-
 public class TCPoptionTimeStamp implements TCPOption {
     private int tsval = 0;
     private int tsecr = 0;

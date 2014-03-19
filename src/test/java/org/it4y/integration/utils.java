@@ -1,7 +1,6 @@
 package org.it4y.integration;
 
 import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
-import org.it4y.net.protocols.IP.IpPacket;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

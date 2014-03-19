@@ -7,8 +7,9 @@
 
 package org.it4y.jni;
 
-import java.nio.ByteBuffer;
 import org.it4y.jni.libc.ErrnoException;
+
+import java.nio.ByteBuffer;
 
 /**
  * Created by luc on 12/28/13.

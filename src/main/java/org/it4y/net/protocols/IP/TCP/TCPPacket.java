@@ -11,7 +11,6 @@ package org.it4y.net.protocols.IP.TCP;
 
 import org.it4y.jni.linux.jhash;
 import org.it4y.net.protocols.IP.IpPacket;
-import org.it4y.net.protocols.IP.TCP.*;
 import org.it4y.util.Hexdump;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

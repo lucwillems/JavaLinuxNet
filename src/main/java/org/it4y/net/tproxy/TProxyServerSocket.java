@@ -9,11 +9,11 @@
 
 package org.it4y.net.tproxy;
 
+import org.it4y.jni.SocketOptions;
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.jni.tproxy;
 import org.it4y.net.SocketUtils;
-import org.it4y.jni.SocketOptions;
 
 import java.io.FileDescriptor;
 import java.io.IOException;

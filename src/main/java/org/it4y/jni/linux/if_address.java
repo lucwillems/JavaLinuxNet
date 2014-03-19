@@ -8,6 +8,7 @@
 package org.it4y.jni.linux;
 
 import org.it4y.util.IndexNameMap;
+
 import java.util.Collections;
 import java.util.Map;
 

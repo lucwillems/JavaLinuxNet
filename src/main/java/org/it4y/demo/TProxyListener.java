@@ -1,11 +1,12 @@
 package org.it4y.demo;
 
-import org.it4y.jni.linuxutils;
 import org.it4y.jni.SocketOptions;
+import org.it4y.jni.linuxutils;
 import org.it4y.net.tproxy.TProxyInterceptedSocket;
 import org.it4y.net.tproxy.TProxyServerSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 
 

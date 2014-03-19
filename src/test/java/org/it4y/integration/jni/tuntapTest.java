@@ -3,17 +3,12 @@ package org.it4y.integration.jni;
 import junit.framework.Assert;
 import org.it4y.integration.utils;
 import org.it4y.jni.libc;
-import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.net.tuntap.TunDevice;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 
 /**

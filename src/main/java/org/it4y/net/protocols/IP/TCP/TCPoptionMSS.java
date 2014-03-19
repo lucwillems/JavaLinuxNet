@@ -9,8 +9,6 @@
 
 package org.it4y.net.protocols.IP.TCP;
 
-import org.it4y.net.protocols.IP.TCP.TCPOption;
-
 public class TCPoptionMSS implements TCPOption {
     short mss;
 
