@@ -44,13 +44,15 @@ public class IPFactory {
 
     public static final IpPacket processRawPacket(ByteBuffer buffer, int size) {
         //check for IPv4 and protocol
-        byte ipVersion = (byte) (buffer.get(0) >> 4);
-        if (ipVersion == 4) {
-            ipv4Factory factory = ipv4FactoryMap.get((byte) buffer.get(9));
-            if (factory == null) {
-                return new IpPacket(buffer, size);
-            } else {
-                return factory.create(buffer, size);
+        if (buffer != null & size >0) {
+            byte ipVersion = (byte) (buffer.get(0) >> 4);
+            if (ipVersion == 4) {
+                ipv4Factory factory = ipv4FactoryMap.get((byte) buffer.get(9));
+                if (factory == null) {
+                    return new IpPacket(buffer, size);
+                } else {
+                    return factory.create(buffer, size);
+                }
             }
         }
         return null;
