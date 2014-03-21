@@ -23,8 +23,8 @@ import java.net.Socket;
  * You need to run src/test/scripts/setup-test.sh to be able to run this test
  * Created by luc on 1/10/14.
  */
-public class TProxyListenerTest {
-    final private Logger log = LoggerFactory.getLogger(TProxyListenerTest.class);
+public class IT_TProxyListenerTest {
+    final private Logger log = LoggerFactory.getLogger(IT_TProxyListenerTest.class);
 
     //check this values with setup-test.sh
     private String bind = "Localhost";
@@ -96,7 +96,7 @@ public class TProxyListenerTest {
     }
 
 
-    @Test
+   @Test
     public void testTProxyListener() throws Exception {
 
         TProxyListener listener = startTProxyListener(new TProxyListener(InetAddress.getByName(bind), port, backlog) {

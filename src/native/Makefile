@@ -1,7 +1,12 @@
 CC=gcc
 CFLAGS=-Wall
-JDK_HOME=$(shell readlink -f `which javac` | sed "s:bin/javac::")
-INCLUDES = -I$(JDK_HOME)include/linux -I$(JDK_HOME)include
+
+#search JDK if not set
+ifndef JDK_HOME
+  JDK_HOME=$(shell readlink -f `which javac` | sed "s:/bin/javac::")
+endif
+
+INCLUDES = -I$(JDK_HOME)/include/linux -I$(JDK_HOME)/include
 LFLAGS = -shared
 JAVAH=javah
 CLASSPATH=../../target/classes
@@ -55,7 +60,6 @@ bpf_compile: bpf_compile.c
 	$(CC) $(CFLAGS) $(INCLUDES) `pcap-config --cflags ` bpf_compile.c -lpcap -o bpf_compile
 
 build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash bpf_compile
-
 
 prepare:
 	install -d $(NLIB)
