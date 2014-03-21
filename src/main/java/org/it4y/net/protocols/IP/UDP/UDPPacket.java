@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 
 public class UDPPacket extends IpPacket {
 
-    private static final int UDP_HEADER_SIZE = 4;
+    public static final int UDP_HEADER_SIZE = 4;
     private int ip_header_size;
 
     public static final int header_udp_sport=0;
