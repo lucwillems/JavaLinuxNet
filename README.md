@@ -40,6 +40,16 @@ You MUST read following link to understand the issues :
 
    http://bugs.sun.com/view_bug.do?bug_id=7076745
 
+Security note:
+==============
+When setting capabilities on the java JVM, this JVM can also be used by other java application and will
+have the same capabilities. This could be security risk because capabilities are given to
+java application , not your jars , and any user can use this jvm.
+
+when using this , you should install your jre into a seperated JAVA_HOME and set user permissions for files
+and directories so execution is limited to he user which run's your application.
+
+
 TODO:
 =====
 * release it
