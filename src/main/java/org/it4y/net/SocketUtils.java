@@ -113,7 +113,7 @@ public class SocketUtils {
             privateFd.setAccessible(true);
             return ((Integer) privateFd.get(fd)).intValue();
         } catch (final Exception jvmerror) {
-            log.error("RandomAccessFile:", jvmerror);
+            log.error("getFileHandle:", jvmerror);
         }
         return -1;
     }
@@ -121,6 +121,7 @@ public class SocketUtils {
     public static int getFd(final ServerSocket socket) {
         final FileDescriptor fd = getFileDescriptor(socket);
         if (fd == null) {
+            log.error("NULL fd : ServerSocket {}",socket);
             return -1;
         }
         return getFileHandle(fd);
@@ -131,6 +132,7 @@ public class SocketUtils {
     public static int getFd(final Socket socket) {
         final FileDescriptor fd = getFileDescriptor(socket);
         if (fd == null) {
+            log.error("NULL fd : Socket {}",socket);
             return -1;
         }
         return getFileHandle(fd);
@@ -147,6 +149,7 @@ public class SocketUtils {
     public static int getFd(final FileOutputStream stream ){
         final FileDescriptor fd = getFileDescriptor(stream);
         if (fd == null) {
+            log.error("NULL fd : FileOutputStream {}",stream);
             return -1;
         }
         return getFileHandle(fd);
@@ -155,6 +158,7 @@ public class SocketUtils {
     public static int getFd(final FileInputStream stream ){
         final FileDescriptor fd = getFileDescriptor(stream);
         if (fd == null) {
+            log.error("NULL fd : FileInputStream {}",random);
             return -1;
         }
         return getFileHandle(fd);
@@ -162,6 +166,7 @@ public class SocketUtils {
     public static int getFd(final RandomAccessFile random ){
         final FileDescriptor fd = getFileDescriptor(random);
         if (fd == null) {
+            log.error("NULL fd : RandomAccessFile {}",random);
             return -1;
         }
         return getFileHandle(fd);
