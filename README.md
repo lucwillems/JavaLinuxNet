@@ -23,6 +23,17 @@ Testing it:
   * Linux with kernel 3.5 or better
   * run the src/test/scripts/setup-test.sh before running the test.
 
+IPV6 :
+======
+currently IPV6 is not supported. behaviour is undefined when a IPv6 address is available on the interface.
+
+You can disable IPv6 by adding following lines in
+/etc/sysctl.d/20-noipv6.conf
+
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
 Required permissions :
 ======================
 The integration test require additional capabilities or be run as root (which i would not do !!!)
