@@ -158,7 +158,7 @@ public class SocketUtils {
     public static int getFd(final FileInputStream stream ){
         final FileDescriptor fd = getFileDescriptor(stream);
         if (fd == null) {
-            log.error("NULL fd : FileInputStream {}",random);
+            log.error("NULL fd : FileInputStream {}",stream);
             return -1;
         }
         return getFileHandle(fd);
