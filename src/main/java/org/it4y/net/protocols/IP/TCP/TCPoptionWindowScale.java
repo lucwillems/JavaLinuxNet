@@ -27,4 +27,8 @@ public class TCPoptionWindowScale implements TCPOption {
     public String toString() {
         return "wscale:" + ((int) (scale) & 0x00ff);
     }
+
+    public byte getScale() {
+        return scale;
+    }
 }

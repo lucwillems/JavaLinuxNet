@@ -41,4 +41,11 @@ public class TCPoptionTimeStamp implements TCPOption {
         s.append(")");
         return s.toString();
     }
+
+    public int getTsval() {
+        return tsval;
+    }
+    public int getTsecr() {
+        return tsecr;
+    }
 }

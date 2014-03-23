@@ -27,4 +27,8 @@ public class TCPoptionMSS implements TCPOption {
     public String toString() {
         return "mss:" + ((int) mss & 0xffff);
     }
+
+    public short getMss() {
+        return mss;
+    }
 }
