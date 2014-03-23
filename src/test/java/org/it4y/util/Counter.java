@@ -1,20 +1,23 @@
 package org.it4y.util;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Created by luc on 1/9/14.
  */
 public class Counter {
     //workaround around final/inner class access
-    private int cnt=0;
+    private AtomicInteger cnt=new AtomicInteger(0);
     public void inc() {
-          cnt++;
+          cnt.incrementAndGet();
     }
     public void dec() {
-        cnt--;
+        cnt.decrementAndGet();
     }
 
     public int getCount() {
-          return cnt;
+          return cnt.intValue();
     }
 
 }
