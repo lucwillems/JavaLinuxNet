@@ -21,6 +21,7 @@ public class JNILoader {
      */
     public static void loadLibrary(final String lib) {
         final Logger log = LoggerFactory.getLogger(JNILoader.class);
+
         //Try loading from lib path
         for (final String path : libpath) {
             final File f = new File(path + '/' + lib);
@@ -71,7 +72,10 @@ public class JNILoader {
         } else {
             log.warn("lib {} not found in jar", lib);
         }
+
         //did we got a error or just not found ?
+        //we can not continue here
+        log.error("FATAL : unable to load native lib {}"+lib);
         throw new RuntimeException("No library loaded: " + lib);
     }
 
