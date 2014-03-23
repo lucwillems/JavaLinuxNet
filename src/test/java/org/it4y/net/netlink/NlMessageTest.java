@@ -46,4 +46,36 @@ public class NlMessageTest {
         logger.info("NlErrorMessage : {}",msg.toString());
     }
 
+    @Test
+    public void testneighbourMessage() throws Exception {
+        logger.info("neighbourMessage...");
+        ByteBuffer rawData=ByteBuffer.allocate(16+12);
+        neighbourMsg msg=new neighbourMsg(rawData);
+        Assert.assertNotNull(msg);
+        Assert.assertEquals(0, msg.getNlMsgType());
+        Assert.assertEquals(0, msg.getNlMsgLen());
+        Assert.assertEquals(0, msg.getNlMsgPID());
+        Assert.assertEquals(0,msg.getNlMsgSequence());
+        Assert.assertEquals(0,msg.getNlmsg_flags());
+        Assert.assertEquals(-1,msg.getRTAIndex(""));
+        Assert.assertNotNull(msg.toString());
+        logger.info("neighbourMessage : {}",msg.toString());
+    }
+
+    @Test
+    public void testRouteMessage() throws Exception {
+        logger.info("routeMessage...");
+        ByteBuffer rawData=ByteBuffer.allocate(16+12);
+        routeMsg msg=new routeMsg(rawData);
+        Assert.assertNotNull(msg);
+        Assert.assertEquals(0, msg.getNlMsgType());
+        Assert.assertEquals(0, msg.getNlMsgLen());
+        Assert.assertEquals(0, msg.getNlMsgPID());
+        Assert.assertEquals(0,msg.getNlMsgSequence());
+        Assert.assertEquals(0,msg.getNlmsg_flags());
+        Assert.assertEquals(-1,msg.getRTAIndex(""));
+        Assert.assertNotNull(msg.toString());
+        logger.info("routeMessage : {}",msg.toString());
+    }
+
 }

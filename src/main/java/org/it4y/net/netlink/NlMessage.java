@@ -71,7 +71,7 @@ public abstract class NlMessage {
 
     public abstract int getRTAIndex(String name);
 
-    public abstract RTAMessage createRTAMessage(int position, ByteBuffer msg);
+    protected abstract RTAMessage createRTAMessage(int position, ByteBuffer msg);
 
     protected void parseRTAMessages(final ByteBuffer msg) {
         while (msg.position() < nlmsg_len) {

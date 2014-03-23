@@ -53,7 +53,7 @@ public class routeMsg extends NlMessage {
     }
 
     @Override
-    public RTAMessage createRTAMessage(final int position, final ByteBuffer msg) {
+    protected RTAMessage createRTAMessage(final int position, final ByteBuffer msg) {
         return new routeRTAMessages(position, msg);
     }
 
