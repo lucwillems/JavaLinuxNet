@@ -61,7 +61,7 @@ public class IPFactoryTest {
     * */
     static final byte[] unknownIpProtocol = {
             (byte)0x45, (byte)0x00, (byte)/* 8/....E. */
-            (byte)0x00, (byte)0x39, (byte)0xf5, (byte)0x10, (byte)0x00, (byte)0x00, (byte)0x40, (byte)0x11, (byte)/* .9....@. */
+            (byte)0x00, (byte)0x39, (byte)0xf5, (byte)0x10, (byte)0x00, (byte)0x00, (byte)0x40, (byte)0xff, (byte)/* .9....@. */
             (byte)0xb4, (byte)0x5b, (byte)0xc0, (byte)0xa8, (byte)0x00, (byte)0x90, (byte)0x08, (byte)0x08, (byte)/* .[...... */
             (byte)0x08, (byte)0x08, (byte)0xca, (byte)0xfd, (byte)0x00, (byte)0x35, (byte)0x00, (byte)0x25, (byte)/* .....5.% */
             (byte)0xd5, (byte)0x7e, (byte)0x32, (byte)0x14, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x01, (byte)/* .~2..... */
@@ -80,35 +80,39 @@ public class IPFactoryTest {
     public void testProcessUDPPacket() throws Exception {
         ByteBuffer rawData = ByteBuffer.allocate(DNSrequest.length);
         rawData.put(DNSrequest);
-        Object result=IPFactory.processRawPacket(rawData,rawData.limit());
+        IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
         org.junit.Assert.assertTrue(result instanceof UDPPacket);
+        org.junit.Assert.assertEquals(IpPacket.UDP,result.getProtocol());
     }
 
     @Test
     public void testProcessICMPPacket() throws Exception {
         ByteBuffer rawData = ByteBuffer.allocate(pingRequest.length);
         rawData.put(pingRequest);
-        Object result=IPFactory.processRawPacket(rawData,rawData.limit());
+        IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
         org.junit.Assert.assertTrue(result instanceof ICMPPacket);
+        org.junit.Assert.assertEquals(IpPacket.ICMP,result.getProtocol());
     }
 
     @Test
     public void testProcessTCPPacket() throws Exception {
         ByteBuffer rawData = ByteBuffer.allocate(tcp_sync.length);
         rawData.put(tcp_sync);
-        Object result=IPFactory.processRawPacket(rawData,rawData.limit());
+        IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
         org.junit.Assert.assertTrue(result instanceof TCPPacket);
+        org.junit.Assert.assertEquals(IpPacket.TCP,result.getProtocol());
     }
 
     @Test
     public void testProcessUnkownPacket() throws Exception {
         ByteBuffer rawData = ByteBuffer.allocate(unknownIpProtocol.length);
         rawData.put(unknownIpProtocol);
-        Object result=IPFactory.processRawPacket(rawData,rawData.limit());
+        IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
+        org.junit.Assert.assertEquals((byte)0xff,result.getProtocol());
     }
 
 }
