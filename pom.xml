@@ -88,7 +88,6 @@
                     <executable>make</executable>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 </project>

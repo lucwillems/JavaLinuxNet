@@ -35,6 +35,6 @@ iptables -t mangle -A PREROUTING -p tcp -m tcp --destination $TESTIP --dport 80 
 iptables -t mangle -A OUTPUT -p tcp -m tcp --destination $TESTIP --dport 80 -j MARK --set-mark 0x01
 
 #get some packet loss and delay
-tc qdisc del dev lo root netem
-tc qdisc add dev lo root netem loss 1% delay 100ms 20ms
+#tc qdisc del dev lo root netem
+#tc qdisc add dev lo root netem loss 1% delay 100ms 20ms
 

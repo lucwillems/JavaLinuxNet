@@ -30,6 +30,7 @@ public class TCPPacketTest {
             (byte)0x03, (byte)0x0a                                      /* .. */
     };
 
+
     @Test
     public void testTCPPacket() {
         ByteBuffer rawData=ByteBuffer.allocate(tcp_sync.length);
