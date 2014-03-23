@@ -98,5 +98,13 @@ public class IpPacketTest {
         Assert.assertEquals(IpPacket.UDP,packet.getProtocol());
         Assert.assertEquals(0x1fff,packet.getFragmentOffset());
         Assert.assertEquals(0x04,packet.getIdentification());
+
+        packet.setDF(false);
+        packet.setMF(false);
+        Assert.assertEquals(0x1fff,packet.getFragmentOffset());
+        Assert.assertFalse(packet.isDF());
+        Assert.assertFalse(packet.isMF());
+        packet.setFragmentOffset((short)0x1234);
+        Assert.assertEquals((short)0x1234,packet.getFragmentOffset());
     }
 }
