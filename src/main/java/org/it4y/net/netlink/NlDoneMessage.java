@@ -14,8 +14,8 @@ import java.nio.ByteBuffer;
 /**
  * Created by luc on 1/3/14.
  */
-public class NLDoneMessage extends NlMessage {
-    public NLDoneMessage(final ByteBuffer msg) {
+public class NlDoneMessage extends NlMessage {
+    public NlDoneMessage(final ByteBuffer msg) {
         super(msg);
     }
 

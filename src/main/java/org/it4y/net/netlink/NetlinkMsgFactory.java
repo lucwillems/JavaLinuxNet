@@ -66,7 +66,7 @@ public class NetlinkMsgFactory {
             //case libnetlink.linux.rtnetlink.RTM_DELRULE: System.out.println("Del route rule:"+nlmsg_type);break;
             //case libnetlink.linux.rtnetlink.RTM_NEWNETCONF:System.out.println("New netconf:"+nlmsg_type);break;
             case netlink.NLMSG_DONE:
-                result = new NLDoneMessage(buffer);
+                result = new NlDoneMessage(buffer);
                 break;
             case netlink.NLMSG_ERROR:
                 result = new NlErrorMessage(buffer);
