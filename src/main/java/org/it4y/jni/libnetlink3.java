@@ -54,23 +54,40 @@ public class libnetlink3 {
     }
 
     //from include <libnetlink.h>
+    //struct rtnl_handle
+    //{
+    //    int			fd;
+    //    struct sockaddr_nl	local;
+    //    struct sockaddr_nl	peer;
+    //    uint32_t		seq;
+    //    uint32_t		dump;
+    //};
+
     public static class rtnl_handle {
         public static final int SIZE = 36;
         public byte[] handle = new byte[SIZE];
-
         public rtnl_handle() {
         }
-
-        public ByteBuffer toByteBuffer() {
-            return ByteBuffer.wrap(handle);
+        public int getFd() {
+            return (handle[0]<<24)&0xff000000|(handle[1]<<16)&0xff0000|(handle[2]<<8)&0xff00|(handle[3]<<0)&0xff;
+        }
+        //TODO
+        //to complex for now
+        //public int getLocal() {
+        //    return -1;
+        //}
+        //TODO
+        //to complex for now
+        //public int getPeer() {
+        //    return -1;
+        //}
+        public int getSeq() {
+            return (handle[28]<<24)&0xff000000|(handle[29]<<16)&0xff0000|(handle[30]<<8)&0xff00|(handle[31]<<0)&0xff;
         }
 
-        private void clear() {
-            for(int i=0;i<handle.length;i++) {
-                handle[i]=0;
-            }
+        public int getDump() {
+            return (handle[32]<<24)&0xff000000|(handle[33]<<16)&0xff0000|(handle[34]<<8)&0xff00|(handle[35]<<0)&0xff;
         }
-
     }
 
     //This method should be called first before using the library
@@ -109,7 +126,6 @@ public class libnetlink3 {
 
     public static void rtnl_close(rtnl_handle handler) {
         rtnl_close(handler.handle);
-        handler.clear();
     }
 
 
