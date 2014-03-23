@@ -56,6 +56,7 @@ public class IpPacketTest {
 
    }
 
+   @Test
    public void testNotWordBoundRfc1071Checksum() {
        ByteBuffer rawBytes=ByteBuffer.allocate(3);
        //this is based on rfc1071 examples
@@ -63,7 +64,7 @@ public class IpPacketTest {
        rawBytes.put((byte)0x01);
        rawBytes.put((byte)0xf2);
        IpPacket packet = new IpPacket(rawBytes,rawBytes.limit());
-       Assert.assertEquals((short)0x220d,packet.rfc1071Checksum(0,3));
+       Assert.assertEquals((short)0xFF0C,packet.rfc1071Checksum(0,3));
    }
 
     @Test
