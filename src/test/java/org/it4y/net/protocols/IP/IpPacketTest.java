@@ -12,10 +12,28 @@ public class IpPacketTest {
 
    @Test
     public void testIpPacket() {
-       ByteBuffer rawBytes=ByteBuffer.allocate(0);
-       IpPacket ipPacket = new IpPacket(rawBytes,0);
+       ByteBuffer rawBytes=ByteBuffer.allocate(60);
+       IpPacket ipPacket = new IpPacket(rawBytes,60);
 
        Assert.assertNotNull(ipPacket);
+       ipPacket.initIpHeader();
+       ipPacket.updateChecksum();
+       Assert.assertEquals(20,ipPacket.getHeaderSize());
+       Assert.assertEquals(0,ipPacket.getTOS());
+       Assert.assertEquals(64,ipPacket.getTTL());
+       Assert.assertEquals(64,ipPacket.getTTL());
+       Assert.assertEquals(20,ipPacket.getHeaderSize());
+       Assert.assertEquals(40,ipPacket.getPayLoadSize());
+       Assert.assertEquals(60,ipPacket.getRawSize());
+       Assert.assertNotNull(ipPacket.getRawPacket());
+       ipPacket.getDstRoutingHash();
+       ipPacket.getFlowHash();
+       Assert.assertNotNull(ipPacket.toString());
+       Assert.assertFalse(ipPacket.hasOptions());
+       Assert.assertNotNull(ipPacket.getHeader());
+       Assert.assertNotNull(ipPacket.getIpHeader());
+       Assert.assertNotNull(ipPacket.getPayLoad());
+       Assert.assertNotNull(ipPacket.getIpPayLoad());
    }
 
    @Test
@@ -43,6 +61,5 @@ public class IpPacketTest {
        rawBytes.put((byte)0xf2);
        IpPacket packet = new IpPacket(rawBytes,rawBytes.limit());
        Assert.assertEquals((short)0x220d,packet.rfc1071Checksum(0,3));
-
    }
 }

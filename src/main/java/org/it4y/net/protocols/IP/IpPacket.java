@@ -230,7 +230,7 @@ public class IpPacket extends RawPacket {
 
     public void initIpHeader() {
         rawPacket.put((byte) 0x45);  //IPv4 + header size
-        rawPacket.put((byte) 0x00);        //dscp
+        rawPacket.put((byte) 0x00);        //dscp - tos
         rawPacket.putShort((short)rawSize); //size
         rawPacket.putShort((byte) 0x00); //identification
         rawPacket.putShort((byte) 0x00); //flags fragments
