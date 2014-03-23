@@ -63,7 +63,7 @@ public class TCPPacket extends IpPacket {
     public short getSourcePort() {
         return rawPacket.getShort(ip_header_size);
     }
-    public void getSourcePort(short port) {
+    public void setSourcePort(short port) {
         rawPacket.putShort(ip_header_size, port);
     }
 
@@ -138,10 +138,10 @@ public class TCPPacket extends IpPacket {
         rawPacket.putShort(ip_header_size + header_tcp_window, window);
     }
 
-    public short getChecksumSize() {
+    public short getTCPChecksum() {
         return rawPacket.getShort(ip_header_size + header_tcp_checksum);
     }
-    public void setChecksumSize(short checksum) {
+    public void setTCPChecksum(short checksum) {
         rawPacket.putShort(ip_header_size + header_tcp_checksum, checksum);
     }
 

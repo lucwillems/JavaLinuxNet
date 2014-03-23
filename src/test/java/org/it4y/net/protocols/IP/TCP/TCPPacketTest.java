@@ -61,10 +61,12 @@ public class TCPPacketTest {
         ((TCPPacket)packet).swapSourceDestinationPort();
         Assert.assertEquals((short) 0xdd60, ((TCPPacket) packet).getDestinationPort());
         Assert.assertEquals(80, ((TCPPacket) packet).getSourcePort());
-
+        Assert.assertTrue(((TCPPacket)packet).hasOptions());
+        Assert.assertEquals(19001,((TCPPacket)packet).getTCPChecksum());
         Assert.assertNotNull(((TCPPacket)packet).toString());
-        packet.getFlowHash();
-        packet.getDstRoutingHash();
+        Assert.assertEquals(0xd8388ee8,packet.getFlowHash());
+        Assert.assertEquals(0x35a4919f,packet.getDstRoutingHash());
+
 
     }
 
