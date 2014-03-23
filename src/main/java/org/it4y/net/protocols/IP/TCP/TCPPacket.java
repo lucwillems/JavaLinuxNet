@@ -56,8 +56,8 @@ public class TCPPacket extends IpPacket {
 
     public void swapSourceDestinationPort() {
         final short srcPort = rawPacket.getShort(ip_header_size);
-        rawPacket.putInt(ip_header_size, rawPacket.getInt(ip_header_size + header_tcp_dport));
-        rawPacket.putInt(ip_header_size + header_tcp_dport, srcPort);
+        rawPacket.putShort(ip_header_size, rawPacket.getShort(ip_header_size + header_tcp_dport));
+        rawPacket.putShort(ip_header_size + header_tcp_dport, srcPort);
     }
 
     public short getSourcePort() {

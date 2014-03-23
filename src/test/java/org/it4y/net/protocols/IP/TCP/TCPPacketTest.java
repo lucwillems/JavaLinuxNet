@@ -54,6 +54,18 @@ public class TCPPacketTest {
         Assert.assertFalse(((TCPPacket)packet).isPSH());
         Assert.assertFalse(((TCPPacket)packet).isRST());
         Assert.assertFalse(((TCPPacket)packet).isURG());
+        Assert.assertEquals(0,((TCPPacket)packet).getPayLoadSize());
+        Assert.assertEquals(40,((TCPPacket)packet).getHeaderSize());
+        Assert.assertEquals(20,((TCPPacket)packet).getIpHeaderSize());
+
+        ((TCPPacket)packet).swapSourceDestinationPort();
+        Assert.assertEquals((short) 0xdd60, ((TCPPacket) packet).getDestinationPort());
+        Assert.assertEquals(80, ((TCPPacket) packet).getSourcePort());
+
+        Assert.assertNotNull(((TCPPacket)packet).toString());
+        packet.getFlowHash();
+        packet.getDstRoutingHash();
+
     }
 
     @Test
