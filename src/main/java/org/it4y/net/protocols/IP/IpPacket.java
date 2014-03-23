@@ -185,7 +185,13 @@ public class IpPacket extends RawPacket {
         // Handle all pairs
         for (int i = 0; i < size; i = i + 2) {
             // Corrected to include @Andy's edits and various comments on Stack Overflow
-            data = rawPacket.get(offset + i) << 8 & 0xFF00 | rawPacket.get(offset + i + 1) & 0xFF;
+            if (i+1<size) {
+                //we have 2 bytes
+                data = rawPacket.get(offset + i) << 8 & 0xFF00 | rawPacket.get(offset + i + 1) & 0xFF;
+            } else {
+                //we only have 1 byte
+                data = rawPacket.get(offset + i) << 8 & 0xFF00;
+            }
             sum += data;
             // 1's complement carry bit correction in 16-bits (detecting sign extension)
             if ((sum & 0xFFFF0000) > 0) {

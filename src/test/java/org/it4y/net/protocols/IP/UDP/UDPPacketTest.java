@@ -57,7 +57,13 @@ public class UDPPacketTest {
         Assert.assertEquals(((UDPPacket) packet).getTTL(),64);
         Assert.assertEquals(((UDPPacket) packet).getProtocol(),17);
         Assert.assertEquals(((UDPPacket) packet).getPayLoadSize(),33);
-
+        ((UDPPacket)packet).updateChecksum();
+        ((UDPPacket)packet).getDstRoutingHash();
+        ((UDPPacket)packet).getFlowHash();
+        Assert.assertNotNull(((UDPPacket)packet).toString());
+        Assert.assertNotNull(((UDPPacket)packet).getHeader());
+        Assert.assertNotNull(((UDPPacket)packet).getPayLoad());
+        Assert.assertEquals(33,((UDPPacket)packet).getPayLoadSize());
     }
 
     @Test
