@@ -10,8 +10,8 @@ import java.nio.ByteBuffer;
 /**
  * Created by luc on 3/23/14.
  */
-public class NlMessageTest {
-    private Logger logger= LoggerFactory.getLogger(NlMessageTest.class);
+public class netLinkMessageTest {
+    private Logger logger= LoggerFactory.getLogger(netLinkMessageTest.class);
 
     @Test
     public void testNlErrorMessage() throws Exception {
@@ -25,7 +25,7 @@ public class NlMessageTest {
         Assert.assertEquals(0,msg.getNlMsgSequence());
         Assert.assertEquals(0,msg.getNlmsg_flags());
         Assert.assertEquals(-1,msg.getRTAIndex(""));
-        Assert.assertNull(msg.createRTAMessage(0,rawData));
+        Assert.assertNull(msg.createRTAMessage(0, rawData));
         Assert.assertNotNull(msg.toString());
         logger.info("NlErrorMessage : {}",msg.toString());
     }
@@ -57,7 +57,7 @@ public class NlMessageTest {
         Assert.assertEquals(0, msg.getNlMsgPID());
         Assert.assertEquals(0,msg.getNlMsgSequence());
         Assert.assertEquals(0,msg.getNlmsg_flags());
-        Assert.assertEquals(-1,msg.getRTAIndex(""));
+        Assert.assertEquals(-1, msg.getRTAIndex(""));
         Assert.assertNotNull(msg.toString());
         logger.info("neighbourMessage : {}",msg.toString());
     }
@@ -73,7 +73,7 @@ public class NlMessageTest {
         Assert.assertEquals(0, msg.getNlMsgPID());
         Assert.assertEquals(0,msg.getNlMsgSequence());
         Assert.assertEquals(0,msg.getNlmsg_flags());
-        Assert.assertEquals(-1,msg.getRTAIndex(""));
+        Assert.assertEquals(-1, msg.getRTAIndex(""));
         Assert.assertNotNull(msg.toString());
         logger.info("routeMessage : {}",msg.toString());
     }
