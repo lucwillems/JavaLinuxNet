@@ -14,7 +14,7 @@ import java.io.InputStream;
  */
 public class JNILoader {
     static String tmpPath = "/tmp/linux-net";
-    static String[] libpath = new String[]{"nlib", "/usr/lib", tmpPath};
+    static String[] libpath = new String[]{"/usr/lib", tmpPath};
 
     /**
      * Load a libary from well known locations
