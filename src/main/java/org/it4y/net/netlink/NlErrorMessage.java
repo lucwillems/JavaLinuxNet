@@ -22,7 +22,7 @@ public class NlErrorMessage extends NlMessage {
 
     @Override
     public int getRTAIndex(final String name) {
-        return -1;
+        return RTA_INDEX_NOTSUPPORTED;
     }
 
     @Override

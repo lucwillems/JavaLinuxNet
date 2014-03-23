@@ -17,6 +17,7 @@ import java.util.HashMap;
  */
 public abstract class NlMessage {
 
+    public final int RTA_INDEX_NOTSUPPORTED=-1;
 
     //Read nlmsg header
     protected int nlmsg_len;
