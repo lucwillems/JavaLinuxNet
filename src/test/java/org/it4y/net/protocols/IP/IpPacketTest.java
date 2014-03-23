@@ -18,13 +18,16 @@ public class IpPacketTest {
        Assert.assertNotNull(ipPacket);
        ipPacket.initIpHeader();
        ipPacket.updateChecksum();
-       Assert.assertEquals(20,ipPacket.getHeaderSize());
-       Assert.assertEquals(0,ipPacket.getTOS());
-       Assert.assertEquals(64,ipPacket.getTTL());
-       Assert.assertEquals(64,ipPacket.getTTL());
-       Assert.assertEquals(20,ipPacket.getHeaderSize());
-       Assert.assertEquals(40,ipPacket.getPayLoadSize());
-       Assert.assertEquals(60,ipPacket.getRawSize());
+       Assert.assertEquals(20, ipPacket.getHeaderSize());
+       Assert.assertEquals(0, ipPacket.getTOS());
+       Assert.assertEquals(64, ipPacket.getTTL());
+       Assert.assertEquals(64, ipPacket.getTTL());
+       Assert.assertEquals(20, ipPacket.getHeaderSize());
+       Assert.assertEquals(40, ipPacket.getPayLoadSize());
+       Assert.assertEquals(60, ipPacket.getRawSize());
+       Assert.assertEquals(0, ipPacket.getIdentification());
+       Assert.assertEquals(0, ipPacket.getFlags());
+       Assert.assertEquals(0,ipPacket.getFragmentOffset());
        Assert.assertNotNull(ipPacket.getRawPacket());
        ipPacket.getDstRoutingHash();
        ipPacket.getFlowHash();
@@ -62,4 +65,38 @@ public class IpPacketTest {
        IpPacket packet = new IpPacket(rawBytes,rawBytes.limit());
        Assert.assertEquals((short)0x220d,packet.rfc1071Checksum(0,3));
    }
+
+    @Test
+    public void testCreateRawIp(){
+        ByteBuffer rawBytes=ByteBuffer.allocate(60);
+        IpPacket packet = new IpPacket(rawBytes,60);
+        Assert.assertNotNull(packet);
+        packet.resetBuffer();
+        packet.initIpHeader();
+        packet.setSourceAddress(0x08080808);
+        packet.setDestinationAddress(0x08080404);
+        packet.setTOS((byte)0x01);
+        packet.setTTL((byte)0x02);
+        packet.setProtocol(IpPacket.UDP);
+        packet.setFragmentOffset((short)0x1fff);
+        packet.setIdentification((short)0x04);
+        //set some flags
+        Assert.assertFalse(packet.isDF());
+        Assert.assertFalse(packet.isMF());
+        packet.setDF(true);
+        Assert.assertTrue(packet.isDF());
+        Assert.assertFalse(packet.isMF());
+        packet.setMF(true);
+        Assert.assertTrue(packet.isDF());
+        Assert.assertTrue(packet.isMF());
+        packet.updateChecksum();
+        //validate
+        Assert.assertEquals(0x08080808,packet.getSourceAddress());
+        Assert.assertEquals(0x08080404,packet.getDestinationAddress());
+        Assert.assertEquals(0x01,packet.getTOS());
+        Assert.assertEquals(0x02,packet.getTTL());
+        Assert.assertEquals(IpPacket.UDP,packet.getProtocol());
+        Assert.assertEquals(0x1fff,packet.getFragmentOffset());
+        Assert.assertEquals(0x04,packet.getIdentification());
+    }
 }

@@ -110,19 +110,57 @@ public class IpPacket extends RawPacket {
     public short getIdentification() {
         return rawPacket.getShort(header_identification);
     }
+    public void setIdentification(short id) {
+        rawPacket.putShort(header_identification,id);
+    }
+
+    public boolean isDF() {
+        byte data=rawPacket.get(header_flags);
+        return (byte) (data & (byte) 0x40)==(byte)0x40;
+    }
+
+    public void setDF(boolean df) {
+        byte data=rawPacket.get(header_flags);
+        if (df) {
+            data= (byte) (data | ((byte)0x40));
+        } else {
+            data= (byte) (data & ~((byte)0x40));
+        }
+        rawPacket.put(header_flags,data);
+    }
+
+    public boolean isMF() {
+        return (byte) (rawPacket.get(header_flags) & (byte) 0x20)==(byte)0x20;
+    }
+
+    public void setMF(boolean mf) {
+        byte data=rawPacket.get(header_flags);
+        if (mf) {
+            data= (byte) (data | ((byte)0x20));
+        } else {
+            data= (byte) (data & ~((byte)0x20));
+        }
+        rawPacket.put(header_flags,data);
+    }
 
     public byte getFlags() {
         return (byte) (rawPacket.get(header_flags) & (byte) 0xe0 >> (byte) 5);
     }
 
     public short getFragmentOffset() {
-        return rawPacket.getShort(header_fragments);
+        short data= (short) (rawPacket.getShort(header_fragments) & (short)0x1fff);
+        return data;
+    }
+    public void  setFragmentOffset(short offset) {
+        short data=rawPacket.getShort(header_fragments);
+        data= (short) ((short) (data)&(short)0xe000);
+        data= (short) (data+offset);
+        rawPacket.putShort(header_fragments, data);
     }
 
     public byte getTTL() {
         return rawPacket.get(header_ttl);
     }
-
     public void setTTL(final byte ttl) {
         rawPacket.put(header_ttl, ttl);
     }
