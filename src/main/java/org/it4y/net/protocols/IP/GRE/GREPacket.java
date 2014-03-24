@@ -90,7 +90,7 @@ public class GREPacket extends IpPacket {
     }
 
     public short getEmbeddedProtocol() {
-        return rawPacket.get(ip_header_offset + header_gre_protocol);
+        return rawPacket.getShort(ip_header_offset + header_gre_protocol);
     }
 
     public void setEmbeddedProtocol(short protocol) {

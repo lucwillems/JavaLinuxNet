@@ -110,6 +110,8 @@ public class grePacketTest {
         Assert.assertEquals(4, gre.getHeaderSize());
         Assert.assertEquals(84, gre.getPayLoadSize());
         ByteBuffer payload=gre.getPayLoad();
+        Assert.assertEquals(0x0800,gre.getEmbeddedProtocol());
+        Assert.assertEquals(0x0,gre.getGreFlags());
         //payload is ICMP packet so lets see if this works
         ICMPPacket icmpPacket = (ICMPPacket) IPFactory.processRawPacket(payload,payload.limit());
         Assert.assertNotNull(icmpPacket);
@@ -135,6 +137,9 @@ public class grePacketTest {
         Assert.assertEquals(0x44c4, gre.getGreChecksum());
         Assert.assertEquals(16, gre.getHeaderSize());
         Assert.assertEquals(84, gre.getPayLoadSize());
+        Assert.assertEquals(0x0800,gre.getEmbeddedProtocol());
+        Assert.assertEquals((short)0xb000,gre.getGreFlags());
+
         ByteBuffer payload=gre.getPayLoad();
         //payload is ICMP packet so lets see if this works
         ICMPPacket icmpPacket = (ICMPPacket) IPFactory.processRawPacket(payload,payload.limit());
