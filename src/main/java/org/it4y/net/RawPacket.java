@@ -56,6 +56,7 @@ public abstract class RawPacket {
 
     public abstract int getDstRoutingHash();
     public abstract int getFlowHash();
+    public abstract int getReverseFlowHash();
 
 
 }

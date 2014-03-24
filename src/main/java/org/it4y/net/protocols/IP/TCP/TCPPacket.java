@@ -281,4 +281,15 @@ public class TCPPacket extends IpPacket {
         return jhash.jhash_3words(dst, src, port,proto);
     }
 
+    @Override
+    public int getReverseFlowHash() {
+        int src=rawPacket.getInt(header_dst);  //32 dest address
+        int dst=rawPacket.getInt(header_src);  //32 src address
+        int proto=((int)rawPacket.get(header_protocol)&0xff)<<16;
+        int dport=((int)rawPacket.getShort(ip_header_size+header_tcp_sport)) &0xffff;
+        int sport=((int)rawPacket.getShort(ip_header_size+header_tcp_dport)) &0xffff;
+        int port=sport<<16+dport;
+        return jhash.jhash_3words(dst, src, port,proto);
+    }
+
 }

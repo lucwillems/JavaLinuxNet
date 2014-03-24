@@ -292,4 +292,11 @@ public class IpPacket extends RawPacket {
         return jhash.jhash_3words(dst, src, proto, 0);
     }
 
+    public int getReverseFlowHash() {
+        final int src=rawPacket.getInt(header_dst);  //32 dest address
+        final int dst=rawPacket.getInt(header_src);  //32 src address
+        final int proto=((int)rawPacket.get(header_protocol) &0xff)<<16;
+        return jhash.jhash_3words(dst, src, proto, 0);
+    }
+
 }
