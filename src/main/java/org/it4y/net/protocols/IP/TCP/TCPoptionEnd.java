@@ -10,17 +10,18 @@
 package org.it4y.net.protocols.IP.TCP;
 
 public class TCPoptionEnd implements TCPOption {
+    public static final String name="end";
+    public static final int length=1;
+
     public TCPoptionEnd() {
     }
 
     ;
 
-    public String getName() {
-        return "end";
-    }
+    public String getName() {  return name;  }
 
     public int getLength() {
-        return 1;
+        return length;
     }
 
     public String toString() {

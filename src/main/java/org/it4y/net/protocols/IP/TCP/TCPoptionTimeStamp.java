@@ -10,6 +10,9 @@
 package org.it4y.net.protocols.IP.TCP;
 
 public class TCPoptionTimeStamp implements TCPOption {
+    public static final String name="timestamps";
+    public static final int length=10;
+
     private int tsval = 0;
     private int tsecr = 0;
 
@@ -18,12 +21,10 @@ public class TCPoptionTimeStamp implements TCPOption {
         this.tsecr = tsecr;
     }
 
-    public String getName() {
-        return "timestamps";
-    }
+    public String getName() {return name; }
 
     public int getLength() {
-        return 10;
+        return length;
     }
 
     public String toString() {

@@ -10,15 +10,18 @@
 package org.it4y.net.protocols.IP.TCP;
 
 public class TCPoptionNOP implements TCPOption {
+    public static final String name="NOP";
+    public static final int length=1;
+
     public TCPoptionNOP() {
     }
 
     public String getName() {
-        return "NOP";
+        return name;
     }
 
     public int getLength() {
-        return 1;
+        return length;
     }
 
     public String toString() {

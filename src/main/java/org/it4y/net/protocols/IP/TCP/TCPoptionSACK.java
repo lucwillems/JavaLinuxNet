@@ -10,16 +10,19 @@
 package org.it4y.net.protocols.IP.TCP;
 
 public class TCPoptionSACK implements TCPOption {
+    public static final String name="SACK";
+    public static final int length=2;
+
 
     public TCPoptionSACK() {
     }
 
     public String getName() {
-        return "SACK";
+        return name;
     }
 
     public int getLength() {
-        return 2;
+        return length;
     }
 
     public String toString() {

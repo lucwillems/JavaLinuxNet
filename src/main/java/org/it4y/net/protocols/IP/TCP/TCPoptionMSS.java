@@ -10,18 +10,21 @@
 package org.it4y.net.protocols.IP.TCP;
 
 public class TCPoptionMSS implements TCPOption {
-    short mss;
+    public static final String name="mss";
+    public static final int length=4;
+
+    private short mss;
 
     public TCPoptionMSS(short mss) {
         this.mss = mss;
     }
 
     public String getName() {
-        return "mss";
+        return name;
     }
 
     public int getLength() {
-        return 4;
+        return length;
     }
 
     public String toString() {

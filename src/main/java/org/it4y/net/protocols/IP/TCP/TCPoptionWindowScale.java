@@ -10,18 +10,19 @@
 package org.it4y.net.protocols.IP.TCP;
 
 public class TCPoptionWindowScale implements TCPOption {
-    byte scale;
+    public static final String name="wscale";
+    public static final int length=3;
+
+    private byte scale;
 
     public TCPoptionWindowScale(byte scale) {
         this.scale = scale;
     }
 
-    public String getName() {
-        return "wscale";
-    }
+    public String getName() { return name; }
 
     public int getLength() {
-        return 3;
+        return length;
     }
 
     public String toString() {

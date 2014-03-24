@@ -353,6 +353,8 @@ public class TCPPacketTest {
         Assert.assertTrue(o instanceof TCPoptionWindowScale);
         Assert.assertNotNull(o.toString());
         Assert.assertEquals(10, ((TCPoptionWindowScale) o).getScale());
+        Assert.assertEquals(TCPoptionWindowScale.name,o.getName());
+        Assert.assertEquals(TCPoptionWindowScale.length,o.getLength());
     }
 
     @Test
@@ -365,6 +367,11 @@ public class TCPPacketTest {
         Assert.assertTrue(packet instanceof TCPPacket);
         TCPOption o=((TCPPacket) packet).getOptionByType(TCPOption.SACK);
         Assert.assertNull(o);
+        //some dummy testing
+        o=new TCPoptionSACK();
+        Assert.assertEquals(TCPoptionSACK.name,o.getName());
+        Assert.assertEquals(TCPoptionSACK.length, o.getLength());
+        Assert.assertNotNull(o.toString());
     }
 
     @Test
@@ -380,6 +387,8 @@ public class TCPPacketTest {
         Assert.assertNotNull(o.toString());
         Assert.assertEquals(0, ((TCPoptionTimeStamp) o).getTsecr());
         Assert.assertEquals(0x00fd0e76, ((TCPoptionTimeStamp) o).getTsval());
+        Assert.assertEquals(TCPoptionTimeStamp.name,o.getName());
+        Assert.assertEquals(TCPoptionTimeStamp.length,o.getLength());
     }
 
     @Test
@@ -393,6 +402,9 @@ public class TCPPacketTest {
         TCPOption o=((TCPPacket) packet).getOptionByType(TCPOption.NOP);
         Assert.assertNotNull(o);
         Assert.assertNotNull(o.toString());
+        Assert.assertEquals(TCPoptionNOP.name,o.getName());
+        Assert.assertEquals(TCPoptionNOP.length,o.getLength());
+
     }
 
     @Test
@@ -405,6 +417,11 @@ public class TCPPacketTest {
         Assert.assertTrue(packet instanceof TCPPacket);
         TCPOption o=((TCPPacket) packet).getOptionByType(TCPOption.END);
         Assert.assertNull(o);
+        //some dummy testing
+        o=new TCPoptionEnd();
+        Assert.assertEquals(TCPoptionEnd.name,o.getName());
+        Assert.assertEquals(TCPoptionEnd.length,o.getLength());
+        Assert.assertNotNull(o.toString());
     }
 
     @Test
