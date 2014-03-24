@@ -12,6 +12,7 @@ package org.it4y.net.protocols.IP;
 import org.it4y.net.protocols.IP.GRE.GREPacket;
 import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IPIP.IPIPPacket;
+import org.it4y.net.protocols.IP.IPv6Tunnel.IPv6TunnelPacket;
 import org.it4y.net.protocols.IP.TCP.TCPPacket;
 import org.it4y.net.protocols.IP.UDP.UDPPacket;
 
@@ -45,6 +46,11 @@ public class IPFactory {
         put((byte) UDPPacket.PROTOCOL , new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new UDPPacket(buffer, size);
+            }
+        });
+        put((byte) IPv6TunnelPacket.PROTOCOL , new ipv4Factory() {
+            public IpPacket create(ByteBuffer buffer, int size) {
+                return new IPv6TunnelPacket(buffer, size);
             }
         });
         put((byte) GREPacket.PROTOCOL , new ipv4Factory() {

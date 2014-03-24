@@ -1,7 +1,6 @@
 package org.it4y.net.protocols.IP.IPv6Tunnel;
 
 import junit.framework.Assert;
-import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.junit.Test;
@@ -36,13 +35,17 @@ public class IPv6TunnelPacketTest {
 
     @Test
     public void testIPv6TunnelPacket() {
-        ByteBuffer rawData=ByteBuffer.allocate(ipv6Tunnel_1.length);
+        ByteBuffer rawData = ByteBuffer.allocate(ipv6Tunnel_1.length);
         rawData.put(ipv6Tunnel_1);
         rawData.flip();
         IpPacket packet = IPFactory.processRawPacket(rawData, (byte) rawData.limit());
         Assert.assertNotNull(packet);
         logger.info("IPv6Tunnel packet: {}", packet.toString());
-        ByteBuffer payload=packet.getPayLoad();
+        IPv6TunnelPacket ipv6 = (IPv6TunnelPacket) packet;
+        ByteBuffer payload = ipv6.getPayLoad();
+        Assert.assertNotNull(ipv6.getHeader());
+        Assert.assertEquals(0, ipv6.getHeaderSize());
+        Assert.assertEquals(84, ipv6.getPayLoadSize());
     }
 
 }
