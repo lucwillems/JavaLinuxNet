@@ -106,7 +106,15 @@ public class grePacketTest {
         Assert.assertFalse(gre.hasGreKeys());
         Assert.assertFalse(gre.hasGreChecksum());
         Assert.assertFalse(gre.hasGreSequenceNumbers());
-
+        Assert.assertNotNull(gre.getHeader());
+        Assert.assertEquals(4, gre.getHeaderSize());
+        Assert.assertEquals(84, gre.getPayLoadSize());
+        ByteBuffer payload=gre.getPayLoad();
+        //payload is ICMP packet so lets see if this works
+        ICMPPacket icmpPacket = (ICMPPacket) IPFactory.processRawPacket(payload,payload.limit());
+        Assert.assertNotNull(icmpPacket);
+        logger.info("  gre payload: {}",icmpPacket.toString());
+        Assert.assertEquals(ICMPPacket.ECHO_REQUEST,icmpPacket.getType());
     }
 
     @Test
@@ -122,9 +130,17 @@ public class grePacketTest {
         Assert.assertTrue(gre.hasGreKeys());
         Assert.assertTrue(gre.hasGreChecksum());
         Assert.assertTrue(gre.hasGreSequenceNumbers());
-        Assert.assertEquals(1,gre.getGreKey());
-        Assert.assertEquals(0x33a,gre.getGreSeqNumber());
-        Assert.assertEquals(0x44c4,gre.getGreChecksum());
+        Assert.assertEquals(1, gre.getGreKey());
+        Assert.assertEquals(0x33a, gre.getGreSeqNumber());
+        Assert.assertEquals(0x44c4, gre.getGreChecksum());
+        Assert.assertEquals(16, gre.getHeaderSize());
+        Assert.assertEquals(84, gre.getPayLoadSize());
+        ByteBuffer payload=gre.getPayLoad();
+        //payload is ICMP packet so lets see if this works
+        ICMPPacket icmpPacket = (ICMPPacket) IPFactory.processRawPacket(payload,payload.limit());
+        Assert.assertNotNull(icmpPacket);
+        logger.info("  gre payload: {}",icmpPacket.toString());
+        Assert.assertEquals(ICMPPacket.ECHO_REQUEST,icmpPacket.getType());
     }
 
 }
