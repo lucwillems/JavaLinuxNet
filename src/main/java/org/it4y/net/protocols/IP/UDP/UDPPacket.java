@@ -17,13 +17,15 @@ import java.nio.ByteBuffer;
 
 public class UDPPacket extends IpPacket {
 
+    public static final byte PROTOCOL=17;
     public static final int UDP_HEADER_SIZE = 4;
+
     private int ip_header_size;
 
-    public static final int header_udp_sport=0;
-    public static final int header_udp_dport=2;
-    public static final int header_udp_length=4;
-    public static final int header_udp_checksum=6;
+    private static final int header_udp_sport=0;
+    private static final int header_udp_dport=2;
+    private static final int header_udp_length=4;
+    private static final int header_udp_checksum=6;
 
     public UDPPacket(ByteBuffer buffer, int size) {
         super(buffer, size);

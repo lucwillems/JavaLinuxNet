@@ -83,7 +83,7 @@ public class IPFactoryTest {
         IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
         org.junit.Assert.assertTrue(result instanceof UDPPacket);
-        org.junit.Assert.assertEquals(IpPacket.UDP,result.getProtocol());
+        org.junit.Assert.assertEquals(UDPPacket.PROTOCOL,result.getProtocol());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class IPFactoryTest {
         IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
         org.junit.Assert.assertTrue(result instanceof ICMPPacket);
-        org.junit.Assert.assertEquals(IpPacket.ICMP,result.getProtocol());
+        org.junit.Assert.assertEquals(ICMPPacket.PROTOCOL,result.getProtocol());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class IPFactoryTest {
         IpPacket result=IPFactory.processRawPacket(rawData,rawData.limit());
         Assert.assertNotNull(result);
         org.junit.Assert.assertTrue(result instanceof TCPPacket);
-        org.junit.Assert.assertEquals(IpPacket.TCP,result.getProtocol());
+        org.junit.Assert.assertEquals(TCPPacket.PROTOCOL,result.getProtocol());
     }
 
     @Test

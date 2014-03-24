@@ -9,16 +9,17 @@ import java.nio.ByteBuffer;
  * Created by luc on 3/24/14.
  */
 public class GREPacket extends IpPacket {
-
+    public static final byte PROTOCOL=47;
     public static final int GRE_HEADER_SIZE = 4;
-    private int ip_header_offset;
 
-    public static final int header_gre_flags=0;
-    public static final int header_gre_protocol=2;
-    public static final int header_gre_checksum=4;
-    public static final int header_gre_reserved=6;
-    public static final int header_gre_key=8;
-    public static final int header_gre_seq=12;
+    private static final int header_gre_flags=0;
+    private static final int header_gre_protocol=2;
+    private static final int header_gre_checksum=4;
+    private static final int header_gre_reserved=6;
+    private static final int header_gre_key=8;
+    private static final int header_gre_seq=12;
+
+    private int ip_header_offset;
 
     public GREPacket(ByteBuffer buffer, int size) {
         super(buffer, size);

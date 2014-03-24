@@ -18,20 +18,22 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 public class TCPPacket extends IpPacket {
-    private Logger log= LoggerFactory.getLogger(TCPPacket.class);
+    public static final int PROTOCOL=6;
 
+    private static final int header_tcp_sport=0;
+    private static final int header_tcp_dport=2;
+    private static final int header_tcp_sequence_number=4;
+    private static final int header_tcp_ack_number=8;
+    private static final int header_tcp_data_offset=12;
+    private static final int header_tcp_flags1=12;
+    private static final int header_tcp_flags2=13;
+    private static final int header_tcp_window=14;
+    private static final int header_tcp_checksum=16;
+    private static final int header_tcp_urgentpointer=18;
+
+    private Logger log= LoggerFactory.getLogger(TCPPacket.class);
     private int ip_header_size;
 
-    public static final int header_tcp_sport=0;
-    public static final int header_tcp_dport=2;
-    public static final int header_tcp_sequence_number=4;
-    public static final int header_tcp_ack_number=8;
-    public static final int header_tcp_data_offset=12;
-    public static final int header_tcp_flags1=12;
-    public static final int header_tcp_flags2=13;
-    public static final int header_tcp_window=14;
-    public static final int header_tcp_checksum=16;
-    public static final int header_tcp_urgentpointer=18;
 
     public TCPPacket(ByteBuffer buffer, int size) {
         super(buffer, size);

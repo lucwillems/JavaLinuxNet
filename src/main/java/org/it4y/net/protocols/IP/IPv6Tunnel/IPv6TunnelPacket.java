@@ -1,31 +1,32 @@
-package org.it4y.net.protocols.IP.IPIP;
+package org.it4y.net.protocols.IP.IPv6Tunnel;
 
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.util.Hexdump;
+
 import java.nio.ByteBuffer;
 
 /**
  * Created by luc on 3/24/14.
- * bassed on RFC1853
  */
-public class IPIPPacket extends IpPacket{
-    public static final byte PROTOCOL=4;
-    public static final int IPIP_HEADER_SIZE = 0;
+public class IPv6TunnelPacket extends IpPacket {
+    public static final byte PROTOCOL=41;
+    public static final int IPv6Tunnel_HEADER_SIZE = 0;
 
     private int ip_header_offset;
 
-    public IPIPPacket(ByteBuffer buffer, int size) {
+    public IPv6TunnelPacket(ByteBuffer buffer, int size) {
         super(buffer, size);
         ip_header_offset=super.getHeaderSize();
     }
-    public IPIPPacket(IpPacket ip) {
+
+    public IPv6TunnelPacket(IpPacket ip) {
         super(ip.getRawPacket(),ip.getRawSize());
         //get IP header size
         ip_header_offset=ip.getHeaderSize();
     }
 
     public int getHeaderSize() {
-        return IPIP_HEADER_SIZE;
+        return IPv6Tunnel_HEADER_SIZE;
     }
 
     public int getPayLoadSize() {
@@ -48,6 +49,7 @@ public class IPIPPacket extends IpPacket{
         return rawPacket.slice();
     }
 
+
     @Override
     public String toString() {
         final StringBuilder s=new StringBuilder(128);
@@ -56,5 +58,6 @@ public class IPIPPacket extends IpPacket{
         }
         return s.toString();
     }
+
 
 }

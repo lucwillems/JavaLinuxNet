@@ -27,27 +27,27 @@ public class IPFactory {
     }
 
     public static final Map<Byte, ipv4Factory> ipv4FactoryMap = Collections.unmodifiableMap(new HashMap<Byte, ipv4Factory>() {{
-        put((byte) 1, new ipv4Factory() {
+        put((byte) ICMPPacket.PROTOCOL, new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new ICMPPacket(buffer, size);
             }
         });
-        put((byte) 4, new ipv4Factory() {
+        put((byte) IPIPPacket.PROTOCOL, new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new IPIPPacket(buffer, size);
             }
         });
-        put((byte) 6, new ipv4Factory() {
+        put((byte) TCPPacket.PROTOCOL , new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new TCPPacket(buffer, size);
             }
         });
-        put((byte) 17, new ipv4Factory() {
+        put((byte) UDPPacket.PROTOCOL , new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new UDPPacket(buffer, size);
             }
         });
-        put((byte) 47, new ipv4Factory() {
+        put((byte) GREPacket.PROTOCOL , new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new GREPacket(buffer, size);
             }

@@ -3,6 +3,7 @@ package org.it4y.integration.jni;
 import junit.framework.Assert;
 import org.it4y.integration.utils;
 import org.it4y.jni.libc;
+import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.net.tuntap.TunDevice;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class IT_tuntapWriteTest {
             log.info("device: {} fd: {}",tun.getDevice(),tun.getFd());
 
             int size=1000;
-            ByteBuffer ipPacket= utils.getBadIpPacket(IpPacket.ICMP, size);
+            ByteBuffer ipPacket= utils.getBadIpPacket(ICMPPacket.PROTOCOL, size);
             tun.writeByteBuffer(ipPacket,size);
         } catch (libc.ErrnoException errno) {
             //invalid argument

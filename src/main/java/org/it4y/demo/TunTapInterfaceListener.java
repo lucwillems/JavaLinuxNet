@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
+import org.it4y.net.protocols.IP.TCP.TCPPacket;
 import org.it4y.net.protocols.IP.UDP.UDPPacket;
 import org.it4y.net.tuntap.TunDevice;
 import org.it4y.util.Hexdump;
@@ -118,7 +119,7 @@ public class TunTapInterfaceListener extends TestRunner {
                     ip.getDstRoutingHash();//whats my hash
                     bytes.addAndGet(size);
                     cnt++;
-                    if (ip.getProtocol() == IpPacket.ICMP) {
+                    if (ip.getProtocol() == ICMPPacket.PROTOCOL) {
                         icmplimiter.acquire(size);
                         //log.info("{}",ip);
                         if (((ICMPPacket) ip).isEchoRequest()) {
@@ -134,7 +135,7 @@ public class TunTapInterfaceListener extends TestRunner {
                             //    hexDumpOut(ip.getRawPacket(),ip.getRawSize());
                             //}
                         }
-                    } else if (ip.getProtocol() == IpPacket.UDP) {
+                    } else if (ip.getProtocol() == UDPPacket.PROTOCOL) {
                         //we must reset Buffer before manipulating it !!
                         //System.out.println("IP: " + ip.toString());
                         ip.resetBuffer();
@@ -144,7 +145,7 @@ public class TunTapInterfaceListener extends TestRunner {
                         ((UDPPacket) ip).swapSourceDestinationPort();
                         tundev.writeByteBuffer(ip.getRawPacket(), ip.getRawSize());
                         //hexDumpOut(ip.getRawPacket(), ip.getRawSize());
-                    } else if (ip.getProtocol() == IpPacket.TCP) {
+                    } else if (ip.getProtocol() == TCPPacket.PROTOCOL) {
                         //we must reset Buffer before manipulating it !!
                         log.info("{}",ip);
                     } else {

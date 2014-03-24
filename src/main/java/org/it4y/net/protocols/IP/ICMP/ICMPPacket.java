@@ -14,21 +14,23 @@ import org.it4y.jni.linux.jhash;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.util.Hexdump;
 
+import java.net.ProtocolException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
 public class ICMPPacket extends IpPacket {
+    public static final byte PROTOCOL=1;
 
     public static final byte ICMP_HEADER_SIZE = 4;
     public static final byte ECHO_REPLY = (byte) 0;
     public static final byte ECHO_REQUEST = (byte) 8;
 
-    public static final int header_icmp_type=0;
-    public static final int header_icmp_code=1;
-    public static final int header_icmp_checksum=2;
-    public static final int icmp_identifier=4;
-    public static final int icmp_seqnumber=6;
-    public static final int icmp_timestamp=8;
+    private static final int header_icmp_type=0;
+    private static final int header_icmp_code=1;
+    private static final int header_icmp_checksum=2;
+    private static final int icmp_identifier=4;
+    private static final int icmp_seqnumber=6;
+    private static final int icmp_timestamp=8;
 
     private int ip_header_offset=0;
 

@@ -16,10 +16,6 @@ import java.nio.ByteBuffer;
 
 public class IpPacket extends RawPacket {
 
-    public static final byte ICMP = (byte) 1;
-    public static final byte UDP = (byte) 17;
-    public static final byte TCP = (byte) 6;
-
     //byte position of IP header
     public static final int header_version=0;
     public static final int header_tos=1;
