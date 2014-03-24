@@ -11,17 +11,27 @@ import java.io.InputStream;
 /**
  * Created by luc on 12/28/13.
  * Use this class as for loading of .so files from any class implementing native methods
+ *
+ * The loader will first look into /usr/lib . if not found it will look into jar which include this class.
+ * If found , it will copy the .so file to /tmp directory and load from there.
+ *
+ * We will remove any file retrieved from JAR on exist, just to make sure we have the latest version
+ *
+ *
  */
 public class JNILoader {
-    static String tmpPath = "/tmp/linux-net";
-    static String[] libpath = new String[]{"/usr/lib", tmpPath};
+    public  static String customPathKEY="JNILoader.tmpPath";
+    private static String tmpPath = "/tmp/linux-net";
+
+    //Predefined location of librabry path.
+    private static String[] libpath = new String[]{"/usr/lib","/usr/lib/jlinux-net"};
 
     /**
-     * Load a libary from well known locations
+     * Load .so library from different location.
+     * @param lib the library (filename only !!!)
      */
     public static void loadLibrary(final String lib) {
         final Logger log = LoggerFactory.getLogger(JNILoader.class);
-
         //Try loading from lib path
         for (final String path : libpath) {
             final File f = new File(path + '/' + lib);
@@ -45,22 +55,24 @@ public class JNILoader {
         //cleanup any old file
         if (targetFile.exists()) {
             log.info("cleanup old {}", targetFile);
-            targetFile.delete();
+            if(!targetFile.delete()) {
+                //should never happen but you never know
+                log.warn("Could not delete old {}",targetFile);
+            };
         }
         targetFile.deleteOnExit();
 
         // extract file into the current directory
         InputStream reader = JNILoader.class.getResourceAsStream("/" + lib);
+        FileOutputStream writer=null;
         if (reader != null) {
             try {
-                FileOutputStream writer = new FileOutputStream(targetFile);
+                writer = new FileOutputStream(targetFile);
                 byte[] buffer = new byte[4096];
                 int bytesRead = 0;
                 while ((bytesRead = reader.read(buffer)) != -1) {
                     writer.write(buffer, 0, bytesRead);
                 }
-                writer.close();
-                reader.close();
                 //load native lib
                 System.load(targetFile.getAbsolutePath());
                 log.info("native lib loaded: {}", targetFile);
@@ -68,6 +80,21 @@ public class JNILoader {
                 //
             } catch (IOException io) {
                 log.error("Fatal IO error : {}", io.getMessage());
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ignore) {
+                        log.warn("could not close resource {}",lib);
+                    }
+                }
+                if (writer != null ) {
+                    try {
+                        writer.close();
+                    } catch (IOException ignore) {
+                        log.warn("could not close {}",targetFile);
+                    }
+                }
             }
         } else {
             log.warn("lib {} not found in jar", lib);
@@ -75,15 +102,30 @@ public class JNILoader {
 
         //did we got a error or just not found ?
         //we can not continue here
-        log.error("FATAL : unable to load native lib {}"+lib);
+        log.error("FATAL : unable to load native lib {}",lib);
         throw new RuntimeException("No library loaded: " + lib);
     }
 
+    /**
+     *
+     * @return Directory of tmp file for .so loading
+     */
     private static String getTargetFolder() {
-        File dir = new File("/tmp/linux-net");
-        dir.deleteOnExit();
-        if (!dir.exists())
-            dir.mkdirs();
-        return dir.getAbsolutePath();
+        final Logger log = LoggerFactory.getLogger(JNILoader.class);
+        File tmpDir=null;
+        if (System.getProperty(customPathKEY) != null) {
+            tmpDir=new File(System.getProperty(customPathKEY));
+            log.info("using custom tmp {}",tmpDir);
+
+        } else if (System.getProperty("java.io.tmpdir") != null) {
+            tmpDir=new File(System.getProperty("java.io.tmpdir")+"/linux-net");
+            log.info("using java tmp {}",tmpDir);
+        } else {
+            tmpDir = new File("/tmp/linux-net");
+            log.info("using tmp {}",tmpDir);
+        }
+        if (!tmpDir.exists())
+            tmpDir.mkdirs();
+        return tmpDir.getAbsolutePath();
     }
 }
