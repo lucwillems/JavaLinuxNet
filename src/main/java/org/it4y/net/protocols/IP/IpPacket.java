@@ -260,8 +260,8 @@ public class IpPacket extends RawPacket {
         s.append('[').append("len:").append(getRawSize()).append(',');
         s.append("src:").append(ipToString(getSourceAddress())).append(',');
         s.append("dst:").append(ipToString(getDestinationAddress())).append(',');
-        s.append("tos:").append(getTOS()).append(',');
-        s.append("ttl:").append(getTTL()).append(']');
+        s.append("tos: 0x").append(Integer.toHexString((int)getTOS()&0xff)).append(',');
+        s.append("ttl:").append(((int)getTTL()&0xff)).append(']');
         return s.toString();
     }
 

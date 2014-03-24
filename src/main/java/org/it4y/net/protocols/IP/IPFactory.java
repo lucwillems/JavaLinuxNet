@@ -9,6 +9,7 @@
 
 package org.it4y.net.protocols.IP;
 
+import org.it4y.net.protocols.IP.GRE.GREPacket;
 import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.TCP.TCPPacket;
 import org.it4y.net.protocols.IP.UDP.UDPPacket;
@@ -30,14 +31,19 @@ public class IPFactory {
                 return new ICMPPacket(buffer, size);
             }
         });
+        put((byte) 6, new ipv4Factory() {
+            public IpPacket create(ByteBuffer buffer, int size) {
+                return new TCPPacket(buffer, size);
+            }
+        });
         put((byte) 17, new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
                 return new UDPPacket(buffer, size);
             }
         });
-        put((byte) 6, new ipv4Factory() {
+        put((byte) 47, new ipv4Factory() {
             public IpPacket create(ByteBuffer buffer, int size) {
-                return new TCPPacket(buffer, size);
+                return new GREPacket(buffer, size);
             }
         });
     }});
