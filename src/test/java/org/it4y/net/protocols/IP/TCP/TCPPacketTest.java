@@ -338,6 +338,8 @@ public class TCPPacketTest {
         Assert.assertTrue(o instanceof TCPoptionMSS);
         Assert.assertNotNull(o.toString());
         Assert.assertEquals(1460, ((TCPoptionMSS) o).getMss());
+        Assert.assertEquals(TCPoptionMSS.name,o.getName());
+        Assert.assertEquals(TCPoptionMSS.length,o.getLength());
     }
 
     @Test
