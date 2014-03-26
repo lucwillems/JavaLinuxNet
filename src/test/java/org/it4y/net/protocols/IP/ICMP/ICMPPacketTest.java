@@ -122,7 +122,7 @@ public class ICMPPacketTest {
         Assert.assertEquals(((ICMPPacket) packet).getTOS(),0);
         Assert.assertEquals(((ICMPPacket) packet).getTTL(),48);
         Assert.assertEquals(((ICMPPacket) packet).getProtocol(),1);
-        Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),60);
+        Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),56);
 
     }
 
