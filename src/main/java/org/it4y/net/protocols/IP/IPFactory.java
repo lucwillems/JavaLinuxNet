@@ -65,7 +65,8 @@ public class IPFactory {
         if (buffer != null & size >0) {
             byte ipVersion = (byte) (buffer.get(IpPacket.header_version) >> 4);
             if (ipVersion == 4) {
-                ipv4Factory factory = ipv4FactoryMap.get((byte) buffer.get(IpPacket.header_protocol));
+                byte ipProtocol=buffer.get(IpPacket.header_protocol);
+                ipv4Factory factory = ipv4FactoryMap.get(ipProtocol);
                 if (factory == null) {
                     return new IpPacket(buffer, size);
                 } else {

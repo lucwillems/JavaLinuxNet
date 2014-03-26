@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 public class TCPPacket extends IpPacket {
-    public static final int PROTOCOL=6;
+    public static final byte PROTOCOL=6;
 
     private static final int header_tcp_sport=0;
     private static final int header_tcp_dport=2;
@@ -48,6 +48,7 @@ public class TCPPacket extends IpPacket {
     @Override
     public void initIpHeader() {
         super.initIpHeader();
+        setProtocol(TCPPacket.PROTOCOL);
         ip_header_size=super.getIpHeaderSize();
     }
 

@@ -24,14 +24,24 @@ public class IPIPPacket extends IpPacket{
         ip_header_offset=ip.getHeaderSize();
     }
 
+    @Override
+    public void initIpHeader() {
+        super.initIpHeader();
+        setProtocol(IPIPPacket.PROTOCOL);
+        ip_header_offset=super.getIpHeaderSize();
+    }
+
+    @Override
     public int getHeaderSize() {
         return IPIP_HEADER_SIZE;
     }
 
+    @Override
     public int getPayLoadSize() {
         return rawLimit - ip_header_offset - getHeaderSize();
     }
 
+    @Override
     public ByteBuffer getHeader() {
         //get IP header size
         resetBuffer();
@@ -40,6 +50,7 @@ public class IPIPPacket extends IpPacket{
         return rawPacket.slice();
     }
 
+    @Override
     public ByteBuffer getPayLoad() {
         //get IP header size
         resetBuffer();

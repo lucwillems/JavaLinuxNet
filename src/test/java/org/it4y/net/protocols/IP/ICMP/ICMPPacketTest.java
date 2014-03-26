@@ -149,6 +149,7 @@ public class ICMPPacketTest {
         }
         packet.updateChecksum();
         packet.updateICMPChecksum();
+        Assert.assertEquals(ICMPPacket.PROTOCOL,packet.getProtocol());
         Assert.assertEquals(60, packet.getPayLoadSize());
         Assert.assertEquals(88, packet.getRawSize());
         Assert.assertEquals(0x45,packet.getRawPacket().get(0)); //should be ip 0x45

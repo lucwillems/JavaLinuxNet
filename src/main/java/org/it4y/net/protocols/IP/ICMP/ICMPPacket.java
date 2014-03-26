@@ -50,6 +50,7 @@ public class ICMPPacket extends IpPacket {
     @Override
     public void initIpHeader() {
         super.initIpHeader();
+        setProtocol(ICMPPacket.PROTOCOL);
         ip_header_offset=super.getIpHeaderSize();
     }
 

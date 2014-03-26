@@ -40,6 +40,7 @@ public class UDPPacket extends IpPacket {
     @Override
     public void initIpHeader() {
         super.initIpHeader();
+        setProtocol(UDPPacket.PROTOCOL);
         ip_header_size=super.getIpHeaderSize();
     }
 

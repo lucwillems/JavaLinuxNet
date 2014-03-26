@@ -31,6 +31,14 @@ public class GREPacket extends IpPacket {
         ip_header_offset=ip.getHeaderSize();
     }
 
+    @Override
+    public void initIpHeader() {
+        super.initIpHeader();
+        setProtocol(GREPacket.PROTOCOL);
+        ip_header_offset=super.getIpHeaderSize();
+    }
+
+    @Override
     public int getHeaderSize() {
         int size=GRE_HEADER_SIZE;
         if (hasGreChecksum())   { size=size+4;}
@@ -38,10 +46,12 @@ public class GREPacket extends IpPacket {
         return size;
     }
 
+    @Override
     public int getPayLoadSize() {
         return rawLimit - ip_header_offset - getHeaderSize();
     }
 
+    @Override
     public ByteBuffer getHeader() {
         //get IP header size
         resetBuffer();
@@ -50,6 +60,7 @@ public class GREPacket extends IpPacket {
         return rawPacket.slice();
     }
 
+    @Override
     public ByteBuffer getPayLoad() {
         //get IP header size
         resetBuffer();
