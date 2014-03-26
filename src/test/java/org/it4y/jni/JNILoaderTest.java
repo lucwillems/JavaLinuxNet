@@ -17,7 +17,7 @@ public class JNILoaderTest {
     public void testJNILoaderWithCustomPath() {
 
         File tmpDir=new File("/tmp/luc/test");
-        System.setProperty(JNILoader.customPathKEY,tmpDir.getAbsolutePath());
+        System.setProperty(JNILoader.customPathKEY,tmpDir.getAbsolutePath().toString());
         JNILoader.loadLibrary("libjnituntap.so");
         //Directory must exist
         Assert.assertTrue(tmpDir.exists());
