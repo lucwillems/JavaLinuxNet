@@ -1,5 +1,6 @@
 package org.it4y.net.protocols.IP.UDP;
 
+import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.junit.Assert;
@@ -56,14 +57,30 @@ public class UDPPacketTest {
         Assert.assertEquals(((UDPPacket) packet).getTOS(),0);
         Assert.assertEquals(((UDPPacket) packet).getTTL(),64);
         Assert.assertEquals(((UDPPacket) packet).getProtocol(),17);
-        Assert.assertEquals(((UDPPacket) packet).getPayLoadSize(),33);
+        //Test payload
+        ByteBuffer payload=packet.getPayLoad();
+        Assert.assertEquals(8,((UDPPacket)packet).getHeaderSize());
+        Assert.assertEquals(29,((UDPPacket) packet).getPayLoadSize());
+        Assert.assertEquals(((UDPPacket)packet).getPayLoadSize(),payload.limit());
+        Assert.assertEquals(packet.getRawPacket().get(packet.getIpHeaderSize() + UDPPacket.UDP_HEADER_SIZE), payload.get(0));
+
+        //check ICMP header
+        ByteBuffer header=(((UDPPacket)packet).getHeader());
+        Assert.assertEquals(((UDPPacket)packet).getHeaderSize(),header.limit());
+        Assert.assertEquals(packet.getRawPacket().getInt(packet.getIpHeaderSize()),header.getInt(0));
+
+        //Check IP Header
+        ByteBuffer Ipheader=(((UDPPacket)packet).getIpHeader());
+        Assert.assertEquals(((UDPPacket)packet).getIpHeaderSize(),Ipheader.limit());
+        Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
+
+        ((UDPPacket)packet).swapSourceDestinationPort();
+        ((UDPPacket)packet).swapSourceDestination();
         ((UDPPacket)packet).updateChecksum();
         ((UDPPacket)packet).getDstRoutingHash();
         ((UDPPacket)packet).getFlowHash();
+
         Assert.assertNotNull(((UDPPacket)packet).toString());
-        Assert.assertNotNull(((UDPPacket)packet).getHeader());
-        Assert.assertNotNull(((UDPPacket)packet).getPayLoad());
-        Assert.assertEquals(33,((UDPPacket)packet).getPayLoadSize());
     }
 
     @Test

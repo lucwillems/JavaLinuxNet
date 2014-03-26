@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 public class UDPPacket extends IpPacket {
 
     public static final byte PROTOCOL=17;
-    public static final int UDP_HEADER_SIZE = 4;
+    public static final int UDP_HEADER_SIZE = 8;
 
     private int ip_header_size;
 
@@ -37,12 +37,17 @@ public class UDPPacket extends IpPacket {
         ip_header_size=ip.getHeaderSize();
     }
 
-    public int getHeaderSize() {
-        return UDP_HEADER_SIZE;
+    @Override
+    public void initIpHeader() {
+        super.initIpHeader();
+        ip_header_size=super.getIpHeaderSize();
+    }
+
+    public int getHeaderSize() {return UDP_HEADER_SIZE;
     }
 
     public int getPayLoadSize() {
-        return getLength() - UDP_HEADER_SIZE;
+        return rawLimit - getIpHeaderSize() - UDP_HEADER_SIZE;
     }
 
     public ByteBuffer getHeader() {
@@ -64,7 +69,7 @@ public class UDPPacket extends IpPacket {
         int oposition=rawPacket.position();
         int olimit=rawPacket.limit();
         try {
-            rawPacket.position(ip_header_size);
+            rawPacket.position(ip_header_size+UDP_HEADER_SIZE);
             return rawPacket.slice();
         } finally {
             rawPacket.limit(olimit);

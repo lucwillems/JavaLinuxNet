@@ -28,7 +28,7 @@ public abstract class RawPacket {
     }
 
     public void resetBuffer() {
-        rawPacket.position(0);
+        rawPacket.clear();
         rawPacket.limit(rawLimit);
     }
 

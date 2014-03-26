@@ -3,6 +3,7 @@ package org.it4y.net.protocols.IP.TCP;
 import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
+import org.it4y.net.protocols.IP.UDP.UDPPacket;
 import org.it4y.util.Counter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -321,11 +322,36 @@ public class TCPPacketTest {
         Assert.assertNotNull(((TCPPacket)packet).toString());
         Assert.assertEquals(0xd8388ee8,packet.getFlowHash());
         Assert.assertEquals(0x35a4919f,packet.getDstRoutingHash());
+    }
+
+    @Test
+    public void testTCPDataPacket() {
+        ByteBuffer rawData = ByteBuffer.allocate(https4.length);
+        rawData.put(https4);
+        rawData.flip();
+        TCPPacket packet = (TCPPacket)IPFactory.processRawPacket(rawData, rawData.limit());
+        Assert.assertNotNull(packet);
+
+        //Test payload
+        ByteBuffer payload=packet.getPayLoad();
+        Assert.assertEquals(32,packet.getHeaderSize());
+        Assert.assertEquals(517,packet.getPayLoadSize());
+
+        //check ICMP header
+        ByteBuffer header=packet.getHeader();
+        Assert.assertEquals(packet.getHeaderSize(),header.limit());
+        Assert.assertEquals(packet.getRawPacket().getInt(packet.getIpHeaderSize()),header.getInt(0));
+
+        //Check IP Header
+        ByteBuffer Ipheader=(packet.getIpHeader());
+        Assert.assertEquals(packet.getIpHeaderSize(),Ipheader.limit());
+        Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
 
 
     }
 
-    @Test
+
+        @Test
     public void testTCPOptionMSS() {
         ByteBuffer rawData=ByteBuffer.allocate(tcp_sync.length);
         rawData.put(tcp_sync);
@@ -436,6 +462,22 @@ public class TCPPacketTest {
         TCPPacket tcpSync= (TCPPacket) IPFactory.processRawPacket(syncData,syncData.limit());
         Assert.assertTrue(tcpSync.isSYN());
         Assert.assertFalse(tcpSync.isACK());
+
+        //Test payload
+        ByteBuffer payload=tcpSync.getPayLoad();
+        Assert.assertEquals(40,tcpSync.getHeaderSize());
+        Assert.assertEquals(0,tcpSync.getPayLoadSize());
+
+        //check ICMP header
+        ByteBuffer header=tcpSync.getHeader();
+        Assert.assertEquals(tcpSync.getHeaderSize(),header.limit());
+        Assert.assertEquals(tcpSync.getRawPacket().getInt(tcpSync.getIpHeaderSize()),header.getInt(0));
+
+        //Check IP Header
+        ByteBuffer Ipheader=(tcpSync.getIpHeader());
+        Assert.assertEquals(tcpSync.getIpHeaderSize(),Ipheader.limit());
+        Assert.assertEquals(tcpSync.getRawPacket().getInt(0),Ipheader.getInt(0));
+
         //Flow hash must be the same for all packets
         int flowHash1=tcpSync.getFlowHash();
         int reverseflowHash1=tcpSync.getReverseFlowHash();

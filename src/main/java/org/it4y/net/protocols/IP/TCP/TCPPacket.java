@@ -46,6 +46,12 @@ public class TCPPacket extends IpPacket {
     }
 
     @Override
+    public void initIpHeader() {
+        super.initIpHeader();
+        ip_header_size=super.getIpHeaderSize();
+    }
+
+    @Override
     public int getHeaderSize() {
         int size=getDataOffset();
         return size;
@@ -53,7 +59,34 @@ public class TCPPacket extends IpPacket {
 
     @Override
     public int getPayLoadSize() {
-        return getIPLenght() - ip_header_size - getHeaderSize();
+        return rawLimit - getIpHeaderSize() - getHeaderSize();
+    }
+
+    public ByteBuffer getHeader() {
+        resetBuffer();
+        int oposition=rawPacket.position();
+        int olimit=rawPacket.limit();
+        try {
+            rawPacket.position(ip_header_size);
+            rawPacket.limit(ip_header_size + getHeaderSize());
+            return rawPacket.slice();
+        } finally {
+            rawPacket.limit(olimit);
+            rawPacket.position(oposition);
+        }
+    }
+
+    public ByteBuffer getPayLoad() {
+        resetBuffer();
+        int oposition=rawPacket.position();
+        int olimit=rawPacket.limit();
+        try {
+            rawPacket.position(ip_header_size+getHeaderSize());
+            return rawPacket.slice();
+        } finally {
+            rawPacket.limit(olimit);
+            rawPacket.position(oposition);
+        }
     }
 
     public void swapSourceDestinationPort() {

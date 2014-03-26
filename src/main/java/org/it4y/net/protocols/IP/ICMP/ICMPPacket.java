@@ -21,16 +21,17 @@ import java.util.Date;
 public class ICMPPacket extends IpPacket {
     public static final byte PROTOCOL=1;
 
-    public static final byte ICMP_HEADER_SIZE = 4;
+    public static final byte ICMP_HEADER_SIZE = 8;
     public static final byte ECHO_REPLY = (byte) 0;
     public static final byte ECHO_REQUEST = (byte) 8;
 
     private static final int header_icmp_type=0;
     private static final int header_icmp_code=1;
     private static final int header_icmp_checksum=2;
-    private static final int icmp_identifier=4;
-    private static final int icmp_seqnumber=6;
-    private static final int icmp_timestamp=8;
+    private static final int header_icmp_identifier=4;
+    private static final int header_icmp_nexthopmtu=6;
+    private static final int header_icmp_seqnumber=6;
+    private static final int header_icmp_timestamp=8;
 
     private int ip_header_offset=0;
 
@@ -46,14 +47,23 @@ public class ICMPPacket extends IpPacket {
         ip_header_offset=ip.getHeaderSize();
     }
 
+    @Override
+    public void initIpHeader() {
+        super.initIpHeader();
+        ip_header_offset=super.getIpHeaderSize();
+    }
+
+    @Override
     public int getHeaderSize() {
         return ICMP_HEADER_SIZE;
     }
 
+    @Override
     public int getPayLoadSize() {
-        return rawLimit - ip_header_offset - ICMP_HEADER_SIZE;
+        return rawLimit - getIpHeaderSize() - ICMP_HEADER_SIZE;
     }
 
+    @Override
     public ByteBuffer getHeader() {
         //get IP header size
         resetBuffer();
@@ -62,11 +72,11 @@ public class ICMPPacket extends IpPacket {
         return rawPacket.slice();
     }
 
+    @Override
     public ByteBuffer getPayLoad() {
         //get IP header size
         resetBuffer();
-        rawPacket.position(ip_header_offset);
-        rawPacket.limit(rawSize);
+        rawPacket.position(getIpHeaderSize()+ICMP_HEADER_SIZE);
         return rawPacket.slice();
     }
 
@@ -86,6 +96,14 @@ public class ICMPPacket extends IpPacket {
         rawPacket.put(ip_header_offset + header_icmp_code, code);
     }
 
+    public short getNextHopMTU() {
+        return rawPacket.getShort(ip_header_offset + header_icmp_nexthopmtu);
+    }
+
+    public void setNextHopMTU(short mtu) {
+        rawPacket.putShort(ip_header_offset + header_icmp_nexthopmtu, mtu);
+    }
+
     public short getICMPChecksum() {
         return rawPacket.getShort(ip_header_offset + header_icmp_checksum);
     }
@@ -102,32 +120,31 @@ public class ICMPPacket extends IpPacket {
     }
 
     public short getIdentifier() {
-        return rawPacket.getShort(ip_header_offset + icmp_identifier);
+        return rawPacket.getShort(ip_header_offset + header_icmp_identifier);
     }
 
     public void setIdentifier(short ident) {
-        rawPacket.putShort(ip_header_offset + icmp_identifier, ident);
+        rawPacket.putShort(ip_header_offset + header_icmp_identifier, ident);
     }
 
     public short getSequenceNumber() {
-        return rawPacket.getShort(ip_header_offset + icmp_seqnumber);
+        return rawPacket.getShort(ip_header_offset + header_icmp_seqnumber);
     }
     public void putSequenceNumber(short number) {
-        rawPacket.putShort(ip_header_offset + icmp_seqnumber, number);
+        rawPacket.putShort(ip_header_offset + header_icmp_seqnumber, number);
     }
 
     public long getTimeStamp() {
-        System.out.println(Long.toHexString(System.currentTimeMillis()));
-        return rawPacket.getLong(ip_header_offset + icmp_timestamp);
+        return rawPacket.getLong(ip_header_offset + header_icmp_timestamp);
     }
 
     public void setTimeStamp(long epochTime) {
-        rawPacket.putLong(ip_header_offset + icmp_timestamp, epochTime);
+        rawPacket.putLong(ip_header_offset + header_icmp_timestamp, epochTime);
     }
     public Date getTimeStampAsDate() {
         //linux ping store date as timeval , so convert it
-        int msec=libc.ntol(rawPacket.getInt(ip_header_offset + icmp_timestamp+4));
-        int sec=libc.ntol(rawPacket.getInt(ip_header_offset + icmp_timestamp));
+        int msec=libc.ntol(rawPacket.getInt(ip_header_offset + header_icmp_timestamp+4));
+        int sec=libc.ntol(rawPacket.getInt(ip_header_offset + header_icmp_timestamp));
         return libc.Timeval2Date(sec,msec);
     }
 

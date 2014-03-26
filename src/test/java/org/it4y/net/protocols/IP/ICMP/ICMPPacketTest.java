@@ -2,12 +2,15 @@ package org.it4y.net.protocols.IP.ICMP;
 
 import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
+import org.it4y.util.Hexdump;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.nio.ByteBuffer;
 
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 
 /**
  * Created by luc on 3/21/14.
@@ -59,6 +62,7 @@ public class ICMPPacketTest {
         Assert.assertNotNull(packet);
         Assert.assertTrue(packet instanceof ICMPPacket);
         log.info("ICMP: {}", packet.toString());
+        log.info("Dump: {}",Hexdump.bytesToHex(packet.getRawPacket(),packet.getRawSize()));
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REQUEST);
         Assert.assertEquals(((ICMPPacket) packet).getCode(), 0);
         Assert.assertEquals(((ICMPPacket) packet).getChecksum(),0x7E6D);
@@ -71,10 +75,24 @@ public class ICMPPacketTest {
         Assert.assertEquals(((ICMPPacket) packet).getTOS(),0);
         Assert.assertEquals(((ICMPPacket) packet).getTTL(),64);
         Assert.assertEquals(((ICMPPacket) packet).getProtocol(),1);
-        Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),60);
+        Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),56);
+        //check payload
+        ByteBuffer payload=(((ICMPPacket)packet).getPayLoad());
+        Assert.assertEquals(((ICMPPacket)packet).getPayLoadSize(),payload.limit());
+        Assert.assertEquals(packet.getRawPacket().get(packet.getIpHeaderSize()+ICMPPacket.ICMP_HEADER_SIZE),payload.get(0));
+
+        //check ICMP header
+        ByteBuffer header=(((ICMPPacket)packet).getHeader());
+        Assert.assertEquals(((ICMPPacket)packet).getHeaderSize(),header.limit());
+        Assert.assertEquals(packet.getRawPacket().getInt(packet.getIpHeaderSize()),header.getInt(0));
+
+        //Check IP Header
+        ByteBuffer Ipheader=(((ICMPPacket)packet).getIpHeader());
+        Assert.assertEquals(((ICMPPacket)packet).getIpHeaderSize(),Ipheader.limit());
+        Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
 
         //Convert to reply
-        ((ICMPPacket)packet).convertToEchoReply();
+        ((ICMPPacket) packet).convertToEchoReply();
         Assert.assertEquals(((ICMPPacket) packet).getDestinationAddress(),0xc0a80090);
         Assert.assertEquals(((ICMPPacket) packet).getSourceAddress(),0x08080808);
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REPLY);
@@ -108,4 +126,35 @@ public class ICMPPacketTest {
 
     }
 
+    @Test
+    public void testCreateICMP() {
+        //Create ICMP unreachable network packet
+        ByteBuffer rawData=ByteBuffer.allocate(pingRequest.length);
+        rawData.put(pingRequest);
+        rawData.flip();
+        IpPacket ping = IPFactory.processRawPacket(rawData, pingRequest.length);
+        Assert.assertNotNull(ping);
+        ByteBuffer buffer = ByteBuffer.allocate(20+8+20+40); //ip header+icmp header + orig ip header +40 bytes orig data
+        ICMPPacket packet = new ICMPPacket(buffer,buffer.limit());
+        packet.initIpHeader();
+        packet.setType((byte) 3);
+        packet.setCode((byte) 0);
+        packet.setSourceAddress(0x7f000001);
+        packet.setDestinationAddress(0x7f000002);
+        packet.setNextHopMTU((short)1200);
+        //we need to copy original IP header + 8 data bytes
+        ByteBuffer payload=packet.getPayLoad().slice();
+        for (int i=0;i<ping.getIpHeaderSize()+40;i++) {
+            payload.put(i,ping.getRawPacket().get(i));
+        }
+        packet.updateChecksum();
+        packet.updateICMPChecksum();
+        Assert.assertEquals(60, packet.getPayLoadSize());
+        Assert.assertEquals(88, packet.getRawSize());
+        Assert.assertEquals(0x45,packet.getRawPacket().get(0)); //should be ip 0x45
+        Assert.assertEquals(0x03,packet.getType());
+        Assert.assertEquals(0x45,packet.getPayLoad().get(0));//header of original packet
+        log.info("Dump: {}",Hexdump.bytesToHex(packet.getRawPacket(),packet.getRawSize()));
+
+    }
 }
