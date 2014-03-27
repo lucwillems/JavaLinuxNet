@@ -15,8 +15,9 @@ Building it:
 * java stuf : just run mvn clean install
 * to build native code , you need to install some dev packages. on ubuntu this is
 
+```
     apt-get install pkg-config build-essential iproute-dev libnl-3-dev libcap2-bin openjdk-7-jdk
-    
+``` 
     
 
 Testing it:
@@ -33,10 +34,11 @@ currently IPV6 is not supported. behaviour is undefined when a IPv6 address is a
 You can disable IPv6 by adding following lines in
 /etc/sysctl.d/20-noipv6.conf
 
-
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
+```
+ net.ipv6.conf.all.disable_ipv6 = 1
+ net.ipv6.conf.default.disable_ipv6 = 1
+ net.ipv6.conf.lo.disable_ipv6 = 1
+```
 
 Required permissions :
 ======================
@@ -48,9 +50,9 @@ To run the script as normal user, you require to
  * java JDK 7 or better (it will not work with jdk6)
 
 run following command on your JDK java command
-
+```
  setcap "cap_net_raw=+eip cap_net_admin=+eip" <path to your java executable>
-
+```
 You MUST read following link to understand the issues :
 
    http://bugs.sun.com/view_bug.do?bug_id=7076745
