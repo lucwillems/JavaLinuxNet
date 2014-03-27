@@ -51,7 +51,7 @@ public class LinkManagerTest {
         if (lm != null) {
             lm.halt();
             //wait so thread can stop
-            Thread.sleep(10);
+            Thread.sleep(100);
             Assert.assertTrue("link manager must be stopped",lm.isHalted());
             lm.shutDown();
             Assert.assertTrue(!lm.isReady());
