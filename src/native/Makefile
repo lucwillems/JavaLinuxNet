@@ -7,7 +7,7 @@ ifndef JDK_HOME
 endif
 
 INCLUDES = -I$(JDK_HOME)/include/linux -I$(JDK_HOME)/include
-LFLAGS = -shared
+LFLAGS = -shared -fPIC
 JAVAH=javah
 CLASSPATH=../../target/classes
 
