@@ -14,7 +14,10 @@ Building it:
 ============
 * java stuf : just run mvn clean install
 * to build native code , you need to install some dev packages. on ubuntu this is
-  apt-get install pkg-config build-essential iproute-dev libnl-3-dev libcap2-bin
+
+    apt-get install pkg-config build-essential iproute-dev libnl-3-dev libcap2-bin openjdk-7-jdk
+    
+    
 
 Testing it:
 ============
