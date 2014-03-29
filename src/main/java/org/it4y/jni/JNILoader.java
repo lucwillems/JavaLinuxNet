@@ -26,15 +26,21 @@ public class JNILoader {
     //Predefined location of librabry path.
     private static String[] libpath = new String[]{"/usr/lib","/usr/lib/jlinux-net"};
 
+    public static String libraryArchFileName(String lib) {
+        final String arch=System.getProperty("os.arch");
+        return lib+"-"+arch+".so";
+    }
     /**
      * Load .so library from different location.
      * @param lib the library (filename only !!!)
      */
     public static void loadLibrary(final String lib) {
+        final String libfname=libraryArchFileName(lib);
         final Logger log = LoggerFactory.getLogger(JNILoader.class);
+        log.info("load {}",libfname);
         //Try loading from lib path
         for (final String path : libpath) {
-            final File f = new File(path + '/' + lib);
+            final File f = new File(path + '/' + libfname);
             try {
                 final String fname = f.getCanonicalPath();
                 if (f.exists()) {
@@ -51,7 +57,7 @@ public class JNILoader {
 
         //try loading from JAR resource stream
         String targetFolder = getTargetFolder();
-        File targetFile = new File(targetFolder, lib);
+        File targetFile = new File(targetFolder, libfname);
         //cleanup any old file
         if (targetFile.exists()) {
             log.info("cleanup old {}", targetFile);
@@ -63,7 +69,7 @@ public class JNILoader {
         targetFile.deleteOnExit();
 
         // extract file into the current directory
-        InputStream reader = JNILoader.class.getResourceAsStream("/" + lib);
+        InputStream reader = JNILoader.class.getResourceAsStream("/" + libfname);
         FileOutputStream writer=null;
         if (reader != null) {
             try {
@@ -97,13 +103,13 @@ public class JNILoader {
                 }
             }
         } else {
-            log.warn("lib {} not found in jar", lib);
+            log.warn("lib {} ({}) not found in jar", lib,libfname);
         }
 
         //did we got a error or just not found ?
         //we can not continue here
-        log.error("FATAL : unable to load native lib {}",lib);
-        throw new RuntimeException("No library loaded: " + lib);
+        log.error("FATAL : unable to load native lib {}",libfname);
+        throw new RuntimeException("No library loaded: " + libfname);
     }
 
     /**

@@ -6,12 +6,11 @@
  */
 package org.it4y.jni;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import org.it4y.jni.linux.socket;
+import java.net.*;
 import java.nio.ByteOrder;
 import java.util.Date;
+import java.nio.ByteBuffer;
 
 public final class libc {
 
@@ -23,7 +22,7 @@ public final class libc {
      *
      */
 
-    public static int ntol(final int address) {
+    public static int ntohi(final int address) {
         final int[] ab=new int[4];
         if (isLittleEndian) {
             ab[0] = address >> 24 & 0x00ff;
@@ -36,7 +35,66 @@ public final class libc {
         }
     }
 
-    public static long ntol(final long address) {
+    public static int htoni(final int address) {
+        final int[] ab=new int[4];
+        if (isLittleEndian) {
+            ab[0] = address >> 24 & 0x00ff;
+            ab[1] = address >> 16 & 0x00ff;
+            ab[2] = address >> 8 & 0x00ff;
+            ab[3] = address & 0x00ff;
+            return (ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+ ab[0];
+        } else {
+            return address;
+        }
+    }
+
+    public static short ntohs(final short x) {
+        final int[] ab=new int[2];
+        if (isLittleEndian) {
+            ab[0] = x >> 8 & 0x00ff;
+            ab[1] = x & 0x00ff;
+            return (short) (((short)(ab[1]<<8)|(short)ab[0]) & 0xffff);
+        } else {
+            return x;
+        }
+    }
+    public static short ntohs(byte h,byte l) {
+        if (isLittleEndian) {
+            return (short) ((short)(h<<8)|((short)l) &0xff);
+        } else {
+            return (short) (((short)(l<<8)|(short)h) & 0xffff);
+        }
+    }
+
+    public static short htons(final short x) {
+        final int[] ab=new int[2];
+        if (isLittleEndian) {
+            ab[0] = x >> 8 & 0x00ff;
+            ab[1] = x & 0x00ff;
+            return (short) (((short)(ab[1]<<8)|(short)ab[0]) & 0xffff);
+        } else {
+            return x;
+        }
+    }
+
+    public static long ntohl(final long address) {
+        final long[] ab= new long[8];
+        if (isLittleEndian) {
+            ab[0] = address >> 56 & 0x00ff;
+            ab[1] = address >> 48 & 0x00ff;
+            ab[2] = address >> 40  & 0x00ff;
+            ab[3] = address >> 32 & 0x00ff;
+            ab[4] = address >> 24 & 0x00ff;
+            ab[5] = address >> 16 & 0x00ff;
+            ab[6] = address >> 8  & 0x00ff;
+            ab[7] = address       & 0x00ff;
+            return (ab[6]<<52)+(ab[6]<<48)+(ab[5]<<40)+(ab[4]<<32)+(ab[3]<<24)+(ab[2]<<16)+(ab[1]<<8)+ ab[0];
+        } else {
+            return address;
+        }
+    }
+
+    public static long htonl(final long address) {
         final long[] ab= new long[8];
         if (isLittleEndian) {
             ab[0] = address >> 56 & 0x00ff;
@@ -103,9 +161,10 @@ public final class libc {
      *
      */
     public static class sockaddr_in {
+        public final int sockaddr_in_size=16;
         //Note : storage is based on libc structure !!!
-        public int family;
-        public int port;
+        public short family;
+        public short port;
         public int address;
 
         //cache this result as it is expensive
@@ -114,10 +173,51 @@ public final class libc {
         //Used by jni code
         private sockaddr_in() {}
 
-        public sockaddr_in(final int address, final int port, final int family) {
+        public sockaddr_in(final int address, final short port, final short family) {
             this.address = address;
             this.port = port;
             this.family = family;
+        }
+
+        /**
+         * Use this Constuctor when receiving data from kernel in network order.
+         * the constructor takes care of converting network -> host order
+         * @param sockaddr
+         */
+        public sockaddr_in(byte[] sockaddr) {
+            this.address = ((0xFF & sockaddr[4]) << 24) | ((0xFF & sockaddr[5]) << 16) |
+                            ((0xFF & sockaddr[6]) << 8)  |  (0xFF & sockaddr[7]);
+            this.port = ntohs(sockaddr[3],sockaddr[2]);
+            this.family = ntohs(sockaddr[1],sockaddr[0]);
+        }
+
+        public sockaddr_in(byte[] sockaddr, boolean ntohs) {
+            this.address = ((0xFF & sockaddr[4]) << 24) | ((0xFF & sockaddr[5]) << 16) |
+                    ((0xFF & sockaddr[6]) << 8)  |  (0xFF & sockaddr[7]);
+            if (ntohs) {
+                this.port = ntohs(sockaddr[2], sockaddr[3]);
+                this.family = ntohs(sockaddr[0], sockaddr[1]);
+            } else {
+                this.port = ntohs(sockaddr[3], sockaddr[2]);
+                this.family = ntohs(sockaddr[1], sockaddr[0]);
+            }
+
+        }
+
+        public sockaddr_in(InetAddress ipv4) {
+            byte[]addr=((Inet4Address)ipv4).getAddress();
+            this.address = ((0xFF & addr[0]) << 24) | ((0xFF & addr[1]) << 16) |
+                           ((0xFF & addr[2]) << 8)  |  (0xFF & addr[3]);
+            this.family= socket.AF_INET;
+            this.port=0;
+        }
+
+        public sockaddr_in(InetSocketAddress ipv4) {
+            byte[]addr=((Inet4Address)ipv4.getAddress()).getAddress();
+            this.address = ((0xFF & addr[0]) << 24) | ((0xFF & addr[1]) << 16) |
+                           ((0xFF & addr[2]) << 8)  |  (0xFF & addr[3]);
+            this.family= socket.AF_INET;
+            this.port= (short) ipv4.getPort();
         }
 
         public InetAddress toInetAddress() {
@@ -135,11 +235,37 @@ public final class libc {
         }
 
         public InetSocketAddress toInetSocketAddress() {
-            return new InetSocketAddress(toInetAddress(), port);
+            return new InetSocketAddress(toInetAddress(),(int)port&0xffff);
+        }
+
+        /**
+         * Use this function to provide sockaddr_in as byte[]
+         * this method also takes care of host->network order fixes
+         * @return
+         */
+        public byte[] array(boolean htons) {
+            ByteBuffer bb = ByteBuffer.allocate(sockaddr_in_size);
+            if (htons) {
+                bb.putShort(htons(family));
+                bb.putShort(htons(port));
+            } else {
+                bb.putShort(family);
+                bb.putShort(port);
+            }
+            bb.putInt(address);
+            return bb.array();
+        }
+        /**
+         * Use this function to provide sockaddr_in as byte[]
+         * this method also takes care of host->network order fixes
+         * @return
+         */
+        public byte[] array() {
+            return array(false);
         }
 
         public String toString() {
-            return String.format("0x%08x:%d", (long)address & 0xffffffffL,port);
+            return String.format("0x%08x:%d", (long)address & 0xffffffffL,(int)port&0xffff);
         }
 
 

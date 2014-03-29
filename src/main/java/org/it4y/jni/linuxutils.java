@@ -19,7 +19,7 @@ public class linuxutils {
     //Load our native JNI lib
     static {
         //THIS requires libnl3 !!!!
-        JNILoader.loadLibrary("libjnilinuxutils.so");
+        JNILoader.loadLibrary("libjnilinuxutils");
     }
 
     public static native void setbooleanSockOption(int fd, int level, int option, boolean booleanValue) throws libc.ErrnoException;
@@ -136,26 +136,27 @@ public class linuxutils {
         return getstringSockOption(fd, level, option);
     }
 
-    public static native libc.sockaddr_in getsockname(int fd) throws libc.ErrnoException;
+    private static native byte[] _getsockname(int fd) throws libc.ErrnoException;
 
     public static libc.sockaddr_in getsockname(final Socket s) throws libc.ErrnoException {
         final int fd = SocketUtils.getFd(s);
-        return getsockname(fd);
+        byte[] sa=_getsockname(fd);
+        return new libc.sockaddr_in(sa,true);
     }
 
     public static libc.sockaddr_in getsockname(final ServerSocket s) throws libc.ErrnoException {
         final int fd = SocketUtils.getFd(s);
-        return getsockname(fd);
+        return new libc.sockaddr_in(_getsockname(fd),true);
     }
 
     public static libc.sockaddr_in getsockname(final ServerSocketChannel sc) throws libc.ErrnoException {
         final int fd = SocketUtils.getFd(sc.socket());
-        return getsockname(fd);
+        return new libc.sockaddr_in(_getsockname(fd),true);
     }
 
     public static libc.sockaddr_in getsockname(final SocketChannel sc) throws libc.ErrnoException {
         final int fd = SocketUtils.getFd(sc.socket());
-        return getsockname(fd);
+        return new libc.sockaddr_in(_getsockname(fd),true);
     }
 
 
@@ -182,6 +183,21 @@ public class linuxutils {
     }
 
     public static native InetSocketAddress getLocalHost();
+
+    public static native short ioctl_SIOCGIFFLAGS(String  device) throws libc.ErrnoException;
+    public static native int ioctl_SIOCSIFFLAGS(String  device,short flags) throws libc.ErrnoException;
+
+    private static native byte[] _ioctl_SIOCGIFADDR(String device);
+    public static libc.sockaddr_in ioctl_SIOCGIFADDR(String device) {
+        return new libc.sockaddr_in(_ioctl_SIOCGIFADDR(device),false);
+    }
+
+    public static native int _ioctl_SIOCSIFADDR(String device,byte[] ipv4);
+    private static int ioctl_SIOCSIFADDR(String device, libc.sockaddr_in address) throws libc.ErrnoException {
+        return _ioctl_SIOCSIFADDR(device,address.array());
+    }
+
+    public static native int ioctl_ifupdown(String  device,boolean state) throws libc.ErrnoException;
 
 
 }

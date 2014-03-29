@@ -5,15 +5,22 @@
 TESTIP=8.8.4.4
 TESTNET=8.8.4.0/24
 TUNDEV=test
-USER=luc
+USER=$USER
 GROUP=users
-
+TUNDEV2=testnotused
+USER=$USER
+GROUP=users
 
 ip tuntap del dev $TUNDEV mode tun
 ip tuntap add dev $TUNDEV mode tun user $USER group $GROUP
 ip addr add 127.0.0.2/32 dev $TUNDEV
 ip link set dev $TUNDEV up
 ip route add $TESTNET dev $TUNDEV
+
+ip tuntap del dev $TUNDEV2 mode tun
+ip tuntap add dev $TUNDEV2 mode tun user $USER group $GROUP
+ip addr add 127.0.0.3/32 dev $TUNDEV2
+ip link set dev $TUNDEV2 up
 
 #route all redirected traffic to lo
 ip rule del priority 2000

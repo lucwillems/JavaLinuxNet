@@ -20,10 +20,10 @@ import java.nio.ByteBuffer;
 public class tuntap {
     /* Load libjnituntap.so */
     static {
-        JNILoader.loadLibrary("libjnituntap.so");
+        JNILoader.loadLibrary("libjnituntap");
         final int initResult=initLib();
         if (initResult != 0) {
-            throw new RuntimeException("Error initialiaze libjnituntap.so: "+initResult);
+            throw new RuntimeException("Error initialiaze libjnituntap : "+initResult);
         }
     }
 

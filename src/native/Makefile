@@ -1,5 +1,6 @@
 CC=gcc
 CFLAGS=-Wall
+ARCH=$(shell uname -i)
 
 #search JDK if not set
 ifndef JDK_HOME
@@ -31,21 +32,21 @@ libpcap.h: org_it4y_jni_libpcap.c
 	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.libpcap
 
 libjnitproxy.so: org_it4y_jni_tproxy.c
-	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnitproxy.so org_it4y_jni_tproxy.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnitproxy-$(ARCH).so org_it4y_jni_tproxy.c
 
 libjnituntap.so: org_it4y_jni_tuntap.c
-	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnituntap.so org_it4y_jni_tuntap.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnituntap-$(ARCH).so org_it4y_jni_tuntap.c
 
 libjnilinuxutils.so: org_it4y_jni_linuxutils.c
-	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnilinuxutils.so org_it4y_jni_linuxutils.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnilinuxutils-$(ARCH).so org_it4y_jni_linuxutils.c
 
 libjninetlink3.so: org_it4y_jni_libnetlink3.c
 	$(CC) $(CFLAGS)  $(INCLUDES) `pkg-config --cflags --libs libnl-3.0` $(LFLAGS) \
-	 -o libjninetlink3.so -Wl,-whole-archive /usr/lib/libnetlink.a -Wl,-no-whole-archive org_it4y_jni_libnetlink3.c
+	 -o libjninetlink3-$(ARCH).so -Wl,-whole-archive /usr/lib/libnetlink.a -Wl,-no-whole-archive org_it4y_jni_libnetlink3.c
 
 libjnipcap.so: org_it4y_jni_libpcap.c
 	$(CC)   $(INCLUDES) `pcap-config --cflags ` $(LFLAGS) \
-	org_it4y_jni_libpcap.c -lpcap -o libjnipcap.so
+	org_it4y_jni_libpcap.c -lpcap -o libjnipcap-$(ARCH).so
 
 testjhash: testjhash.c
 	$(CC) $(CFLAGS) $(INCLUDES) testjhash.c -o testjhash

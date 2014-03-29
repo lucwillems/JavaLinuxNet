@@ -15,15 +15,19 @@ import java.nio.ByteOrder;
  */
 public class libcTest {
     Logger log= LoggerFactory.getLogger(libcTest.class);
+    private byte[] sockaddr_in_test={(byte)0x02,(byte)0x00,(byte)0xfe,(byte)0xff,
+                                (byte)0x7F,(byte)0x00,(byte)0x00,(byte)0x03,
+                                (byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
+                                (byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00};
 
     @Test
     public void testNtol() throws Exception {
      log.info("System endian: {}", ByteOrder.nativeOrder());
      /* convert 32 bits from network to local format */
      int x=0x44332211;
-     Assert.assertEquals(0x11223344,libc.ntol(x));
+     Assert.assertEquals(0x11223344,libc.ntohi(x));
      x=0xffeeddcc;
-     Assert.assertEquals(0xccddeeff,libc.ntol(x));
+     Assert.assertEquals(0xccddeeff,libc.ntohi(x));
 
     }
 
@@ -65,20 +69,20 @@ public class libcTest {
     public void testSockaddr_in() throws Exception {
         libc.sockaddr_in sa;
 
-        sa=new libc.sockaddr_in(0,0, socket.AF_INET);
+        sa=new libc.sockaddr_in(0, (short) 0, socket.AF_INET);
         Assert.assertNotNull(sa);
         Assert.assertEquals(0, sa.address);
         Assert.assertEquals(0, sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
-        sa=new libc.sockaddr_in(0x01020304,0x1234,socket.AF_INET);
+        sa=new libc.sockaddr_in(0x01020304, (short) 0x1234,socket.AF_INET);
         Assert.assertEquals(0x01020304, sa.address);
         Assert.assertEquals(0x1234,sa.port);
         Assert.assertEquals(10,socket.AF_INET6);
 
-        sa=new libc.sockaddr_in(0x7f000001,0xffff,socket.AF_INET);
+        sa=new libc.sockaddr_in(0x7f000001, (short) 0xffff,socket.AF_INET);
         Assert.assertEquals(0x7f000001, sa.address);
-        Assert.assertEquals(0xffff,sa.port);
+        Assert.assertEquals((short)0xffff,sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
         InetSocketAddress isa=sa.toInetSocketAddress();
@@ -87,9 +91,9 @@ public class libcTest {
         Assert.assertEquals("0x7f000001:65535",sa.toString());
 
 
-        sa=new libc.sockaddr_in(0xAABBCCDD,0xffff,socket.AF_INET);
+        sa=new libc.sockaddr_in(0xAABBCCDD, (short) 0xffff,socket.AF_INET);
         Assert.assertEquals(0xAABBCCDD, sa.address);
-        Assert.assertEquals(0xffff,sa.port);
+        Assert.assertEquals((short)0xffff,sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
         isa=sa.toInetSocketAddress();
@@ -97,9 +101,9 @@ public class libcTest {
         Assert.assertEquals("/170.187.204.221:65535",isa.toString());
         Assert.assertEquals("0xaabbccdd:65535",sa.toString());
 
-        sa=new libc.sockaddr_in(0xfffffffe,0xffff,socket.AF_INET);
+        sa=new libc.sockaddr_in(0xfffffffe, (short) 0xffff,socket.AF_INET);
         Assert.assertEquals(0xfffffffe, sa.address);
-        Assert.assertEquals(0xffff,sa.port);
+        Assert.assertEquals((short)0xffff,sa.port);
         Assert.assertEquals(socket.AF_INET,sa.family);
 
         isa=sa.toInetSocketAddress();
@@ -110,6 +114,29 @@ public class libcTest {
         InetAddress ia=sa.toInetAddress();
         Assert.assertNotNull(ia);
         Assert.assertEquals("/255.255.255.254",ia.toString());
+
+        sa=new libc.sockaddr_in(sockaddr_in_test);
+        Assert.assertEquals(0x7f000003, sa.address);
+        log.info("{}",Integer.toHexString(sa.port));
+        Assert.assertEquals((short)0xfffe,sa.port);
+        Assert.assertEquals(socket.AF_INET,sa.family);
+        InetAddress iax=sa.toInetAddress();
+        Assert.assertEquals("/127.0.0.3",iax.toString());
+
+        InetSocketAddress isax=sa.toInetSocketAddress();
+        Assert.assertEquals("/127.0.0.3:65534",isax.toString());
+
+        sa=new libc.sockaddr_in(isax);
+        Assert.assertEquals(0x7f000003, sa.address);
+        Assert.assertEquals((short)0xfffe,sa.port);
+        Assert.assertEquals(socket.AF_INET,sa.family);
+        Assert.assertEquals("0x7f000003:65534",sa.toString());
+
+        sa=new libc.sockaddr_in(iax);
+        Assert.assertEquals(0x7f000003, sa.address);
+        Assert.assertEquals((short)0,sa.port);
+        Assert.assertEquals(socket.AF_INET,sa.family);
+        Assert.assertEquals("0x7f000003:0",sa.toString());
 
     }
 

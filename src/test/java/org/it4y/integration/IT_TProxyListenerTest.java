@@ -119,6 +119,7 @@ public class IT_TProxyListenerTest {
     @Test
     public void testTProxyConnection() throws Exception {
         final Counter msgcnt = new Counter();
+        System.setProperty("java.net.preferIPv4Stack","1");
 
         LinkManager linkManager = null;
         TProxyListener proxy = null;

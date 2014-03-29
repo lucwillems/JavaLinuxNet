@@ -21,7 +21,7 @@ public class libpcap {
     //Load our native JNI lib
     static {
         //THIS requires libnl3 !!!!
-        JNILoader.loadLibrary("libjnipcap.so");
+        JNILoader.loadLibrary("libjnipcap");
         final int initResult = initlib();
         if (initResult != JNI_OK) {
             throw new RuntimeException("Failed to initialize libpcap jni interface : " + initResult);

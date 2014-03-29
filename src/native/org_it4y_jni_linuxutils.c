@@ -14,10 +14,24 @@
 #include <linux/tcp.h>
 //libnet
 #include <libnetlink.h>
+//ioctl
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+
 
 #include "org_it4y_jni_linuxutils.h"
  /* Amount of characters in the error message buffer */
 #define ERROR_SIZE 254
+//some errorcodes
+#define OK 0;
+#define ERR_JNI_ERROR -1;
+#define ERR_FIND_CLASS_FAILED -2;
+#define ERR_FIND_FIELD_FAILED -3;
+#define ERR_GET_METHOD_FAILED -4;
+#define ERR_CALL_METHOD_FAILED -5;
+#define ERR_BUFFER_TO_SMALL -6;
+#define ERR_EXCEPTION -7;
 
 
 void tostring(JNIEnv *env, jobject obj) {
@@ -55,7 +69,7 @@ void tostring(JNIEnv *env, jobject obj) {
  * This will create a ErrnoException based on returned errno
  *
  */
-jint throwErrnoExceptionfError(JNIEnv *env, int error) {
+jint throwErrnoExceptionError(JNIEnv *env, int error) {
 
    jclass errnoexception_class = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
    if((*env)->ExceptionOccurred(env)) { return -1;}
@@ -84,7 +98,7 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv 
  //set socket boolean option
  if (setsockopt(fd, level,option, &value, sizeof(value)) != 0) {
      perror("setsockopt_boolean");
-     throwErrnoExceptionfError(env,errno);
+     throwErrnoExceptionError(env,errno);
  }
 }
 
@@ -100,7 +114,7 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setintSockOption(JNIEnv *env
    //set socket int option
    if (setsockopt(fd, level,option, &value, sizeof(value)) != 0) {
       perror("setsockopt_uint16");
-      throwErrnoExceptionfError(env,errno);
+      throwErrnoExceptionError(env,errno);
    }
 }
 
@@ -120,7 +134,7 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption(JNIEnv *
    //set socket int option
    if (setsockopt(fd, level,option, value, sizeof(value)+1) != 0) {
       perror("setsockopt_string");
-      throwErrnoExceptionfError(env,errno);
+      throwErrnoExceptionError(env,errno);
    }
   //must always be done !!!
   (*env)->ReleaseStringUTFChars(env, s, value);
@@ -141,7 +155,7 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption(JNI
   //get socket boolean option
   if (getsockopt(fd, level,option, &value,&len) != 0) {
      perror("getsockopt boolean");
-     throwErrnoExceptionfError(env,errno);
+     throwErrnoExceptionError(env,errno);
      return 0;
  }
  return value;
@@ -160,7 +174,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getintSockOption(JNIEnv *env
   //get socket boolean option
   if (getsockopt(fd, level,option, &value,&len) != 0) {
      perror("getsockopt int");
-     throwErrnoExceptionfError(env,errno);
+     throwErrnoExceptionError(env,errno);
      return 0;
   }
   return value;
@@ -179,7 +193,7 @@ JNIEXPORT jstring JNICALL Java_org_it4y_jni_linuxutils_getstringSockOption (JNIE
   //get socket string option
   if (getsockopt(fd,level,option, &value,&len) != 0) {
      perror("getsockopt string");
-     throwErrnoExceptionfError(env,errno);
+     throwErrnoExceptionError(env,errno);
      return 0;
   }
   return (*env)->NewStringUTF(env,value);
@@ -190,46 +204,51 @@ JNIEXPORT jstring JNICALL Java_org_it4y_jni_linuxutils_getstringSockOption (JNIE
  * Method:    getsockname
  * Signature: (I)I
  */
-JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getsockname(JNIEnv *env, jclass this, jint fd) {
+JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1getsockname(JNIEnv *env, jclass this, jint fd) {
 
-    struct sockaddr_in orig_dst;
+    struct sockaddr_storage orig_dst;
+    //struct sockaddr_in  *sa4 = (struct sockaddr_in *)&orig_dst;
+    struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)&orig_dst;
     socklen_t addrlen = sizeof(orig_dst);
   
     memset(&orig_dst, 0, addrlen);
     //get socket bound address/port
     if(getsockname(fd, (struct sockaddr*) &orig_dst, &addrlen) < 0){
         perror("getsockname: ");
-        throwErrnoExceptionfError(env,errno);
+        throwErrnoExceptionError(env,errno);
         return 0;
-    } else {
-        if(orig_dst.sin_family == AF_INET) {
-           /* TODO : use cached ID's */
-          jclass csockaddr_in = (*env)->FindClass(env,"org/it4y/jni/libc$sockaddr_in");
-          if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-          jfieldID sockaddr_in_addressID = (*env)->GetFieldID(env, csockaddr_in, "address", "I");
-          if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-          jfieldID sockaddr_in_familyID  = (*env)->GetFieldID(env, csockaddr_in, "family", "I");
-          if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-          jfieldID sockaddr_in_portID   = (*env)->GetFieldID(env, csockaddr_in, "port", "I");
-          if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-          jmethodID sockaddr_in_ctorID  = (*env)->GetMethodID(env, csockaddr_in, "<init>","()V");
-          if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-
-          /* create instance of sockaddr_in and fillup */
-         jobject jsockaddr_in_Obj = (*env)->NewObject(env, csockaddr_in, sockaddr_in_ctorID);
-         if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-         (*env)->SetIntField(env, jsockaddr_in_Obj, sockaddr_in_addressID ,(jint)ntohl(orig_dst.sin_addr.s_addr));
-         if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-         (*env)->SetIntField(env, jsockaddr_in_Obj, sockaddr_in_portID ,(jint)ntohs(orig_dst.sin_port));
-         if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-         (*env)->SetIntField(env, jsockaddr_in_Obj, sockaddr_in_familyID ,orig_dst.sin_family);
-         if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-         return jsockaddr_in_Obj;
-       } else {
-         fprintf(stderr," IPv6 not supported!!!\n");
-       }
     }
-    return 0;
+    //IPV4 socket
+    if(orig_dst.ss_family == AF_INET) {
+           jbyteArray result;
+           result = (*env)->NewByteArray(env,sizeof(struct sockaddr_in));
+           //do stuff to raw bytes
+           jboolean isCopy;
+           jbyte* rawjBytes = (*env)->GetByteArrayElements(env, result, &isCopy);
+           memcpy(rawjBytes,&orig_dst,sizeof(struct sockaddr_in));
+           (*env)->ReleaseByteArrayElements(env, result, rawjBytes, 0);
+           return result;
+    }
+    //IPV6 socket , only if ipv4 is mapped in ipv6 for know
+    if(orig_dst.ss_family == AF_INET6 && IN6_IS_ADDR_V4MAPPED(&sa6->sin6_addr)) {
+           //Convert MAPPED IPV4 in IPV6 to IPV4
+           struct sockaddr_in ipv4;
+           //get last 4 bytes=ipv4 address
+           ipv4.sin_addr = *((struct in_addr *)&(sa6->sin6_addr.s6_addr[12]));
+           ipv4.sin_port=sa6->sin6_port;
+           ipv4.sin_family=AF_INET;
+
+           jbyteArray result;
+           result = (*env)->NewByteArray(env,sizeof(struct sockaddr_in));
+           //do stuff to raw bytes
+           jboolean isCopy;
+           jbyte* rawjBytes = (*env)->GetByteArrayElements(env, result, &isCopy);
+           memcpy(rawjBytes,&ipv4,sizeof(struct sockaddr_in));
+           (*env)->ReleaseByteArrayElements(env, result, rawjBytes, 0);
+           return result;
+    }
+    fprintf(stderr,"getsockname: unsupported sock_storage format IPv6!\n");
+    return NULL;
 }
 
 
@@ -246,7 +265,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_gettcpinfo (JNIEnv *env, jcl
   //get socket string option
   if (getsockopt(fd,IPPROTO_TCP,TCP_INFO, &value,&len) != 0) {
      perror("getsockopt tcp_info");
-     throwErrnoExceptionfError(env,errno);
+     throwErrnoExceptionError(env,errno);
      return 0;
   }
   //fprintf(stderr,"retrieved tcp_info from %d size %d",fd,len);
@@ -346,3 +365,168 @@ JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getLocalHost  (JNIEnv *en
   //return null
   //return (*env)->NewGlobalRef(env,NULL);
 }
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    ioctl_SIOCGIFFLAGS
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jshort JNICALL Java_org_it4y_jni_linuxutils_ioctl_1SIOCGIFFLAGS(JNIEnv *env, jclass this, jstring jdevice) {
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+           perror("ioctl_SIOCGIFFLAGS");
+           throwErrnoExceptionError(env,errno);
+           return 0;
+    }
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+
+    if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) < 0) {
+         perror("ioctl_SIOCGIFFLAGS: ");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+
+    return ifr.ifr_flags;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    ioctl_SIOCSIFFLAGS
+ * Signature: (Ljava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_ioctl_1SIOCSIFFLAGS(JNIEnv *env, jclass this, jstring jdevice, jshort flags) {
+
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("ioctl_1SIOCSIFFLAGS");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+    //set flags
+    ifr.ifr_flags=flags;
+    if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) < 0) {
+         perror("ioctl_SIOCGIFFLAGS: ");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+
+    return OK;
+}
+
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    ioctl_ifupdown
+ * Signature: (Ljava/lang/String;Z)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_ioctl_1ifupdown(JNIEnv *env, jclass this, jstring jdevice, jboolean state) {
+
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ifupdown");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+    /* get current interface state */
+    if (ioctl(sockfd, SIOCGIFFLAGS, &ifr) < 0) {
+         perror("SIOCGIFFLAGS: ");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+    /* set state up/down */
+    if (state) {
+        ifr.ifr_flags |= IFF_UP;
+    } else {
+        ifr.ifr_flags &= ~IFF_UP;
+    }
+
+    if(ioctl(sockfd, SIOCSIFFLAGS, &ifr) < 0) {
+         perror("SIOCSIFFLAGS: ");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+   }
+   return OK;
+  }
+
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    _ioctl_SIOCGIFADDR
+ * Signature: (Ljava/lang/String;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCGIFADDR(JNIEnv *env, jclass this, jstring jdevice) {
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    jbyteArray result;
+    result = (*env)->NewByteArray(env,sizeof(struct sockaddr_in));
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ioctl_1SIOCGIFADDRipv4");
+         throwErrnoExceptionError(env,errno);
+         return NULL;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+    /* get current interface state */
+    if (ioctl(sockfd, SIOCGIFADDR, &ifr) < 0) {
+         perror("SIOCGIFADDR: ");
+         throwErrnoExceptionError(env,errno);
+         return NULL;
+    }
+    struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
+    //fprintf(stderr,"IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
+    //do stuff to raw bytes
+    jboolean isCopy;
+    jbyte* rawjBytes = (*env)->GetByteArrayElements(env, result, &isCopy);
+    memcpy(rawjBytes, (void *)ipaddr,sizeof(struct sockaddr_in));
+    (*env)->ReleaseByteArrayElements(env, result, rawjBytes, 0);
+
+    return result;
+
+}
+
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    _ioctl_SIOCSIFADDR
+ * Signature: (Ljava/lang/String;[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCSIFADDR(JNIEnv *env, jclass this, jstring device, jbyteArray sockaddr) {
+  return OK;
+}
+

@@ -99,7 +99,7 @@ public class NetworkInterface {
      * @return
      */
     public InetAddress getIpv4AddressAsInetAddress() {
-        return libc.toInetAddress(libc.ntol(ipv4Address));
+        return libc.toInetAddress(libc.ntohi(ipv4Address));
     }
 
     /**
@@ -107,7 +107,7 @@ public class NetworkInterface {
      * @return
      */
     public InetAddress getIpv4P2PAddressAsInetAddress() {
-        return libc.toInetAddress(libc.ntol(ipv4P2Paddress));
+        return libc.toInetAddress(libc.ntohi(ipv4P2Paddress));
     }
 
     /**
@@ -123,7 +123,7 @@ public class NetworkInterface {
      * @return
      */
     public InetAddress getIpv4GatewayAsInetAddress() {
-        return libc.toInetAddress(libc.ntol(ipv4Gateway));
+        return libc.toInetAddress(libc.ntohi(ipv4Gateway));
     }
 
     /**

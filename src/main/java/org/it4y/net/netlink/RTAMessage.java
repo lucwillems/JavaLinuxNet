@@ -98,6 +98,6 @@ public abstract class RTAMessage {
 
 
     public InetAddress getInetAddress() {
-        return libc.toInetAddress(libc.ntol(data.getInt(0)));
+        return libc.toInetAddress(libc.ntohi(data.getInt(0)));
     }
 }

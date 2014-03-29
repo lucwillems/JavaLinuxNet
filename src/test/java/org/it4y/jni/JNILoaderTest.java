@@ -18,10 +18,10 @@ public class JNILoaderTest {
 
         File tmpDir=new File("/tmp/luc/test");
         System.setProperty(JNILoader.customPathKEY,tmpDir.getAbsolutePath().toString());
-        JNILoader.loadLibrary("libjnituntap.so");
+        JNILoader.loadLibrary("libjnituntap");
         //Directory must exist
         Assert.assertTrue(tmpDir.exists());
-        File soFile=new File(tmpDir,"libjnituntap.so");
+        File soFile=new File(tmpDir,JNILoader.libraryArchFileName("libjnituntap"));
         Assert.assertTrue(soFile.exists());
         Assert.assertTrue(soFile.length()>0);
     }

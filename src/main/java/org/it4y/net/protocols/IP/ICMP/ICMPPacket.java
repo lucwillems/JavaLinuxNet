@@ -14,7 +14,6 @@ import org.it4y.jni.linux.jhash;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.util.Hexdump;
 
-import java.net.ProtocolException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 
@@ -144,8 +143,8 @@ public class ICMPPacket extends IpPacket {
     }
     public Date getTimeStampAsDate() {
         //linux ping store date as timeval , so convert it
-        int msec=libc.ntol(rawPacket.getInt(ip_header_offset + header_icmp_timestamp+4));
-        int sec=libc.ntol(rawPacket.getInt(ip_header_offset + header_icmp_timestamp));
+        int msec=libc.ntohi(rawPacket.getInt(ip_header_offset + header_icmp_timestamp + 4));
+        int sec=libc.ntohi(rawPacket.getInt(ip_header_offset + header_icmp_timestamp));
         return libc.Timeval2Date(sec,msec);
     }
 

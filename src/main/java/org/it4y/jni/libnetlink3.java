@@ -25,7 +25,7 @@ public class libnetlink3 {
     //Load our native JNI lib
     static {
         //THIS requires libnl3 !!!!
-        JNILoader.loadLibrary("libjninetlink3.so");
+        JNILoader.loadLibrary("libjninetlink3");
         int initResult=initlib();
         if (initResult != JNI_OK) {
             throw new RuntimeException("Failed to initialize libnet3 jni interface : "+initResult);
