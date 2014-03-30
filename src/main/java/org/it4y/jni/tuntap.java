@@ -36,7 +36,9 @@ public class tuntap {
         }
     }
 
-
+    /*
+     * These fields are also updated by jni code , so don't changes this
+     */
     protected int fd = -1;
     protected String device;
 

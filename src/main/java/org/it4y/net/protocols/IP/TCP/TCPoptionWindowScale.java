@@ -20,9 +20,9 @@ public class TCPoptionWindowScale implements TCPOption {
     public static final String name="wscale";
     public static final int length=3;
 
-    private byte scale;
+    private final byte scale;
 
-    public TCPoptionWindowScale(byte scale) {
+    public TCPoptionWindowScale(final byte scale) {
         this.scale = scale;
     }
 

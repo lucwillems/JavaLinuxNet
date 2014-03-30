@@ -71,7 +71,7 @@ public final class libc {
             return x;
         }
     }
-    public static short ntohs(byte h,byte l) {
+    public static short ntohs(final byte h, final byte l) {
         if (isLittleEndian) {
             return (short) ((short)(h<<8)|((short)l) &0xff);
         } else {
@@ -174,7 +174,7 @@ public final class libc {
      *
      */
     public static class sockaddr_in {
-        public final int sockaddr_in_size=16;
+        public static final int sockaddr_in_size=16;
         //Note : storage is based on libc structure !!!
         public short family;
         public short port;
@@ -197,40 +197,40 @@ public final class libc {
          * the constructor takes care of converting network -> host order
          * @param sockaddr
          */
-        public sockaddr_in(byte[] sockaddr) {
-            this.address = ((0xFF & sockaddr[4]) << 24) | ((0xFF & sockaddr[5]) << 16) |
+        public sockaddr_in(final byte[] sockaddr) {
+            address = ((0xFF & sockaddr[4]) << 24) | ((0xFF & sockaddr[5]) << 16) |
                             ((0xFF & sockaddr[6]) << 8)  |  (0xFF & sockaddr[7]);
-            this.port = ntohs(sockaddr[3],sockaddr[2]);
-            this.family = ntohs(sockaddr[1],sockaddr[0]);
+            port = ntohs(sockaddr[3],sockaddr[2]);
+            family = ntohs(sockaddr[1],sockaddr[0]);
         }
 
-        public sockaddr_in(byte[] sockaddr, boolean ntohs) {
-            this.address = ((0xFF & sockaddr[4]) << 24) | ((0xFF & sockaddr[5]) << 16) |
+        public sockaddr_in(final byte[] sockaddr, final boolean ntohs) {
+            address = ((0xFF & sockaddr[4]) << 24) | ((0xFF & sockaddr[5]) << 16) |
                     ((0xFF & sockaddr[6]) << 8)  |  (0xFF & sockaddr[7]);
             if (ntohs) {
-                this.port = ntohs(sockaddr[2], sockaddr[3]);
-                this.family = ntohs(sockaddr[0], sockaddr[1]);
+                port = ntohs(sockaddr[2], sockaddr[3]);
+                family = ntohs(sockaddr[0], sockaddr[1]);
             } else {
-                this.port = ntohs(sockaddr[3], sockaddr[2]);
-                this.family = ntohs(sockaddr[1], sockaddr[0]);
+                port = ntohs(sockaddr[3], sockaddr[2]);
+                family = ntohs(sockaddr[1], sockaddr[0]);
             }
 
         }
 
-        public sockaddr_in(InetAddress ipv4) {
-            byte[]addr=((Inet4Address)ipv4).getAddress();
-            this.address = ((0xFF & addr[0]) << 24) | ((0xFF & addr[1]) << 16) |
+        public sockaddr_in(final InetAddress ipv4) {
+            final byte[]addr= ipv4.getAddress();
+            address = ((0xFF & addr[0]) << 24) | ((0xFF & addr[1]) << 16) |
                            ((0xFF & addr[2]) << 8)  |  (0xFF & addr[3]);
-            this.family= socket.AF_INET;
-            this.port=0;
+            family = socket.AF_INET;
+            port =0;
         }
 
-        public sockaddr_in(InetSocketAddress ipv4) {
-            byte[]addr=((Inet4Address)ipv4.getAddress()).getAddress();
-            this.address = ((0xFF & addr[0]) << 24) | ((0xFF & addr[1]) << 16) |
+        public sockaddr_in(final InetSocketAddress ipv4) {
+            final byte[]addr= ipv4.getAddress().getAddress();
+            address = ((0xFF & addr[0]) << 24) | ((0xFF & addr[1]) << 16) |
                            ((0xFF & addr[2]) << 8)  |  (0xFF & addr[3]);
-            this.family= socket.AF_INET;
-            this.port= (short) ipv4.getPort();
+            family = socket.AF_INET;
+            port = (short) ipv4.getPort();
         }
 
         public InetAddress toInetAddress() {
@@ -256,8 +256,8 @@ public final class libc {
          * this method also takes care of host->network order fixes
          * @return
          */
-        public byte[] array(boolean htons) {
-            ByteBuffer bb = ByteBuffer.allocate(sockaddr_in_size);
+        public byte[] array(final boolean htons) {
+            final ByteBuffer bb = ByteBuffer.allocate(sockaddr_in_size);
             if (htons) {
                 bb.putShort(htons(family));
                 bb.putShort(htons(port));
@@ -285,7 +285,7 @@ public final class libc {
     }
 
     /* convert to java Date */
-    public static final Date Timeval2Date(int tv_sec,int tv_usec) {
+    public static Date Timeval2Date(final int tv_sec, final int tv_usec) {
           return new Date(((long)tv_sec&0xffffffff)*1000L + (((long)tv_usec&0xffffffff)/1000L)); //java only has msec
     }
 

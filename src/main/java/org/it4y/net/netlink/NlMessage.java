@@ -24,15 +24,15 @@ import java.util.HashMap;
  */
 public abstract class NlMessage {
 
-    public final int RTA_INDEX_NOTSUPPORTED=-1;
+    public static final int RTA_INDEX_NOTSUPPORTED=-1;
 
     //Read nlmsg header
-    protected int nlmsg_len;
-    protected short nlmsg_type;
-    protected short nlmsg_flags;
-    protected int nlmsg_seq;
-    protected int nlmsg_pid;
-    protected HashMap<Integer, RTAMessage> rtaMessages;
+    protected final int nlmsg_len;
+    protected final short nlmsg_type;
+    protected final short nlmsg_flags;
+    protected final int nlmsg_seq;
+    protected final int nlmsg_pid;
+    protected final HashMap<Integer, RTAMessage> rtaMessages;
 
     public NlMessage(final ByteBuffer msg) {
         //Read nlmsg header

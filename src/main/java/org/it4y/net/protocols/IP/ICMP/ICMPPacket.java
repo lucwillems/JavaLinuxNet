@@ -39,15 +39,15 @@ public class ICMPPacket extends IpPacket {
     private static final int header_icmp_seqnumber=6;
     private static final int header_icmp_timestamp=8;
 
-    private int ip_header_offset=0;
+    private int ip_header_offset;
 
-    public ICMPPacket(ByteBuffer buffer, int size) {
+    public ICMPPacket(final ByteBuffer buffer, final int size) {
         super(buffer, size);
         //get IP header size
         ip_header_offset=super.getHeaderSize();
     }
 
-    public ICMPPacket(IpPacket ip) {
+    public ICMPPacket(final IpPacket ip) {
         super(ip.getRawPacket(),ip.getRawSize());
         //get IP header size
         ip_header_offset=ip.getHeaderSize();
@@ -56,8 +56,8 @@ public class ICMPPacket extends IpPacket {
     @Override
     public void initIpHeader() {
         super.initIpHeader();
-        setProtocol(ICMPPacket.PROTOCOL);
-        ip_header_offset=super.getIpHeaderSize();
+        setProtocol(PROTOCOL);
+        ip_header_offset= getIpHeaderSize();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ICMPPacket extends IpPacket {
         return rawPacket.get(ip_header_offset + header_icmp_type);
     }
 
-    public void setType(byte type) {
+    public void setType(final byte type) {
         rawPacket.put(ip_header_offset + header_icmp_type, type);
     }
 
@@ -99,7 +99,7 @@ public class ICMPPacket extends IpPacket {
         return rawPacket.get(ip_header_offset + header_icmp_code);
     }
 
-    public void setCode(byte code) {
+    public void setCode(final byte code) {
         rawPacket.put(ip_header_offset + header_icmp_code, code);
     }
 
@@ -107,7 +107,7 @@ public class ICMPPacket extends IpPacket {
         return rawPacket.getShort(ip_header_offset + header_icmp_nexthopmtu);
     }
 
-    public void setNextHopMTU(short mtu) {
+    public void setNextHopMTU(final short mtu) {
         rawPacket.putShort(ip_header_offset + header_icmp_nexthopmtu, mtu);
     }
 
@@ -130,14 +130,14 @@ public class ICMPPacket extends IpPacket {
         return rawPacket.getShort(ip_header_offset + header_icmp_identifier);
     }
 
-    public void setIdentifier(short ident) {
+    public void setIdentifier(final short ident) {
         rawPacket.putShort(ip_header_offset + header_icmp_identifier, ident);
     }
 
     public short getSequenceNumber() {
         return rawPacket.getShort(ip_header_offset + header_icmp_seqnumber);
     }
-    public void putSequenceNumber(short number) {
+    public void putSequenceNumber(final short number) {
         rawPacket.putShort(ip_header_offset + header_icmp_seqnumber, number);
     }
 
@@ -145,13 +145,13 @@ public class ICMPPacket extends IpPacket {
         return rawPacket.getLong(ip_header_offset + header_icmp_timestamp);
     }
 
-    public void setTimeStamp(long epochTime) {
+    public void setTimeStamp(final long epochTime) {
         rawPacket.putLong(ip_header_offset + header_icmp_timestamp, epochTime);
     }
     public Date getTimeStampAsDate() {
         //linux ping store date as timeval , so convert it
-        int msec=libc.ntohi(rawPacket.getInt(ip_header_offset + header_icmp_timestamp + 4));
-        int sec=libc.ntohi(rawPacket.getInt(ip_header_offset + header_icmp_timestamp));
+        final int msec=libc.ntohi(rawPacket.getInt(ip_header_offset + header_icmp_timestamp + 4));
+        final int sec=libc.ntohi(rawPacket.getInt(ip_header_offset + header_icmp_timestamp));
         return libc.Timeval2Date(sec,msec);
     }
 
@@ -183,24 +183,24 @@ public class ICMPPacket extends IpPacket {
 
     @Override
     public int getDstRoutingHash() {
-        int dst=rawPacket.getInt(header_dst);  //32 dest address
-        int src=rawPacket.getInt(header_src);  //32 src address
-        int port=0;
-        int proto=(int)rawPacket.get(header_protocol);
+        final int dst=rawPacket.getInt(header_dst);  //32 dest address
+        final int src=rawPacket.getInt(header_src);  //32 src address
+        final int port=0;
+        final int proto=(int)rawPacket.get(header_protocol);
         return jhash.jhash_3words(dst, port, proto, src);
     }
 
     @Override
     public int getFlowHash() {
-        int dst=rawPacket.getInt(header_dst);  //32 dest address
-        int src=rawPacket.getInt(header_src);  //32 src address
+        final int dst=rawPacket.getInt(header_dst);  //32 dest address
+        final int src=rawPacket.getInt(header_src);  //32 src address
         int proto=((int)rawPacket.get(header_protocol)) &0xff;
-        int code=((int)rawPacket.get(ip_header_offset + header_icmp_code)) & 0xff;
-        int msgtype=((int)rawPacket.get(ip_header_offset+header_icmp_type))& 0xff;
+        final int code=((int)rawPacket.get(ip_header_offset + header_icmp_code)) & 0xff;
+        final int msgtype=((int)rawPacket.get(ip_header_offset+header_icmp_type))& 0xff;
         //match flow for request/reply
         if (msgtype==(int)ECHO_REPLY || msgtype==(int) ECHO_REQUEST) {
             //pair ping based on there identity
-            short msgIdent=getIdentifier();
+            final short msgIdent=getIdentifier();
             proto=proto<<16+((int)msgIdent&0xffff);
         }else {
             proto=proto<<16+code<<8+msgtype;
@@ -211,7 +211,7 @@ public class ICMPPacket extends IpPacket {
     @Override
     public String toString() {
         final StringBuilder s=new StringBuilder(128);
-        s.append(super.toString()).append("[c:").append(getCode()).append("t:").append(getType()).append("]");
+        s.append(super.toString()).append("[c:").append(getCode()).append("t:").append(getType()).append(']');
         if (getType() == ECHO_REQUEST || getType() == ECHO_REPLY) {
           s.append("i: ").append(String.format("0x%04x", getIdentifier()))
                   .append(" s:").append((int) getSequenceNumber() & 0xffff).append(" t:").append(getTimeStampAsDate());

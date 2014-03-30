@@ -20,9 +20,9 @@ public class TCPoptionMSS implements TCPOption {
     public static final String name="mss";
     public static final int length=4;
 
-    private short mss;
+    private final short mss;
 
-    public TCPoptionMSS(short mss) {
+    public TCPoptionMSS(final short mss) {
         this.mss = mss;
     }
 

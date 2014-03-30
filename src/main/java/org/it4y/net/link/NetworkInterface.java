@@ -174,56 +174,57 @@ public class NetworkInterface {
     }
 
     protected void setIpv4Gateway(final int address) {
-        this.ipv4Gateway = address;
+        ipv4Gateway = address;
     }
     protected void setmtu(final int mtu) {
         this.mtu = mtu;
     }
     protected void setInterfaceFlag(final int flags) {
-        this.interfaceFlag=flags;
+        interfaceFlag =flags;
     }
     protected void setNetmask(final int mask) {
-        this.netmask = mask;
+        netmask = mask;
     }
     protected void setIpv4P2Paddress(final int address) {
-        this.ipv4P2Paddress =address;
+        ipv4P2Paddress =address;
     }
     protected void setIpv4Address(final int address) {
-        this.ipv4Address = address;
+        ipv4Address = address;
     }
     protected void setState(final int state) {
         this.state = state;
-    };
+    }
+
     protected void setInterfaceFlags(final int flags) {
-        this.interfaceFlag=flags;
+        interfaceFlag =flags;
     }
     protected void setMacAddress(final String macAddress) {
         this.macAddress = macAddress;
     }
 
     public String toString() {
-        final StringBuffer s = new StringBuffer();
-        s.append(name).append("[");
-        s.append(if_arp.ARPHDR_NAMES.get(interfaceType)).append(",");
-        s.append("idx:").append(index).append(",");
-        if (this.ipv4Address != 0) {
-            s.append("a:").append(getIpv4AddressAsInetAddress().toString().substring(1)).append("/").append(netmask).append(",");
+        final StringBuilder s = new StringBuilder(128);
+        s.append(name).append('[');
+        s.append(if_arp.ARPHDR_NAMES.get(interfaceType)).append(',');
+        s.append("idx:").append(index).append(',');
+        if (ipv4Address != 0) {
+            s.append("a:").append(getIpv4AddressAsInetAddress().toString().substring(1)).append('/').append(netmask).append(',');
         }
-        if (this.ipv4Gateway != 0) {
-            s.append("g:").append(getIpv4GatewayAsInetAddress().toString().substring(1)).append(",");
+        if (ipv4Gateway != 0) {
+            s.append("g:").append(getIpv4GatewayAsInetAddress().toString().substring(1)).append(',');
         }
-        s.append("mtu:").append(mtu).append(",");
-        s.append("state:").append(state).append(",");
-        s.append("flags:0x").append(Integer.toHexString(interfaceFlag)).append(" ");
+        s.append("mtu:").append(mtu).append(',');
+        s.append("state:").append(state).append(',');
+        s.append("flags:0x").append(Integer.toHexString(interfaceFlag)).append(' ');
         if(isPoint2Point()) {
             s.append(",P2P");
             if (ipv4P2Paddress != 0) {
-                s.append(" ").append(getIpv4P2PAddressAsInetAddress().toString().substring(1));
+                s.append(' ').append(getIpv4P2PAddressAsInetAddress().toString().substring(1));
             }
         }
         if(isUP()) { s.append(",UP");}
         if(isLowerUP()) { s.append(",LOWER_UP");}
-        s.append("]");
+        s.append(']');
         s.append(isActive());
         return s.toString();
     }

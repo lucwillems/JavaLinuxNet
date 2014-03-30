@@ -484,9 +484,9 @@ public class LinkManager extends Thread {
      * notification register entry
      */
     static class NotificationRegister {
-        LinkNotification.EventType type;
-        LinkNotification.EventAction action;
-        LinkNotification listener;
+        final LinkNotification.EventType type;
+        final LinkNotification.EventAction action;
+        final LinkNotification listener;
 
         public NotificationRegister(final LinkNotification.EventAction action, final LinkNotification.EventType type, final LinkNotification listener) {
             this.type=type;

@@ -108,7 +108,7 @@ public class InterfaceTest {
     }
 
     @Test
-    public void testInterfaceAddress() {
+    public void testInterfaceAddress() throws libc.ErrnoException {
         libc.sockaddr_in address=linuxutils.ioctl_SIOCGIFADDR(device);
         logger.info("IPv4 sockaddr_in: {}", Hexdump.bytesToHex(address.array(), address.array().length));
         logger.info("{}", address);

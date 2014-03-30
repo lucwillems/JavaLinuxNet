@@ -30,12 +30,12 @@ public class IPv6TunnelPacket extends IpPacket {
 
     private int ip_header_offset;
 
-    public IPv6TunnelPacket(ByteBuffer buffer, int size) {
+    public IPv6TunnelPacket(final ByteBuffer buffer, final int size) {
         super(buffer, size);
         ip_header_offset=super.getHeaderSize();
     }
 
-    public IPv6TunnelPacket(IpPacket ip) {
+    public IPv6TunnelPacket(final IpPacket ip) {
         super(ip.getRawPacket(),ip.getRawSize());
         //get IP header size
         ip_header_offset=ip.getHeaderSize();
@@ -44,8 +44,8 @@ public class IPv6TunnelPacket extends IpPacket {
     @Override
     public void initIpHeader() {
         super.initIpHeader();
-        setProtocol(IPv6TunnelPacket.PROTOCOL);
-        ip_header_offset=super.getIpHeaderSize();
+        setProtocol(PROTOCOL);
+        ip_header_offset= getIpHeaderSize();
     }
 
     @Override

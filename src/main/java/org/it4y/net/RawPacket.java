@@ -52,8 +52,8 @@ public abstract class RawPacket {
     public abstract int getReverseFlowHash();
 
     public void release() {
-        this.rawPacket=null;
-        this.rawSize=-1;
-        this.rawLimit=-1;
+        rawPacket =null;
+        rawSize =-1;
+        rawLimit =-1;
     }
 }

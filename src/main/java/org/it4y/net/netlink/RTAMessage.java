@@ -28,9 +28,9 @@ import java.nio.charset.Charset;
  * Created by luc on 1/2/14.
  */
 public abstract class RTAMessage {
-    short size;
-    short type;
-    ByteBuffer data;
+    final short size;
+    final short type;
+    final ByteBuffer data;
 
     public RTAMessage(final int pos, final ByteBuffer buffer) {
         size = buffer.getShort(pos);

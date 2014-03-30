@@ -152,7 +152,7 @@ public class libpcapTest {
         try {
             libpcap.bpf_filter(null, pingPkt1);
         } catch (Throwable t) {
-            Assert.assertEquals(t.getClass(),AssertionError.class);//failure
+            Assert.assertEquals(t.getClass(),NullPointerException.class);//failure
         }
 
     }
@@ -167,7 +167,7 @@ public class libpcapTest {
         try {
             libpcap.bpf_filter(program.getBuffer(), null);//failure
         } catch (final Throwable t) {
-            Assert.assertEquals(t.getClass(),AssertionError.class);
+            Assert.assertEquals(t.getClass(),NullPointerException.class);
         }
     }
 

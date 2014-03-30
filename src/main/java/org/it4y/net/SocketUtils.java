@@ -35,16 +35,16 @@ import java.nio.channels.SocketChannel;
 public class SocketUtils {
     private static final Logger log= LoggerFactory.getLogger(SocketUtils.class);
 
-    private static Method ServerSocketGetImpl;
-    private static Method SocketGetImpl;
+    private static final Method ServerSocketGetImpl;
+    private static final Method SocketGetImpl;
     private static Method SocketGetFileDescriptor;
     private static Method ServerSocketGetFileDescriptor;
-    private static Method SocketImplGetFileDescriptor;
+    private static final Method SocketImplGetFileDescriptor;
     private static Method ServerSocketImplGetFileDescriptor;
-    private static Field  FileOutputStreamFileDescriptor;
-    private static Field  FileInputStreamFileDescriptor;
-    private static Field  RandomAccessFileDescriptor;
-    private static Field  privateFd;
+    private static final Field  FileOutputStreamFileDescriptor;
+    private static final Field  FileInputStreamFileDescriptor;
+    private static final Field  RandomAccessFileDescriptor;
+    private static final Field  privateFd;
 
 
     static {
@@ -71,7 +71,7 @@ public class SocketUtils {
             FileInputStreamFileDescriptor.setAccessible(true);
             RandomAccessFileDescriptor.setAccessible(true);
             privateFd.setAccessible(true);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             //If we get here, we have a serious problem and can not continue
             //so throw a runtime exception to notify
             log.error("Reflection error on SocketOptions: ",t.getMessage());
@@ -119,7 +119,7 @@ public class SocketUtils {
         try {
             final FileDescriptor fd = getFileDescriptor(socket);
             return getFileHandle(fd);
-        } catch (Exception shoutNotHappen) {
+        } catch (final Exception shoutNotHappen) {
             throw new JVMException(shoutNotHappen);
         }
     }
@@ -130,7 +130,7 @@ public class SocketUtils {
         try {
         final FileDescriptor fd = getFileDescriptor(socket);
         return getFileHandle(fd);
-        } catch (Exception shoutNotHappen) {
+        } catch (final Exception shoutNotHappen) {
             throw new JVMException(shoutNotHappen);
         }
     }
@@ -147,7 +147,7 @@ public class SocketUtils {
         try {
         final FileDescriptor fd = getFileDescriptor(stream);
         return getFileHandle(fd);
-        } catch (Exception shoutNotHappen) {
+        } catch (final Exception shoutNotHappen) {
             throw new JVMException(shoutNotHappen);
         }
     }
@@ -156,7 +156,7 @@ public class SocketUtils {
         try {
             final FileDescriptor fd = getFileDescriptor(stream);
             return getFileHandle(fd);
-        } catch (Exception shoutNotHappen) {
+        } catch (final Exception shoutNotHappen) {
             throw new JVMException(shoutNotHappen);
         }
     }
@@ -164,7 +164,7 @@ public class SocketUtils {
         try {
             final FileDescriptor fd = getFileDescriptor(random);
             return getFileHandle(fd);
-        } catch (Exception shoutNotHappen) {
+        } catch (final Exception shoutNotHappen) {
             throw new JVMException(shoutNotHappen);
         }
     }

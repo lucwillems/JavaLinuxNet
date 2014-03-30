@@ -19,7 +19,6 @@ package org.it4y.net.tproxy;
 import org.it4y.jni.SocketOptions;
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
-import org.it4y.jni.tproxy;
 import org.it4y.net.JVMException;
 import org.it4y.net.SocketUtils;
 
@@ -68,7 +67,7 @@ public class TProxyServerSocket extends ServerSocket {
     }
 
     public TProxyInterceptedSocket accepProxy() throws IOException,libc.ErrnoException {
-        final tproxy proxy = new tproxy();
+        //final tproxy proxy = new tproxy();
         final Socket c = accept();
         //get original destination address stored in client socket structure
         final libc.sockaddr_in remote = linuxutils.getsockname(c);

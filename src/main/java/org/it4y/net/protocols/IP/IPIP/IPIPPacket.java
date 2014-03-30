@@ -31,11 +31,11 @@ public class IPIPPacket extends IpPacket{
 
     private int ip_header_offset;
 
-    public IPIPPacket(ByteBuffer buffer, int size) {
+    public IPIPPacket(final ByteBuffer buffer, final int size) {
         super(buffer, size);
         ip_header_offset=super.getHeaderSize();
     }
-    public IPIPPacket(IpPacket ip) {
+    public IPIPPacket(final IpPacket ip) {
         super(ip.getRawPacket(),ip.getRawSize());
         //get IP header size
         ip_header_offset=ip.getHeaderSize();
@@ -44,8 +44,8 @@ public class IPIPPacket extends IpPacket{
     @Override
     public void initIpHeader() {
         super.initIpHeader();
-        setProtocol(IPIPPacket.PROTOCOL);
-        ip_header_offset=super.getIpHeaderSize();
+        setProtocol(PROTOCOL);
+        ip_header_offset= getIpHeaderSize();
     }
 
     @Override

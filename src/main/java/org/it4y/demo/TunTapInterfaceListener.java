@@ -23,7 +23,6 @@ import org.it4y.net.protocols.IP.IpPacket;
 import org.it4y.net.protocols.IP.TCP.TCPPacket;
 import org.it4y.net.protocols.IP.UDP.UDPPacket;
 import org.it4y.net.tuntap.TunDevice;
-import org.it4y.util.Hexdump;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,19 +38,18 @@ public class TunTapInterfaceListener extends TestRunner {
     private final TunDevice tundev;
     private final String dev;
     private final int mtu;
-    private long cnt = 0;
-    private AtomicLong bytes = new AtomicLong(0L);
-    private boolean debug = false;
-    private long pktcnt = 0;
-    private long bpfcount=0;
+    private long cnt;
+    private final AtomicLong bytes = new AtomicLong(0L);
+    private static final boolean debug=false;
+    private long pktcnt;
 
     //private BPFProgram program;
     //private BpfVM virtualMachine;
 
     //rate limit
-    long rateInMbit=50000000; //100Mbit/sec
-    RateLimiter Commonlimiter = RateLimiter.create(rateInMbit*100/800);
-    RateLimiter icmplimiter   = RateLimiter.create(rateInMbit*50/800); // 50%
+    static final long rateInMbit=50000000; //100Mbit/sec
+    final RateLimiter Commonlimiter = RateLimiter.create(rateInMbit*100/800);
+    final RateLimiter icmplimiter   = RateLimiter.create(rateInMbit*50/800); // 50%
 
     // IPV4 : icmp[icmptype]==8  || icmp[icmptype]==0
     public static byte[] bpf_PING = {
@@ -95,17 +93,6 @@ public class TunTapInterfaceListener extends TestRunner {
 //        virtualMachine= BpfFactory.getForThread();
     }
 
-    public void hexDumpIn(final ByteBuffer buffer, final int size) {
-        if (debug) {
-            //System.out.println(System.currentTimeMillis() + " (" + size + ") >" + Hexdump.bytesToHex(buffer, size));
-        }
-    }
-
-    public void hexDumpOut(final ByteBuffer buffer, final int size) {
-        if (debug) {
-            System.out.println(System.currentTimeMillis() + " (" + size + ") <" + Hexdump.bytesToHex(buffer, size));
-        }
-    }
 
     public void run() {
         log.info("opening {} mtu: {}",dev,mtu);
@@ -121,11 +108,10 @@ public class TunTapInterfaceListener extends TestRunner {
             try {
                 //we must clear else we get issues
                 bbuffer.clear();
-                int size = tundev.readByteBuffer(bbuffer); //this will block until a packet is available
+                final int size = tundev.readByteBuffer(bbuffer); //this will block until a packet is available
                 Commonlimiter.acquire(size);
                 pktcnt++;
-                hexDumpIn(bbuffer, size);
-                IpPacket ip = IPFactory.processRawPacket(bbuffer, size);
+                final IpPacket ip = IPFactory.processRawPacket(bbuffer, size);
                 if (ip != null) {
                     ip.getDstRoutingHash();//whats my hash
                     bytes.addAndGet(size);
@@ -151,8 +137,8 @@ public class TunTapInterfaceListener extends TestRunner {
                         //System.out.println("IP: " + ip.toString());
                         ip.resetBuffer();
                         //echo packet back to owner
-                        ((UDPPacket) ip).swapSourceDestination();
-                        ((UDPPacket) ip).updateChecksum();
+                        ip.swapSourceDestination();
+                        ip.updateChecksum();
                         ((UDPPacket) ip).swapSourceDestinationPort();
                         tundev.writeByteBuffer(ip.getRawPacket(), ip.getRawSize());
                         //hexDumpOut(ip.getRawPacket(), ip.getRawSize());
@@ -163,7 +149,7 @@ public class TunTapInterfaceListener extends TestRunner {
                         log.info("{}", ip);
                     }
                 }
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 //hell , it still java so it will break
                 log.error("oeps..", t);
             }
@@ -173,8 +159,8 @@ public class TunTapInterfaceListener extends TestRunner {
 
     public void dumpSpeed() {
         if (bytes.intValue()>0) {
-            long v=bytes.getAndSet(0);
-            System.out.println("goodput: " + String.format("%.3f mbit/sec", (double) (v * 8) / (1024 * 1024)) + " bytes: "+ v +" "+ cnt + " pkts: " + pktcnt);
+            final long v=bytes.getAndSet(0);
+            System.out.println("goodput: " + String.format("%.3f mbit/sec", (double) (v * 8) / (1024 * 1024)) + " bytes: "+ v + ' ' + cnt + " pkts: " + pktcnt);
         }
         cnt = 0;
     }

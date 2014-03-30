@@ -24,11 +24,11 @@ import java.nio.ByteBuffer;
  * Created by luc on 1/2/14.
  */
 public class interfaceAddressMsg extends NlMessage {
-    byte ifa_family;
-    byte ifa_prefixlen;  /* The prefix length            */
-    byte ifa_flags;      /* Flags                        */
-    byte ifa_scope;      /* Address scope                */
-    byte ifa_index;      /* Link index                   */
+    final byte ifa_family;
+    final byte ifa_prefixlen;  /* The prefix length            */
+    final byte ifa_flags;      /* Flags                        */
+    final byte ifa_scope;      /* Address scope                */
+    final byte ifa_index;      /* Link index                   */
 
     public interfaceAddressMsg(final ByteBuffer msg) {
         super(msg);

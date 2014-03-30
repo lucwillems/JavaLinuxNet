@@ -149,7 +149,7 @@ public class linuxutils {
 
     public static libc.sockaddr_in getsockname(final Socket s) throws libc.ErrnoException  {
         final int fd = SocketUtils.getFd(s);
-        byte[] sa=_getsockname(fd);
+        final byte[] sa=_getsockname(fd);
         return new libc.sockaddr_in(sa,true);
     }
 
@@ -196,13 +196,13 @@ public class linuxutils {
     public static native short ioctl_SIOCGIFFLAGS(String  device) throws libc.ErrnoException;
     public static native int ioctl_SIOCSIFFLAGS(String  device,short flags) throws libc.ErrnoException;
 
-    private static native byte[] _ioctl_SIOCGIFADDR(String device);
-    public static libc.sockaddr_in ioctl_SIOCGIFADDR(String device) {
+    private static native byte[] _ioctl_SIOCGIFADDR(String device) throws libc.ErrnoException;
+    public static libc.sockaddr_in ioctl_SIOCGIFADDR(final String device) throws libc.ErrnoException{
         return new libc.sockaddr_in(_ioctl_SIOCGIFADDR(device),false);
     }
 
-    public static native int _ioctl_SIOCSIFADDR(String device,byte[] ipv4);
-    private static int ioctl_SIOCSIFADDR(String device, libc.sockaddr_in address) throws libc.ErrnoException {
+    public static native int _ioctl_SIOCSIFADDR(String device,byte[] ipv4) throws libc.ErrnoException;
+    private static int ioctl_SIOCSIFADDR(final String device, final libc.sockaddr_in address) throws libc.ErrnoException {
         return _ioctl_SIOCSIFADDR(device,address.array());
     }
 

@@ -20,10 +20,10 @@ public class TCPoptionTimeStamp implements TCPOption {
     public static final String name="timestamps";
     public static final int length=10;
 
-    private int tsval = 0;
-    private int tsecr = 0;
+    private final int tsval;
+    private final int tsecr;
 
-    public TCPoptionTimeStamp(int tsval, int tsecr) {
+    public TCPoptionTimeStamp(final int tsval, final int tsecr) {
         this.tsval = tsval;
         this.tsecr = tsecr;
     }
@@ -35,18 +35,18 @@ public class TCPoptionTimeStamp implements TCPOption {
     }
 
     public String toString() {
-        StringBuffer s = new StringBuffer();
-        s.append(getName()).append(":(");
+        final StringBuilder s = new StringBuilder(128);
+        s.append(name).append(":(");
         if (tsval != 0) {
             s.append((long) tsval & 0xffffffffL);
         }
         if (tsval != 0 & tsecr != 0) {
-            s.append(",");
+            s.append(',');
         }
         if (tsecr != 0) {
             s.append((long) tsecr & 0xffffffffL);
         }
-        s.append(")");
+        s.append(')');
         return s.toString();
     }
 

@@ -20,9 +20,6 @@ public class TCPoptionNOP implements TCPOption {
     public static final String name="NOP";
     public static final int length=1;
 
-    public TCPoptionNOP() {
-    }
-
     public String getName() {
         return name;
     }
@@ -32,6 +29,6 @@ public class TCPoptionNOP implements TCPOption {
     }
 
     public String toString() {
-        return getName();
+        return name;
     }
 }

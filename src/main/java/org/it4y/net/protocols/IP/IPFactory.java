@@ -35,45 +35,45 @@ public class IPFactory {
     }
 
     public static final Map<Byte, ipv4Factory> ipv4FactoryMap = Collections.unmodifiableMap(new HashMap<Byte, ipv4Factory>() {{
-        put((byte) ICMPPacket.PROTOCOL, new ipv4Factory() {
-            public IpPacket create(ByteBuffer buffer, int size) {
+        put(ICMPPacket.PROTOCOL, new ipv4Factory() {
+            public IpPacket create(final ByteBuffer buffer, final int size) {
                 return new ICMPPacket(buffer, size);
             }
         });
-        put((byte) IPIPPacket.PROTOCOL, new ipv4Factory() {
-            public IpPacket create(ByteBuffer buffer, int size) {
+        put(IPIPPacket.PROTOCOL, new ipv4Factory() {
+            public IpPacket create(final ByteBuffer buffer, final int size) {
                 return new IPIPPacket(buffer, size);
             }
         });
-        put((byte) TCPPacket.PROTOCOL , new ipv4Factory() {
-            public IpPacket create(ByteBuffer buffer, int size) {
+        put(TCPPacket.PROTOCOL, new ipv4Factory() {
+            public IpPacket create(final ByteBuffer buffer, final int size) {
                 return new TCPPacket(buffer, size);
             }
         });
-        put((byte) UDPPacket.PROTOCOL , new ipv4Factory() {
-            public IpPacket create(ByteBuffer buffer, int size) {
+        put(UDPPacket.PROTOCOL, new ipv4Factory() {
+            public IpPacket create(final ByteBuffer buffer, final int size) {
                 return new UDPPacket(buffer, size);
             }
         });
-        put((byte) IPv6TunnelPacket.PROTOCOL , new ipv4Factory() {
-            public IpPacket create(ByteBuffer buffer, int size) {
+        put(IPv6TunnelPacket.PROTOCOL, new ipv4Factory() {
+            public IpPacket create(final ByteBuffer buffer, final int size) {
                 return new IPv6TunnelPacket(buffer, size);
             }
         });
-        put((byte) GREPacket.PROTOCOL , new ipv4Factory() {
-            public IpPacket create(ByteBuffer buffer, int size) {
+        put(GREPacket.PROTOCOL, new ipv4Factory() {
+            public IpPacket create(final ByteBuffer buffer, final int size) {
                 return new GREPacket(buffer, size);
             }
         });
     }});
 
-    public static final IpPacket processRawPacket(ByteBuffer buffer, int size) {
+    public static IpPacket processRawPacket(final ByteBuffer buffer, final int size) {
         //check for IPv4 and protocol
         if (buffer != null & size >0) {
-            byte ipVersion = (byte) (buffer.get(IpPacket.header_version) >> 4);
+            final byte ipVersion = (byte) (buffer.get(IpPacket.header_version) >> 4);
             if (ipVersion == 4) {
-                byte ipProtocol=buffer.get(IpPacket.header_protocol);
-                ipv4Factory factory = ipv4FactoryMap.get(ipProtocol);
+                final byte ipProtocol=buffer.get(IpPacket.header_protocol);
+                final ipv4Factory factory = ipv4FactoryMap.get(ipProtocol);
                 if (factory == null) {
                     return new IpPacket(buffer, size);
                 } else {

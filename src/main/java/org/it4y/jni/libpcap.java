@@ -46,7 +46,7 @@ public class libpcap {
 
     //Class to hold a BPF instruction set in byte buffer
     public static class bpfPprogram {
-        private ByteBuffer buffer = null;
+        private ByteBuffer buffer;
 
         /**
          * this method is called by jni code to initialize the bytebuffer
@@ -71,7 +71,7 @@ public class libpcap {
          * @return
          */
         public boolean isValid() {
-            return (buffer != null) & (buffer.capacity() > 0) & libpcap.bpf_validate(this);
+            return buffer != null && buffer.capacity() > 0 & bpf_validate(this);
         }
 
         /**
@@ -133,8 +133,9 @@ public class libpcap {
      * we assert(program !=null) else jvm can crash !
      */
     public static int pcap_compile(final int linktype, final bpfPprogram program, final String filter) {
-        assert(program !=null);
-        return pcap_compile_nopcap(65535, linktype, program, filter, true, 0);
+        if (program !=null) {
+            return pcap_compile_nopcap(65535, linktype, program, filter, true, 0);
+        } else throw new NullPointerException();
     }
 
     /**
@@ -158,9 +159,9 @@ public class libpcap {
      * we assert(bpf !=null) & assert(pkt != null) else jvm can crash !
      */
     public static boolean bpf_filter(final ByteBuffer bpf, final ByteBuffer pkt) {
-        assert(bpf != null);
-        assert(pkt != null);
-        return bpf_filter(bpf, bpf.capacity(), pkt.capacity(), pkt) > 0;
+        if (bpf != null && pkt != null) {
+            return bpf_filter(bpf, bpf.capacity(), pkt.capacity(), pkt) > 0;
+        } else throw new NullPointerException();
     }
 
     /**
@@ -179,7 +180,8 @@ public class libpcap {
      * we assert(program !=null) else jvm can crash !
      */
     public static boolean bpf_validate(final bpfPprogram program) {
-        assert(program !=null);
-        return bpf_validate(program.getBuffer(), program.getInstructionCnt()) > 0;
+        if(program !=null) {
+            return bpf_validate(program.getBuffer(), program.getInstructionCnt()) > 0;
+        } else throw new NullPointerException();
     }
 }

@@ -99,7 +99,7 @@ public abstract class TProxyListener extends Thread {
         //close socket, this will causes the running thread to stop
         try {
             socket.close();
-        } catch (final IOException ignore) {};
+        } catch (final IOException ignore) {}
     }
     /***
      * Gently stop listener thread

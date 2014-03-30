@@ -24,13 +24,13 @@ import java.nio.ByteBuffer;
  * Created by luc on 1/2/14.
  */
 public class neighbourMsg extends NlMessage {
-    byte ndm_family;
-    byte ndm_pad1;
-    byte ndm_pad2;
-    byte ndm_ifindex;
-    byte ndm_state;
-    byte ndm_flags;
-    byte ndm_type;
+    final byte ndm_family;
+    final byte ndm_pad1;
+    final byte ndm_pad2;
+    final byte ndm_ifindex;
+    final byte ndm_state;
+    final byte ndm_flags;
+    final byte ndm_type;
 
     public neighbourMsg(final ByteBuffer msg) {
         super(msg);

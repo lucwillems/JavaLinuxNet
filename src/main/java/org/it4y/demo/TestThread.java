@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
  * Created by luc on 1/4/14.
  */
 public class TestThread extends TestRunner {
-    LinkManager lnkMng;
-    Logger log= LoggerFactory.getLogger(TestThread.class);
+    final LinkManager lnkMng;
+    final Logger log= LoggerFactory.getLogger(TestThread.class);
 
     public TestThread(final LinkManager lnkMng) {
         this.lnkMng=lnkMng;

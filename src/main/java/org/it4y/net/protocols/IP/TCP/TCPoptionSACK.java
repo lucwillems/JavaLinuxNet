@@ -21,9 +21,6 @@ public class TCPoptionSACK implements TCPOption {
     public static final int length=2;
 
 
-    public TCPoptionSACK() {
-    }
-
     public String getName() {
         return name;
     }
@@ -33,6 +30,6 @@ public class TCPoptionSACK implements TCPOption {
     }
 
     public String toString() {
-        return getName();
+        return name;
     }
 }

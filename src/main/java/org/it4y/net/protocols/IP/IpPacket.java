@@ -121,16 +121,16 @@ public class IpPacket extends RawPacket {
         return rawPacket.getShort(header_identification);
     }
 
-    public void setIdentification(short id) {
+    public void setIdentification(final short id) {
         rawPacket.putShort(header_identification, id);
     }
 
     public boolean isDF() {
-        byte data = rawPacket.get(header_flags);
+        final byte data = rawPacket.get(header_flags);
         return (byte) (data & (byte) 0x40) == (byte) 0x40;
     }
 
-    public void setDF(boolean df) {
+    public void setDF(final boolean df) {
         byte data = rawPacket.get(header_flags);
         if (df) {
             data = (byte) (data | ((byte) 0x40));
@@ -144,7 +144,7 @@ public class IpPacket extends RawPacket {
         return (byte) (rawPacket.get(header_flags) & (byte) 0x20) == (byte) 0x20;
     }
 
-    public void setMF(boolean mf) {
+    public void setMF(final boolean mf) {
         byte data = rawPacket.get(header_flags);
         if (mf) {
             data = (byte) (data | ((byte) 0x20));
@@ -159,13 +159,12 @@ public class IpPacket extends RawPacket {
     }
 
     public short getFragmentOffset() {
-        short data = (short) (rawPacket.getShort(header_fragments) & (short) 0x1fff);
-        return data;
+        return (short) (rawPacket.getShort(header_fragments) & (short) 0x1fff);
     }
 
-    public void setFragmentOffset(short offset) {
+    public void setFragmentOffset(final short offset) {
         short data = rawPacket.getShort(header_fragments);
-        data = (short) ((short) (data) & (short) 0xe000);
+        data = (short) (data & (short) 0xe000);
         data = (short) (data + offset);
         rawPacket.putShort(header_fragments, data);
     }

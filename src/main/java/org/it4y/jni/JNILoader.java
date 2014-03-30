@@ -36,15 +36,15 @@ import java.io.InputStream;
  *
  */
 public class JNILoader {
-    public  static String customPathKEY="JNILoader.tmpPath";
-    private static String tmpPath = "/tmp/linux-net";
+    public  static final String customPathKEY="JNILoader.tmpPath";
+    private static final String tmpPath = "/tmp/linux-net";
 
     //Predefined location of librabry path.
-    private static String[] libpath = new String[]{"/usr/lib","/usr/lib/jlinux-net"};
+    private static final String[] libpath = new String[]{"/usr/lib","/usr/lib/jlinux-net"};
 
-    public static String libraryArchFileName(String lib) {
+    public static String libraryArchFileName(final String lib) {
         final String arch=System.getProperty("os.arch");
-        return lib+"-"+arch+".so";
+        return lib+ '-' +arch+".so";
     }
     /**
      * Load .so library from different location.
@@ -72,26 +72,26 @@ public class JNILoader {
         }
 
         //try loading from JAR resource stream
-        String targetFolder = getTargetFolder();
-        File targetFile = new File(targetFolder, libfname);
+        final String targetFolder = getTargetFolder();
+        final File targetFile = new File(targetFolder, libfname);
         //cleanup any old file
         if (targetFile.exists()) {
             log.info("cleanup old {}", targetFile);
             if(!targetFile.delete()) {
                 //should never happen but you never know
                 log.warn("Could not delete old {}",targetFile);
-            };
+            }
         }
         targetFile.deleteOnExit();
 
         // extract file into the current directory
-        InputStream reader = JNILoader.class.getResourceAsStream("/" + libfname);
+        final InputStream reader = JNILoader.class.getResourceAsStream('/' + libfname);
         FileOutputStream writer=null;
         if (reader != null) {
             try {
                 writer = new FileOutputStream(targetFile);
-                byte[] buffer = new byte[4096];
-                int bytesRead = 0;
+                final byte[] buffer = new byte[4096];
+                int bytesRead;
                 while ((bytesRead = reader.read(buffer)) != -1) {
                     writer.write(buffer, 0, bytesRead);
                 }
@@ -100,20 +100,18 @@ public class JNILoader {
                 log.info("native lib loaded: {}", targetFile);
                 return;
                 //
-            } catch (IOException io) {
+            } catch (final IOException io) {
                 log.error("Fatal IO error : {}", io.getMessage());
             } finally {
-                if (reader != null) {
                     try {
                         reader.close();
-                    } catch (IOException ignore) {
+                    } catch (final IOException ignore) {
                         log.warn("could not close resource {}",lib);
                     }
-                }
                 if (writer != null ) {
                     try {
                         writer.close();
-                    } catch (IOException ignore) {
+                    } catch (final IOException ignore) {
                         log.warn("could not close {}",targetFile);
                     }
                 }
@@ -134,7 +132,7 @@ public class JNILoader {
      */
     private static String getTargetFolder() {
         final Logger log = LoggerFactory.getLogger(JNILoader.class);
-        File tmpDir=null;
+        final File tmpDir;
         if (System.getProperty(customPathKEY) != null) {
             tmpDir=new File(System.getProperty(customPathKEY));
             log.info("using custom tmp {}",tmpDir);
@@ -146,8 +144,11 @@ public class JNILoader {
             tmpDir = new File("/tmp/linux-net");
             log.info("using tmp {}",tmpDir);
         }
-        if (!tmpDir.exists())
-            tmpDir.mkdirs();
+        if (!tmpDir.exists()) {
+            if (!tmpDir.mkdirs()) {
+                log.error("unable to create {}", tmpDir);
+            }
+        }
         return tmpDir.getAbsolutePath();
     }
 }

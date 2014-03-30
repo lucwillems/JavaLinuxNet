@@ -35,16 +35,16 @@ public class libnetlink3 {
     static {
         //THIS requires libnl3 !!!!
         JNILoader.loadLibrary("libjninetlink3");
-        int initResult=initlib();
+        final int initResult=initlib();
         if (initResult != JNI_OK) {
             throw new RuntimeException("Failed to initialize libnet3 jni interface : "+initResult);
-        };
+        }
     }
 
 
     //return code to send from accept interface
-    public static int rtl_accept_CONTINUE = 0;
-    public static int rtl_accept_STOP = -1;
+    public static final int rtl_accept_CONTINUE=0;
+    public static final int rtl_accept_STOP = -1;
     public static int rtl_accept_FAILED_NOMESSAGEBUFFER = -2;
     public static int rtl_accept_FAILED_NOLISTENER = -3;
     public static int rtl_accept_FAILED_BUFFERTOSMALL = -4;
@@ -52,12 +52,12 @@ public class libnetlink3 {
 
     //interface to accept messages from rtnl_listen()
     public interface rtnl_accept {
-        public int accept(ByteBuffer message);
+        int accept(ByteBuffer message);
     }
 
     //From include
     public static class utils {
-        public static int nl_mgrp(int group) {
+        public static int nl_mgrp(final int group) {
             return group > 0 ? (1 << (group - 1)) : 0;
         }
     }
@@ -74,9 +74,8 @@ public class libnetlink3 {
 
     public static class rtnl_handle {
         public static final int SIZE = 36;
-        public byte[] handle = new byte[SIZE];
-        public rtnl_handle() {
-        }
+        public final byte[] handle = new byte[SIZE];
+
         public int getFd() {
             return (handle[0]<<24)&0xff000000|(handle[1]<<16)&0xff0000|(handle[2]<<8)&0xff00|(handle[3]<<0)&0xff;
         }
@@ -112,7 +111,7 @@ public class libnetlink3 {
      */
     private static native int rtnl_open(byte[] handle, int subscriptions);
 
-    public static int rtnl_open(rtnl_handle handler, int subscriptions) {
+    public static int rtnl_open(final rtnl_handle handler, final int subscriptions) {
         return rtnl_open(handler.handle, subscriptions);
     }
 
@@ -124,7 +123,7 @@ public class libnetlink3 {
      */
     private static native int rtnl_open_byproto(byte[] handle, int subscriptions, int protocol);
 
-    public static int rtnl_open_byproto(rtnl_handle handler, int subscriptions, int protocol) {
+    public static int rtnl_open_byproto(final rtnl_handle handler, final int subscriptions, final int protocol) {
         return rtnl_open_byproto(handler.handle, subscriptions, protocol);
     }
 
@@ -133,14 +132,14 @@ public class libnetlink3 {
      */
     private static native void rtnl_close(byte[] handle);
 
-    public static void rtnl_close(rtnl_handle handler) {
+    public static void rtnl_close(final rtnl_handle handler) {
         rtnl_close(handler.handle);
     }
 
 
     public static native int rtnl_wilddump_request(byte[] handle, int family, int type);
 
-    public static int rtnl_wilddump_request(rtnl_handle handle, int family, int type) {
+    public static int rtnl_wilddump_request(final rtnl_handle handle, final int family, final int type) {
         return rtnl_wilddump_request(handle.handle, family, type);
     }
 
@@ -150,7 +149,7 @@ public class libnetlink3 {
 
     private static native int rtnl_listen(byte[] handle, ByteBuffer buf, rtnl_accept listener);
 
-    public static int rtnl_listen(rtnl_handle handle, ByteBuffer buf, rtnl_accept listener) {
+    public static int rtnl_listen(final rtnl_handle handle, final ByteBuffer buf, final rtnl_accept listener) {
         return rtnl_listen(handle.handle, buf, listener);
     }
 

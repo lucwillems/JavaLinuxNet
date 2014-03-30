@@ -38,7 +38,7 @@ public class TProxyInterceptedSocket {
      * @param remote : remote part of the connection
      * @throws UnknownHostException
      */
-    public TProxyInterceptedSocket(final Socket socket, final libc.sockaddr_in remote) throws UnknownHostException {
+    public TProxyInterceptedSocket(final Socket socket, final libc.sockaddr_in remote) {
         this.socket = socket;
         this.remote = remote;
     }

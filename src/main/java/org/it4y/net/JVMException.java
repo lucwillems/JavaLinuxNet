@@ -21,7 +21,7 @@ package org.it4y.net;
  */
 public class JVMException extends RuntimeException {
 
-    public JVMException(Throwable cause) {
+    public JVMException(final Throwable cause) {
         super(cause);
     }
 }

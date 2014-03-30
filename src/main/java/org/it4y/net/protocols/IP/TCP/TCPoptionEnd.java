@@ -20,11 +20,6 @@ public class TCPoptionEnd implements TCPOption {
     public static final String name="end";
     public static final int length=1;
 
-    public TCPoptionEnd() {
-    }
-
-    ;
-
     public String getName() {  return name;  }
 
     public int getLength() {
@@ -32,6 +27,6 @@ public class TCPoptionEnd implements TCPOption {
     }
 
     public String toString() {
-        return getName();
+        return name;
     }
 }

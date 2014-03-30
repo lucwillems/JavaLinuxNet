@@ -22,16 +22,13 @@ import org.it4y.jni.tuntap;
 public class TunDevice extends tuntap {
 
     public TunDevice() {
-        super();
     }
 
-    public TunDevice(String device) {
-        super();
+    public TunDevice(final String device) {
         this.device = device;
     }
 
     public void open() throws libc.ErrnoException {
-        int errno;
         //open on name or let kernel chouse
         if (device != null) {
             openTunDevice(device);

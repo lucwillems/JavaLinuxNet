@@ -26,11 +26,11 @@ import java.nio.ByteBuffer;
  */
 public class interfaceInfoMsg extends NlMessage {
 
-    byte ifi_family;
-    short ifi_type;
-    int ifi_index;
-    int ifi_flags;
-    int ifi_changed;
+    final byte ifi_family;
+    final short ifi_type;
+    final int ifi_index;
+    final int ifi_flags;
+    final int ifi_changed;
 
     public interfaceInfoMsg(final ByteBuffer msg) {
         super(msg);

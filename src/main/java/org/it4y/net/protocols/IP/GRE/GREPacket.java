@@ -37,11 +37,11 @@ public class GREPacket extends IpPacket {
 
     private int ip_header_offset;
 
-    public GREPacket(ByteBuffer buffer, int size) {
+    public GREPacket(final ByteBuffer buffer, final int size) {
         super(buffer, size);
         ip_header_offset=super.getHeaderSize();
     }
-    public GREPacket(IpPacket ip) {
+    public GREPacket(final IpPacket ip) {
         super(ip.getRawPacket(),ip.getRawSize());
         //get IP header size
         ip_header_offset=ip.getHeaderSize();
@@ -50,8 +50,8 @@ public class GREPacket extends IpPacket {
     @Override
     public void initIpHeader() {
         super.initIpHeader();
-        setProtocol(GREPacket.PROTOCOL);
-        ip_header_offset=super.getIpHeaderSize();
+        setProtocol(PROTOCOL);
+        ip_header_offset= getIpHeaderSize();
     }
 
     @Override
@@ -90,15 +90,15 @@ public class GREPacket extends IpPacket {
     }
 
     public boolean hasGreChecksum() {
-        short flags=getGreFlags();
+        final short flags=getGreFlags();
         return (flags & (short)0x8000) == (short)0x8000;
     }
     public boolean hasGreKeys() {
-        short flags=getGreFlags();
+        final short flags=getGreFlags();
         return (flags & (short)0x2000) == (short)0x2000;
     }
     public boolean hasGreSequenceNumbers() {
-        short flags=getGreFlags();
+        final short flags=getGreFlags();
         return (flags & (short)0x1000) == (short)0x1000;
     }
 
@@ -113,7 +113,7 @@ public class GREPacket extends IpPacket {
         return  rawPacket.getInt(ip_header_offset + header_gre_seq);
     }
 
-    public void setGreFlags(short flags) {
+    public void setGreFlags(final short flags) {
         rawPacket.putShort(ip_header_offset + header_gre_flags, flags);
     }
 
@@ -121,19 +121,19 @@ public class GREPacket extends IpPacket {
         return rawPacket.getShort(ip_header_offset + header_gre_protocol);
     }
 
-    public void setEmbeddedProtocol(short protocol) {
+    public void setEmbeddedProtocol(final short protocol) {
         rawPacket.putShort(ip_header_offset + header_gre_protocol,protocol);
     }
 
     @Override
     public String toString() {
         final StringBuilder s=new StringBuilder(128);
-        s.append(super.toString()).append("[");
-        if (hasGreChecksum()) {s.append("C,"); };
-        if (hasGreKeys()) {s.append("K=").append(Integer.toHexString(getGreKey())).append(",");}
-        if (hasGreSequenceNumbers()) {s.append("S=").append(Integer.toHexString(getGreSeqNumber())).append(",");}
+        s.append(super.toString()).append('[');
+        if (hasGreChecksum()) {s.append("C,"); }
+        if (hasGreKeys()) {s.append("K=").append(Integer.toHexString(getGreKey())).append(',');}
+        if (hasGreSequenceNumbers()) {s.append("S=").append(Integer.toHexString(getGreSeqNumber())).append(',');}
         s.deleteCharAt(s.lastIndexOf(","));
-        s.append("]");
+        s.append(']');
         if (getPayLoadSize()>0) {
                 s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 20)));
         }
