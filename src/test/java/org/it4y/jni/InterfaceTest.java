@@ -17,6 +17,7 @@
 package org.it4y.jni;
 
 import org.it4y.jni.linux.ioctl;
+import org.it4y.jni.linux.socket;
 import org.it4y.net.link.LinkManager;
 import org.it4y.net.link.LinkNotification;
 import org.it4y.net.link.NetworkInterface;
@@ -26,6 +27,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 /**
@@ -108,16 +113,63 @@ public class InterfaceTest {
     }
 
     @Test
-    public void testInterfaceAddress() throws libc.ErrnoException {
+    public void testInterfacegetAddress() throws libc.ErrnoException {
         libc.sockaddr_in address=linuxutils.ioctl_SIOCGIFADDR(device);
         logger.info("IPv4 sockaddr_in: {}", Hexdump.bytesToHex(address.array(), address.array().length));
         logger.info("{}", address);
         Assert.assertEquals(0, address.port);
         Assert.assertEquals(0x7f000003, address.address);
+        Assert.assertEquals(0x02, address.family);
+        logger.info("{}", address.toInetAddress());
+        logger.info("{}", address.toInetSocketAddress());
+    }
+
+    @Test
+    public void testInterfacesetAddress() throws libc.ErrnoException, UnknownHostException {
+        libc.sockaddr_in originalAddress= linuxutils.ioctl_SIOCGIFADDR(device);
+        logger.info("original {}", originalAddress);
+        InetAddress ipv4= Inet4Address.getByName("127.0.0.4");
+        libc.sockaddr_in address= new libc.sockaddr_in(ipv4);
+        linuxutils.ioctl_SIOCSIFADDR(device,address);
+        address= linuxutils.ioctl_SIOCGIFADDR(device);
+        logger.info("IPv4 sockaddr_in: {}", Hexdump.bytesToHex(address.array(), address.array().length));
+        logger.info("{}", address);
+        Assert.assertEquals(0, address.port);
+        Assert.assertEquals(0x7f000004, address.address);
+        Assert.assertEquals(0x02,address.family);
+        logger.info("{}", address.toInetAddress());
+        logger.info("{}", address.toInetSocketAddress());
+        linuxutils.ioctl_SIOCSIFADDR(device,new libc.sockaddr_in(0x7f000003,(short)0,socket.AF_INET));
+    }
+
+    @Test
+    public void testInterfacegetNetmask() throws libc.ErrnoException {
+        libc.sockaddr_in address=linuxutils.ioctl_SIOCGIFNETMASK(device);
+        logger.info("IPv4 sockaddr_in: {}", Hexdump.bytesToHex(address.array(), address.array().length));
+        logger.info("{}", address);
+        Assert.assertEquals(0, address.port);
+        Assert.assertEquals(0xffffffff, address.address);
         Assert.assertEquals(0x02,address.family);
         logger.info("{}", address.toInetAddress());
         logger.info("{}", address.toInetSocketAddress());
     }
 
+    @Test
+    public void testInterfacesetNetMask() throws libc.ErrnoException, UnknownHostException {
+        libc.sockaddr_in originalNetmask= linuxutils.ioctl_SIOCGIFNETMASK(device);
+        logger.info("original {}", originalNetmask);
+        libc.sockaddr_in address= new libc.sockaddr_in(0xffffff00,(short)0,socket.AF_INET);
+        linuxutils.ioctl_SIOCSIFNETMASK(device, address);
+        address= linuxutils.ioctl_SIOCGIFNETMASK(device);
+        logger.info("IPv4 sockaddr_in: {}", Hexdump.bytesToHex(address.array(), address.array().length));
+        logger.info("{}", address);
+        Assert.assertEquals(0, address.port);
+        Assert.assertEquals(0xffffff00, address.address);
+        Assert.assertEquals(0x02,address.family);
+        logger.info("{}", address.toInetAddress());
+        logger.info("{}", address.toInetSocketAddress());
+        Assert.assertEquals(0,linuxutils.ioctl_SIOCSIFNETMASK(device,new libc.sockaddr_in(0xffffffff, (short) 0, socket.AF_INET)));
+
+    }
 
 }

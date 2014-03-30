@@ -201,9 +201,19 @@ public class linuxutils {
         return new libc.sockaddr_in(_ioctl_SIOCGIFADDR(device),false);
     }
 
-    public static native int _ioctl_SIOCSIFADDR(String device,byte[] ipv4) throws libc.ErrnoException;
-    private static int ioctl_SIOCSIFADDR(final String device, final libc.sockaddr_in address) throws libc.ErrnoException {
-        return _ioctl_SIOCSIFADDR(device,address.array());
+    private static native int _ioctl_SIOCSIFADDR(String device,byte[] ipv4) throws libc.ErrnoException;
+    public static int ioctl_SIOCSIFADDR(final String device, final libc.sockaddr_in address) throws libc.ErrnoException {
+        return _ioctl_SIOCSIFADDR(device,address.array(true));
+    }
+
+    private static native byte[] _ioctl_SIOCGIFNETMASK(String device) throws libc.ErrnoException;
+    public static libc.sockaddr_in ioctl_SIOCGIFNETMASK(final String device) throws libc.ErrnoException {
+        return new libc.sockaddr_in(_ioctl_SIOCGIFNETMASK(device));
+    }
+
+    private static native int _ioctl_SIOCSIFNETMASK(String device,byte[] ipv4) throws libc.ErrnoException;
+    public static int ioctl_SIOCSIFNETMASK(final String device, final libc.sockaddr_in address) throws libc.ErrnoException {
+        return _ioctl_SIOCSIFNETMASK(device,address.array(true));
     }
 
     public static native int ioctl_ifupdown(String  device,boolean state) throws libc.ErrnoException;

@@ -494,9 +494,6 @@ JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCGIFADDR(J
     int sockfd;
     struct ifreq ifr;
 
-    jbyteArray result;
-    result = (*env)->NewByteArray(env,sizeof(struct sockaddr_in));
-
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {
          perror("socket ioctl_1SIOCGIFADDRipv4");
@@ -515,6 +512,10 @@ JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCGIFADDR(J
          throwErrnoExceptionError(env,errno);
          return NULL;
     }
+
+    jbyteArray result;
+    result = (*env)->NewByteArray(env,sizeof(struct sockaddr_in));
+
     struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
     //fprintf(stderr,"IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
     //do stuff to raw bytes
@@ -533,7 +534,123 @@ JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCGIFADDR(J
  * Method:    _ioctl_SIOCSIFADDR
  * Signature: (Ljava/lang/String;[B)I
  */
-JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCSIFADDR(JNIEnv *env, jclass this, jstring device, jbyteArray sockaddr) {
-  return OK;
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCSIFADDR(JNIEnv *env, jclass this, jstring jdevice, jbyteArray sockaddr) {
+
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ioctl_1SIOCGIFADDRipv4");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+
+    struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
+    //do stuff to raw bytes
+    jboolean isCopy;
+    jbyte* rawjBytes = (*env)->GetByteArrayElements(env, sockaddr, &isCopy);
+    memcpy((void *)ipaddr, rawjBytes, sizeof(struct sockaddr_in));
+    (*env)->ReleaseByteArrayElements(env, sockaddr, rawjBytes, 0);
+
+    //fprintf(stderr,"IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
+
+    if (ioctl(sockfd, SIOCSIFADDR, &ifr) < 0) {
+         perror("SIOCSIFADDR: ");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+    return OK;
 }
 
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    _ioctl_SIOCGIFNETMASK
+ * Signature: (Ljava/lang/String;)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCGIFNETMASK(JNIEnv *env, jclass this, jstring jdevice) {
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ioctl_1SIOCGIFADDRipv4");
+         throwErrnoExceptionError(env,errno);
+         return NULL;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+    /* get current interface state */
+    if (ioctl(sockfd, SIOCGIFNETMASK, &ifr) < 0) {
+         perror("SIOCGIFNETMASK: ");
+         throwErrnoExceptionError(env,errno);
+         return NULL;
+    }
+
+    jbyteArray result;
+    result = (*env)->NewByteArray(env,sizeof(struct sockaddr_in));
+
+    struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
+    //fprintf(stderr,"IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
+    //do stuff to raw bytes
+    jboolean isCopy;
+    jbyte* rawjBytes = (*env)->GetByteArrayElements(env, result, &isCopy);
+    memcpy(rawjBytes, (void *)ipaddr,sizeof(struct sockaddr_in));
+    (*env)->ReleaseByteArrayElements(env, result, rawjBytes, 0);
+
+    return result;
+
+
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    _ioctl_SIOCSIFNETMASK
+ * Signature: (Ljava/lang/String;[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCSIFNETMASK(JNIEnv *env, jclass this, jstring jdevice, jbyteArray ipv4) {
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ioctl_1SIOCGIFADDRipv4");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+
+    struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
+    //do stuff to raw bytes
+    jboolean isCopy;
+    jbyte* rawjBytes = (*env)->GetByteArrayElements(env, ipv4, &isCopy);
+    memcpy((void *)ipaddr, rawjBytes, sizeof(struct sockaddr_in));
+    (*env)->ReleaseByteArrayElements(env, ipv4, rawjBytes, 0);
+
+    //fprintf(stderr,"IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
+
+    if (ioctl(sockfd, SIOCSIFNETMASK, &ifr) < 0) {
+         perror("SIOCSIFNETMASK: ");
+         throwErrnoExceptionError(env,errno);
+         return errno;
+    }
+    return OK;
+}
