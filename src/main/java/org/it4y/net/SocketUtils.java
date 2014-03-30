@@ -45,6 +45,10 @@ public class SocketUtils {
         try {
             /**
              * This greatly depends on JVM implementations !!!
+             * we need access to internal fd of the socket/file. to do that we need
+             * to access private fields :-(
+             * This will fail if someone changes the little details
+             * tested with JDK1.7 and 1.6
              */
             ServerSocketGetImpl = ServerSocket.class.getDeclaredMethod("getImpl");
             SocketGetImpl = Socket.class.getDeclaredMethod("getImpl");
@@ -53,16 +57,19 @@ public class SocketUtils {
             FileInputStreamFileDescriptor=FileInputStream.class.getDeclaredField("fd");
             RandomAccessFileDescriptor=RandomAccessFile.class.getDeclaredField("fd");
             privateFd=FileDescriptor.class.getDeclaredField("fd");
+            ServerSocketGetImpl.setAccessible(true);
+            SocketGetImpl.setAccessible(true);
+            SocketImplGetFileDescriptor.setAccessible(true);
+            FileOutputStreamFileDescriptor.setAccessible(true);
+            FileInputStreamFileDescriptor.setAccessible(true);
+            RandomAccessFileDescriptor.setAccessible(true);
+            privateFd.setAccessible(true);
         } catch (Throwable t) {
+            //If we get here, we have a serious problem and can not continue
+            //so throw a runtime exception to notify
+            log.error("Reflection error on SocketOptions: ",t.getMessage());
             throw new JVMException(t);
         }
-        ServerSocketGetImpl.setAccessible(true);
-        SocketGetImpl.setAccessible(true);
-        SocketImplGetFileDescriptor.setAccessible(true);
-        FileOutputStreamFileDescriptor.setAccessible(true);
-        FileInputStreamFileDescriptor.setAccessible(true);
-        RandomAccessFileDescriptor.setAccessible(true);
-        privateFd.setAccessible(true);
     }
 
 

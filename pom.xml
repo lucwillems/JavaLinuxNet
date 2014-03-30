@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.it4y</groupId>
+    <groupId>org.it4y</groupId>
     <artifactId>linux-net</artifactId>
     <version>0.0.3-SNAPSHOT</version>
     <properties>
