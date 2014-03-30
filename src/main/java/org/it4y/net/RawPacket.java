@@ -32,28 +32,14 @@ public abstract class RawPacket {
         rawPacket.limit(rawLimit);
     }
 
-
     public int getRawSize() {
         return rawSize;
     }
 
-    public int getHeaderSize() {
-        return 0;
-    }
-
-    public int getPayLoadSize() {
-        return rawLimit;
-    }
-
-    public ByteBuffer getHeader() {
-        return null;
-    }
-
-    public ByteBuffer getPayLoad() {
-        rawPacket.position(0);
-        return rawPacket.slice();
-    }
-
+    public abstract int getHeaderSize();
+    public abstract  int getPayLoadSize();
+    public abstract ByteBuffer getHeader();
+    public abstract ByteBuffer getPayLoad();
     public abstract int getDstRoutingHash();
     public abstract int getFlowHash();
     public abstract int getReverseFlowHash();

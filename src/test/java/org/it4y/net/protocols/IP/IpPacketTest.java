@@ -38,6 +38,8 @@ public class IpPacketTest {
        Assert.assertNotNull(ipPacket.getIpHeader());
        Assert.assertNotNull(ipPacket.getPayLoad());
        Assert.assertNotNull(ipPacket.getIpPayLoad());
+       ipPacket.release();
+       Assert.assertNull(ipPacket.getRawPacket());
    }
 
    @Test
