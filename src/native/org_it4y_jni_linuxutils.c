@@ -654,3 +654,68 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils__1ioctl_1SIOCSIFNETMASK(JNIE
     }
     return OK;
 }
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    ioctl_SIOCGIFMTU
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_ioctl_1SIOCGIFMTU(JNIEnv *env, jclass this, jstring jdevice) {
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ioctl_1SIOCGIFMTU");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+    /* get current interface state */
+    if (ioctl(sockfd, SIOCGIFMTU, &ifr) < 0) {
+         perror("SIOCGIFMTU: ");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+
+    return ifr.ifr_metric;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    ioctl_SIOCSIFMTU
+ * Signature: (Ljava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_ioctl_1SIOCSIFMTU(JNIEnv *env, jclass this, jstring jdevice, jint mtu) {
+    const char *dev;
+    int sockfd;
+    struct ifreq ifr;
+
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
+         perror("socket ioctl_1SIOCSIFMTU");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+
+    memset(&ifr, 0, sizeof ifr);
+    /* get device name from java */
+    dev= (*env)->GetStringUTFChars(env,jdevice, 0);
+    memcpy(ifr.ifr_name, dev, IFNAMSIZ);
+    (*env)->ReleaseStringUTFChars(env, jdevice, dev);
+    ifr.ifr_mtu=mtu;
+
+    /* get current interface state */
+    if (ioctl(sockfd, SIOCSIFMTU, &ifr) < 0) {
+         perror("SIOCSIFMTU: ");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+    return OK;
+}

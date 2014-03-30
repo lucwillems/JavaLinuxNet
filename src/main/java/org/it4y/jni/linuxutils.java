@@ -216,7 +216,8 @@ public class linuxutils {
         return _ioctl_SIOCSIFNETMASK(device,address.array(true));
     }
 
-    public static native int ioctl_ifupdown(String  device,boolean state) throws libc.ErrnoException;
 
+    public static native int ioctl_SIOCGIFMTU(String device) throws libc.ErrnoException;
+    public static native int ioctl_SIOCSIFMTU(String device,int mtu) throws libc.ErrnoException;
 
 }

@@ -16,12 +16,7 @@
 
 package org.it4y.jni;
 
-import org.it4y.jni.linux.ioctl;
 import org.it4y.jni.linux.socket;
-import org.it4y.net.link.LinkManager;
-import org.it4y.net.link.LinkNotification;
-import org.it4y.net.link.NetworkInterface;
-import org.it4y.util.Counter;
 import org.it4y.util.Hexdump;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,29 +44,12 @@ public class InterfaceTest {
     }
 
     @Test
-    public void testInterfaceDownUp() throws libc.ErrnoException, InterruptedException {
-        short originalFlags=linuxutils.ioctl_SIOCGIFFLAGS(device);
-        logger.info("current: 0x{}",Integer.toHexString(originalFlags));
-        //Doing this will cause the routing be lost to this interface
-        //so use one that is not required for good working
-        Assert.assertEquals(0, linuxutils.ioctl_ifupdown(device, false));
-        short flags=linuxutils.ioctl_SIOCGIFFLAGS(device);
-        logger.info("down: 0x{}", Integer.toHexString(flags));
-        Assert.assertEquals(0,flags & ioctl.IFF_UP);
-        Assert.assertEquals(0, linuxutils.ioctl_ifupdown(device, true));
-        flags=linuxutils.ioctl_SIOCGIFFLAGS(device);
-        logger.info("up: 0x{}", Integer.toHexString(flags));
-        //flags should be the same after test
-        Assert.assertEquals(originalFlags, flags);
-    }
-
-    @Test
     public void testInterfaceDoestExist()  {
         //Doing this will cause the routing be lost to this interface
         //so use one that is not required for good working
         boolean gotException=false;
         try {
-            linuxutils.ioctl_ifupdown(doesntexist,true);
+            linuxutils.ioctl_SIOCGIFADDR(doesntexist);
         } catch (libc.ErrnoException ok) {
             logger.info("got Exception (OK): {}", ok.getMessage());
             gotException=true;
@@ -79,6 +57,7 @@ public class InterfaceTest {
         Assert.assertTrue(gotException);
     }
 
+    /*
     @Test
     public void testInterfaceWithLinkManager() throws InterruptedException, libc.ErrnoException {
         LinkManager linkMng=new LinkManager();
@@ -111,7 +90,7 @@ public class InterfaceTest {
         Thread.sleep(100);
         linkMng.shutDown();
     }
-
+*/
     @Test
     public void testInterfacegetAddress() throws libc.ErrnoException {
         libc.sockaddr_in address=linuxutils.ioctl_SIOCGIFADDR(device);
@@ -170,6 +149,21 @@ public class InterfaceTest {
         logger.info("{}", address.toInetSocketAddress());
         Assert.assertEquals(0,linuxutils.ioctl_SIOCSIFNETMASK(device,new libc.sockaddr_in(0xffffffff, (short) 0, socket.AF_INET)));
 
+    }
+
+    @Test
+    public void testInterfacegetMTU() throws libc.ErrnoException {
+        int mtu=linuxutils.ioctl_SIOCGIFMTU(device);
+        logger.info("MTU: {}", mtu);
+        Assert.assertEquals(1500,mtu);
+    }
+    @Test
+    public void testInterfacesetMTU() throws libc.ErrnoException {
+        Assert.assertEquals(0,linuxutils.ioctl_SIOCSIFMTU(device,1400));
+        int mtu=linuxutils.ioctl_SIOCGIFMTU(device);
+        logger.info("MTU: {}", mtu);
+        Assert.assertEquals(1400,mtu);
+        Assert.assertEquals(0,linuxutils.ioctl_SIOCSIFMTU(device,1500));
     }
 
 }
