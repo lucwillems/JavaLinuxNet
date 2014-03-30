@@ -33,7 +33,7 @@ public class JNILoaderTest {
     public void testJNILoaderWithCustomPath() {
 
         File tmpDir=new File("/tmp/luc/test");
-        System.setProperty(JNILoader.customPathKEY,(tmpDir.getAbsolutePath()).toString());
+        System.setProperty(JNILoader.customPathKEY,tmpDir.getAbsolutePath());
         JNILoader.loadLibrary("libjnituntap");
         //Directory must exist
         Assert.assertTrue(tmpDir.exists());
