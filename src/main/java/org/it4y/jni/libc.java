@@ -16,10 +16,14 @@
 package org.it4y.jni;
 
 import org.it4y.jni.linux.socket;
-import java.net.*;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Date;
-import java.nio.ByteBuffer;
 
 public final class libc {
 
