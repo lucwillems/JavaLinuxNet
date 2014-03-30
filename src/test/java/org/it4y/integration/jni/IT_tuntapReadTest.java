@@ -166,7 +166,7 @@ public class IT_tuntapReadTest {
             Assert.assertEquals(size+28,result);
             //lets check some ip headers to be sure
             Assert.assertEquals(0x45,buf.get(0x00)); //should be IPv4 header , 5=size in 32 bits
-            Assert.assertEquals(17,buf.get(0x09)); //should be IPv4 header , 5=size in 32 bits
+            Assert.assertEquals(17,buf.get(0x09)); //should be UDP protocol
         } finally {
             if (tun != null) {
                 tun.close();
