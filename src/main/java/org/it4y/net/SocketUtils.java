@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -27,149 +28,131 @@ import java.nio.channels.SocketChannel;
 public class SocketUtils {
     private static final Logger log= LoggerFactory.getLogger(SocketUtils.class);
 
-    public static SocketImpl getImplementation(final ServerSocket socket) {
+    private static Method ServerSocketGetImpl;
+    private static Method SocketGetImpl;
+    private static Method SocketGetFileDescriptor;
+    private static Method ServerSocketGetFileDescriptor;
+    private static Method SocketImplGetFileDescriptor;
+    private static Method ServerSocketImplGetFileDescriptor;
+    private static Field  FileOutputStreamFileDescriptor;
+    private static Field  FileInputStreamFileDescriptor;
+    private static Field  RandomAccessFileDescriptor;
+    private static Field  privateFd;
+
+
+    static {
+        log.info("init socketUtils");
         try {
-            final Method method = ServerSocket.class.getDeclaredMethod("getImpl");
-            method.setAccessible(true);
-            return (SocketImpl) method.invoke(socket);
-        } catch (final Exception jvmerror) {
-            log.error("ServerSocket:",jvmerror);
+            /**
+             * This greatly depends on JVM implementations !!!
+             */
+            ServerSocketGetImpl = ServerSocket.class.getDeclaredMethod("getImpl");
+            SocketGetImpl = Socket.class.getDeclaredMethod("getImpl");
+            SocketImplGetFileDescriptor = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
+            FileOutputStreamFileDescriptor=FileOutputStream.class.getDeclaredField("fd");
+            FileInputStreamFileDescriptor=FileInputStream.class.getDeclaredField("fd");
+            RandomAccessFileDescriptor=RandomAccessFile.class.getDeclaredField("fd");
+            privateFd=FileDescriptor.class.getDeclaredField("fd");
+        } catch (Throwable t) {
+            throw new JVMException(t);
         }
-        return null;
+        ServerSocketGetImpl.setAccessible(true);
+        SocketGetImpl.setAccessible(true);
+        SocketImplGetFileDescriptor.setAccessible(true);
+        FileOutputStreamFileDescriptor.setAccessible(true);
+        FileInputStreamFileDescriptor.setAccessible(true);
+        RandomAccessFileDescriptor.setAccessible(true);
+        privateFd.setAccessible(true);
     }
 
-    public static SocketImpl getImplementation(final Socket socket) {
-        try {
-            final Method method = Socket.class.getDeclaredMethod("getImpl");
-            method.setAccessible(true);
-            return (SocketImpl) method.invoke(socket);
-        } catch (final Exception jvmerror) {
-            log.error("Socket:", jvmerror);
-        }
-        return null;
+
+    public static SocketImpl getImplementation(final ServerSocket socket) throws InvocationTargetException, IllegalAccessException {
+        return (SocketImpl) ServerSocketGetImpl.invoke(socket);
     }
 
-    public static FileDescriptor getFileDescriptor(final ServerSocket socket) {
-        try {
-            final SocketImpl impl = getImplementation(socket);
-            final Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
-            method.setAccessible(true);
-            return (FileDescriptor) method.invoke(impl);
-        } catch (final Exception jvmerror) {
-            log.error("ServerSocket:", jvmerror);
-        }
-        return null;
+    public static SocketImpl getImplementation(final Socket socket) throws InvocationTargetException, IllegalAccessException {
+        return (SocketImpl) SocketGetImpl.invoke(socket);
     }
 
-    public static FileDescriptor getFileDescriptor(final Socket socket) {
-        try {
-            final SocketImpl impl = getImplementation(socket);
-            final Method method = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
-            method.setAccessible(true);
-            return (FileDescriptor) method.invoke(impl);
-        } catch (final Exception jvmerror) {
-            log.error("Socket:", jvmerror);
-        }
-        return null;
+    public static FileDescriptor getFileDescriptor(final ServerSocket socket) throws InvocationTargetException, IllegalAccessException {
+        final SocketImpl impl = (SocketImpl) ServerSocketGetImpl.invoke(socket);
+        return (FileDescriptor) SocketImplGetFileDescriptor.invoke(impl);
     }
 
-    public static FileDescriptor getFileDescriptor(final FileOutputStream stream) {
-        try {
-            final Field privateFd = FileOutputStream.class.getDeclaredField("fd");
-            privateFd.setAccessible(true);
-            return (FileDescriptor) privateFd.get(stream);
-        } catch (final Exception jvmerror) {
-            log.error("FileOutputStream:", jvmerror);
-        }
-        return null;
+    public static FileDescriptor getFileDescriptor(final Socket socket) throws InvocationTargetException, IllegalAccessException {
+            final SocketImpl impl = (SocketImpl) SocketGetImpl.invoke(socket);
+            return (FileDescriptor) SocketImplGetFileDescriptor.invoke(impl);
     }
 
-    public static FileDescriptor getFileDescriptor(final FileInputStream stream) {
-        try {
-            final Field privateFd = FileInputStream.class.getDeclaredField("fd");
-            privateFd.setAccessible(true);
-            return (FileDescriptor) privateFd.get(stream);
-        } catch (final Exception jvmerror) {
-            log.error("FileOutputStream:", jvmerror);
-        }
-        return null;
+    public static FileDescriptor getFileDescriptor(final FileOutputStream stream) throws IllegalAccessException {
+           return (FileDescriptor) FileOutputStreamFileDescriptor.get(stream);
     }
 
-    public static FileDescriptor getFileDescriptor(final RandomAccessFile random) {
-        try {
-            final Field privateFd = RandomAccessFile.class.getDeclaredField("fd");
-            privateFd.setAccessible(true);
-            return (FileDescriptor) privateFd.get(random);
-        } catch (final Exception jvmerror) {
-            log.error("RandomAccessFile:", jvmerror);
-        }
-        return null;
+    public static FileDescriptor getFileDescriptor(final FileInputStream stream) throws IllegalAccessException {
+            return (FileDescriptor) FileInputStreamFileDescriptor.get(stream);
     }
 
-    public static int getFileHandle(final FileDescriptor fd) {
+    public static FileDescriptor getFileDescriptor(final RandomAccessFile random) throws IllegalAccessException {
+            return (FileDescriptor) RandomAccessFileDescriptor.get(random);
+    }
+
+    public static int getFileHandle(final FileDescriptor fd) throws IllegalAccessException {
         //Get FD field value
-        try {
-            final Field privateFd = FileDescriptor.class.getDeclaredField("fd");
-            privateFd.setAccessible(true);
             return ((Integer) privateFd.get(fd)).intValue();
-        } catch (final Exception jvmerror) {
-            log.error("getFileHandle:", jvmerror);
-        }
-        return -1;
     }
 
     public static int getFd(final ServerSocket socket) {
-        final FileDescriptor fd = getFileDescriptor(socket);
-        if (fd == null) {
-            log.error("NULL fd : ServerSocket {}",socket);
-            return -1;
+        try {
+            final FileDescriptor fd = getFileDescriptor(socket);
+            return getFileHandle(fd);
+        } catch (Exception shoutNotHappen) {
+            throw new JVMException(shoutNotHappen);
         }
-        return getFileHandle(fd);
     }
 
 
 
-    public static int getFd(final Socket socket) {
+    public static int getFd(final Socket socket) throws JVMException {
+        try {
         final FileDescriptor fd = getFileDescriptor(socket);
-        if (fd == null) {
-            log.error("NULL fd : Socket {}",socket);
-            return -1;
-        }
         return getFileHandle(fd);
+        } catch (Exception shoutNotHappen) {
+            throw new JVMException(shoutNotHappen);
+        }
     }
 
-    public static int getFd(final ServerSocketChannel socket ){
+    public static int getFd(final ServerSocketChannel socket ) {
        return getFd(socket.socket());
     }
 
-    public static int getFd(final SocketChannel socket ){
+    public static int getFd(final SocketChannel socket ) {
         return getFd(socket.socket());
     }
 
-    public static int getFd(final FileOutputStream stream ){
+    public static int getFd(final FileOutputStream stream )  {
+        try {
         final FileDescriptor fd = getFileDescriptor(stream);
-        if (fd == null) {
-            log.error("NULL fd : FileOutputStream {}",stream);
-            return -1;
-        }
         return getFileHandle(fd);
+        } catch (Exception shoutNotHappen) {
+            throw new JVMException(shoutNotHappen);
+        }
     }
 
-    public static int getFd(final FileInputStream stream ){
-        final FileDescriptor fd = getFileDescriptor(stream);
-        if (fd == null) {
-            log.error("NULL fd : FileInputStream {}",stream);
-            return -1;
+    public static int getFd(final FileInputStream stream )  {
+        try {
+            final FileDescriptor fd = getFileDescriptor(stream);
+            return getFileHandle(fd);
+        } catch (Exception shoutNotHappen) {
+            throw new JVMException(shoutNotHappen);
         }
-        return getFileHandle(fd);
     }
-    public static int getFd(final RandomAccessFile random ){
-        final FileDescriptor fd = getFileDescriptor(random);
-        if (fd == null) {
-            log.error("NULL fd : RandomAccessFile {}",random);
-            return -1;
+    public static int getFd(final RandomAccessFile random ) {
+        try {
+            final FileDescriptor fd = getFileDescriptor(random);
+            return getFileHandle(fd);
+        } catch (Exception shoutNotHappen) {
+            throw new JVMException(shoutNotHappen);
         }
-        return getFileHandle(fd);
     }
 
 }

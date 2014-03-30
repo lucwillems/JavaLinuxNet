@@ -13,10 +13,12 @@ import org.it4y.jni.SocketOptions;
 import org.it4y.jni.libc;
 import org.it4y.jni.linuxutils;
 import org.it4y.jni.tproxy;
+import org.it4y.net.JVMException;
 import org.it4y.net.SocketUtils;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 
 
@@ -35,16 +37,11 @@ public class TProxyServerSocket extends ServerSocket {
     public TProxyServerSocket() throws IOException {
     }
 
-
-    public SocketImpl getImplementation() {
-        return SocketUtils.getImplementation(this);
-    }
-
-    public FileDescriptor getFileDescriptor() {
+    public FileDescriptor getFileDescriptor() throws InvocationTargetException, IllegalAccessException {
         return SocketUtils.getFileDescriptor(this);
     }
 
-    public int getFd() {
+    public int getFd() throws JVMException {
         return SocketUtils.getFd(this);
     }
 
