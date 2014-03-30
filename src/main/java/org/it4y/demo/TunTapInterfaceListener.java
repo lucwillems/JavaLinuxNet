@@ -30,11 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 
-//import org.jnetstream.filter.bpf.BPFProgram;
-//import org.jnetstream.filter.bpf.BpfFactory;
-//import org.jnetstream.filter.bpf.BpfVM;
-//import org.jnetstream.filter.bpf.IllegalInstructionException;
-
 /**
  * Created by luc on 12/27/13.
  */
