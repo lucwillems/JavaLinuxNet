@@ -23,10 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.ByteBuffer;
 
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 
 /**
  * Created by luc on 3/21/14.
@@ -113,6 +111,8 @@ public class ICMPPacketTest {
         Assert.assertEquals(((ICMPPacket) packet).getSourceAddress(),0x08080808);
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REPLY);
         Assert.assertEquals(((ICMPPacket) packet).getChecksum(),0x7E6D);
+        log.info(Integer.toHexString(((ICMPPacket)packet).getFlowHash()));
+        //Assert.assertEquals((int)0xcb64d28c,((ICMPPacket)packet).getFlowHash());
 
     }
 
@@ -139,6 +139,8 @@ public class ICMPPacketTest {
         Assert.assertEquals(((ICMPPacket) packet).getTTL(),48);
         Assert.assertEquals(((ICMPPacket) packet).getProtocol(),1);
         Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),56);
+        log.info(Integer.toHexString(((ICMPPacket)packet).getReverseFlowHash()));
+        //Assert.assertEquals((int)0xcb64d28c,((ICMPPacket)packet).getReverseFlowHash());
 
     }
 

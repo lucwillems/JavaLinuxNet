@@ -201,7 +201,25 @@ public class ICMPPacket extends IpPacket {
         if (msgtype==(int)ECHO_REPLY || msgtype==(int) ECHO_REQUEST) {
             //pair ping based on there identity
             final short msgIdent=getIdentifier();
-            proto=proto<<16+((int)msgIdent&0xffff);
+            proto=((int)msgIdent&0xffff);
+        }else {
+            proto=proto<<16+code<<8+msgtype;
+        }
+        return jhash.jhash_3words(dst, src, proto, 0);
+    }
+
+    @Override
+    public int getReverseFlowHash() {
+        final int src=rawPacket.getInt(header_src);  //32 dest address
+        final int dst=rawPacket.getInt(header_dst);  //32 src address
+        int proto=((int)rawPacket.get(header_protocol)) &0xff;
+        final int code=((int)rawPacket.get(ip_header_offset + header_icmp_code)) & 0xff;
+        final int msgtype=((int)rawPacket.get(ip_header_offset+header_icmp_type))& 0xff;
+        //match flow for request/reply
+        if (msgtype==(int)ECHO_REPLY || msgtype==(int) ECHO_REQUEST) {
+            //pair ping based on there identity
+            final short msgIdent=getIdentifier();
+            proto=((int)msgIdent&0xffff);
         }else {
             proto=proto<<16+code<<8+msgtype;
         }
