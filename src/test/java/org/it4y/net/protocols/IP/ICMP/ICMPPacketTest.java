@@ -35,6 +35,9 @@ public class ICMPPacketTest {
      * the ethernet frame is removed from the packet
      */
     /* Frame (98 bytes)  : ping request */
+    static final int icmpFlowHash=0x6e90cf64;
+    static final int icmpReverseFlowHash=0x3bd8f3e0;
+
     static final byte[] pingRequest = {
             (byte)0x45, (byte)0x00, /* 8/....E. */
             (byte)0x00, (byte)0x54, (byte)0xea, (byte)0xf3, (byte)0x40, (byte)0x00, (byte)0x40, (byte)0x01, /* .T..@.@. */
@@ -68,7 +71,7 @@ public class ICMPPacketTest {
 
     @Test
     public void testICMP_ECHOREQUEST() {
-
+        log.info("Test request...");
         ByteBuffer rawData=ByteBuffer.allocate(pingRequest.length);
         rawData.put(pingRequest);
         rawData.flip();
@@ -105,20 +108,24 @@ public class ICMPPacketTest {
         Assert.assertEquals(((ICMPPacket)packet).getIpHeaderSize(),Ipheader.limit());
         Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
 
+        ICMPPacket packet1 = (ICMPPacket)packet;
+        log.info("flow: {}",Integer.toHexString(packet1.getFlowHash()));
+        log.info("reverse flow: {}",Integer.toHexString(packet1.getReverseFlowHash()));
+        Assert.assertEquals(icmpFlowHash,packet1.getFlowHash());
+        Assert.assertEquals(icmpReverseFlowHash,packet1.getReverseFlowHash());
+
         //Convert to reply
         ((ICMPPacket) packet).convertToEchoReply();
         Assert.assertEquals(((ICMPPacket) packet).getDestinationAddress(),0xc0a80090);
         Assert.assertEquals(((ICMPPacket) packet).getSourceAddress(),0x08080808);
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REPLY);
         Assert.assertEquals(((ICMPPacket) packet).getChecksum(),0x7E6D);
-        log.info(Integer.toHexString(((ICMPPacket)packet).getFlowHash()));
-        //Assert.assertEquals((int)0xcb64d28c,((ICMPPacket)packet).getFlowHash());
 
     }
 
     @Test
     public void testICMP_ECHOREPLY() {
-
+        log.info("Test reply...");
         ByteBuffer rawData=ByteBuffer.allocate(pingResponse.length);
         rawData.put(pingResponse);
         rawData.flip();
@@ -139,8 +146,12 @@ public class ICMPPacketTest {
         Assert.assertEquals(((ICMPPacket) packet).getTTL(),48);
         Assert.assertEquals(((ICMPPacket) packet).getProtocol(),1);
         Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),56);
-        log.info(Integer.toHexString(((ICMPPacket)packet).getReverseFlowHash()));
-        //Assert.assertEquals((int)0xcb64d28c,((ICMPPacket)packet).getReverseFlowHash());
+        ICMPPacket packet2 = (ICMPPacket)packet;
+        log.info("flow: {}",Integer.toHexString(packet2.getFlowHash()));
+        log.info("reverse flow: {}",Integer.toHexString(packet2.getReverseFlowHash()));
+        //this is replay packet so we need to turn around the values
+        Assert.assertEquals(icmpReverseFlowHash,packet2.getFlowHash());
+        Assert.assertEquals(icmpFlowHash,packet2.getReverseFlowHash());
 
     }
 

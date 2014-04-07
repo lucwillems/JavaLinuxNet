@@ -210,8 +210,8 @@ public class ICMPPacket extends IpPacket {
 
     @Override
     public int getReverseFlowHash() {
-        final int src=rawPacket.getInt(header_src);  //32 dest address
-        final int dst=rawPacket.getInt(header_dst);  //32 src address
+        final int dst=rawPacket.getInt(header_src);  //32 dest address
+        final int src=rawPacket.getInt(header_dst);  //32 src address
         int proto=((int)rawPacket.get(header_protocol)) &0xff;
         final int code=((int)rawPacket.get(ip_header_offset + header_icmp_code)) & 0xff;
         final int msgtype=((int)rawPacket.get(ip_header_offset+header_icmp_type))& 0xff;
