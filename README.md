@@ -29,8 +29,7 @@ Testing it:
 
 IPV6 :
 ======
-currently IPV6 is not supported. behaviour is undefined when a IPv6 address is available on the interface.
-
+currently IPV6 is not supported. IPv6 addresses will be ignored.
 You can disable IPv6 by adding following lines in
 /etc/sysctl.d/20-noipv6.conf
 
