@@ -161,4 +161,15 @@ public class UDPPacket extends IpPacket {
         return jhash.jhash_3words(dst, src, port,proto);
     }
 
+    @Override
+    public int getReverseFlowHash() {
+        final int dst=rawPacket.getInt(header_src);  //32 dest address
+        final int src=rawPacket.getInt(header_dst);  //32 src address
+        final int proto=((int)rawPacket.get(header_protocol)&0xff)<<16;
+        final int sport=((int)rawPacket.getShort(ip_header_size+header_udp_dport)) &0xffff;
+        final int dport=((int)rawPacket.getShort(ip_header_size+header_udp_sport)) &0xffff;
+        final int port=sport<<16+dport;
+        return jhash.jhash_3words(dst, src, port,proto);
+    }
+
 }

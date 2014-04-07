@@ -16,11 +16,12 @@
 
 package org.it4y.net.protocols.IP.UDP;
 
-import org.it4y.net.protocols.IP.ICMP.ICMPPacket;
 import org.it4y.net.protocols.IP.IPFactory;
 import org.it4y.net.protocols.IP.IpPacket;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
@@ -28,7 +29,12 @@ import java.nio.ByteBuffer;
  * Created by luc on 3/21/14.
  */
 public class UDPPacketTest {
+    private Logger logger = LoggerFactory.getLogger(UDPPacket.class);
+
     /* Frame (71 bytes) */
+    static final int udpFlowHash=0xd7e93316;
+    static final int udpReverseFlowHash=0x256d58ec;
+
     static final byte[] DNSrequest = {
             (byte)0x45, (byte)0x00, (byte)/* 8/....E. */
             (byte)0x00, (byte)0x39, (byte)0xf5, (byte)0x10, (byte)0x00, (byte)0x00, (byte)0x40, (byte)0x11, (byte)/* .9....@. */
@@ -58,7 +64,7 @@ public class UDPPacketTest {
     };
 
     @Test
-    public void testICMP_DNSRequest() {
+    public void testUDP_DNSRequest() {
 
         ByteBuffer rawData = ByteBuffer.allocate(DNSrequest.length);
         rawData.put(DNSrequest);
@@ -90,6 +96,13 @@ public class UDPPacketTest {
         Assert.assertEquals(((UDPPacket)packet).getIpHeaderSize(),Ipheader.limit());
         Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
 
+        //Check flow hash
+        logger.info("flow: {}",Integer.toHexString(packet.getFlowHash()));
+        logger.info("reverse flow: {}",Integer.toHexString(packet.getReverseFlowHash()));
+        Assert.assertEquals(udpFlowHash,packet.getFlowHash());
+        Assert.assertEquals(udpReverseFlowHash,packet.getReverseFlowHash());
+
+        //replay
         ((UDPPacket)packet).swapSourceDestinationPort();
         ((UDPPacket)packet).swapSourceDestination();
         ((UDPPacket)packet).updateChecksum();
@@ -100,7 +113,7 @@ public class UDPPacketTest {
     }
 
     @Test
-    public void testICMP_DNSResponse() {
+    public void testUDP_DNSResponse() {
 
         ByteBuffer rawData = ByteBuffer.allocate(DNSresponse.length);
         rawData.put(DNSresponse);
@@ -108,6 +121,14 @@ public class UDPPacketTest {
         IpPacket packet = IPFactory.processRawPacket(rawData, DNSresponse.length);
         Assert.assertNotNull(packet);
         Assert.assertTrue(packet instanceof UDPPacket);
+
+        //Check flow hash
+        logger.info("flow: {}",Integer.toHexString(packet.getFlowHash()));
+        logger.info("reverse flow: {}",Integer.toHexString(packet.getReverseFlowHash()));
+        //reverse as this is answer
+        Assert.assertEquals(udpReverseFlowHash,packet.getFlowHash());
+        Assert.assertEquals(udpFlowHash,packet.getReverseFlowHash());
+
     }
 
 }
