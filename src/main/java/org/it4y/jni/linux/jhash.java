@@ -19,6 +19,28 @@ package org.it4y.jni.linux;
 /**
  * Created by luc on 1/18/14.
  */
+ /* jhash.h: Jenkins hash support.
+  *
+  * Copyright (C) 2006. Bob Jenkins (bob_jenkins@burtleburtle.net)
+  *
+  * http://burtleburtle.net/bob/hash/
+  *
+  * These are the credits from Bob's sources:
+  *
+  * lookup3.c, by Bob Jenkins, May 2006, Public Domain.
+  *
+  * These are functions for producing 32-bit hashes for hash table lookup.
+  * hashword(), hashlittle(), hashlittle2(), hashbig(), mix(), and final()
+  * are externally useful functions.  Routines to test the hash are included
+  * if SELF_TEST is defined.  You can use this free for any purpose.  It's in
+  * the public domain.  It has no warranty.
+  *
+  * Copyright (C) 2009-2010 Jozsef Kadlecsik (kadlec@blackhole.kfki.hu)
+  *
+  * I've modified Bob's hash to be useful in the Linux kernel, and
+  * any bugs present are my fault.
+  * Jozsef
+  */
 //based on Linux  include/linux/jhash.h
 public class jhash {
 

@@ -137,7 +137,7 @@ public class UDPPacket extends IpPacket {
         s.append("h:").append(getHeaderSize()).append(',');
         s.append("d:").append(getPayLoadSize());
         s.append("] ");
-        s.append(Hexdump.bytesToHex(getPayLoad(),Math.min(getLength(),128)));
+        s.append(Hexdump.bytesToHex(getPayLoad(),Math.min(getLength(),10)));
         return s.toString();
     }
 

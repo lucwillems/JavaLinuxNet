@@ -56,7 +56,7 @@ public class IPFactoryTest {
             (byte)0x36, (byte)0x37                                      /* 67 */
     };
 
-    
+
     /* Frame (74 bytes) 
     * wget http://8.8.8.8 from 192.168.0.144
     * */

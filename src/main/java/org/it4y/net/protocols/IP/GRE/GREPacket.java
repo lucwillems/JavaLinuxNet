@@ -135,7 +135,7 @@ public class GREPacket extends IpPacket {
         s.deleteCharAt(s.lastIndexOf(","));
         s.append(']');
         if (getPayLoadSize()>0) {
-                s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 20)));
+                s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 10)));
         }
         return s.toString();
     }

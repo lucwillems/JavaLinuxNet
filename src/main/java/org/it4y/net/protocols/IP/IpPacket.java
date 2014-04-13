@@ -269,8 +269,7 @@ public class IpPacket extends RawPacket {
     @Override
     public String toString() {
         final StringBuilder s = new StringBuilder(128);
-        s.append("IP@").append(String.format("%08x", getFlowHash()));
-        s.append('[').append("len:").append(getRawSize()).append(',');
+        s.append("IP[").append("len:").append(getRawSize()).append(',');
         s.append("src:").append(ipToString(getSourceAddress())).append(',');
         s.append("dst:").append(ipToString(getDestinationAddress())).append(',');
         s.append("tos: 0x").append(Integer.toHexString((int) getTOS() & 0xff)).append(',');

@@ -80,7 +80,7 @@ public class IPIPPacket extends IpPacket{
     public String toString() {
         final StringBuilder s=new StringBuilder(128);
         if (getPayLoadSize()>0) {
-            s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 20)));
+            s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 10)));
         }
         return s.toString();
     }

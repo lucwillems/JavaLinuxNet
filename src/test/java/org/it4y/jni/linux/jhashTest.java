@@ -58,8 +58,8 @@ public class jhashTest {
         shift=24;
         Assert.assertEquals(0x995f0910,jhash.rol32(a,shift));
     }
-    
- 
+
+
     @Test
     public void jhash3wordsTest() {
         int a,b,c,initval;

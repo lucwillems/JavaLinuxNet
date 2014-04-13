@@ -235,7 +235,7 @@ public class ICMPPacket extends IpPacket {
                   .append(" s:").append((int) getSequenceNumber() & 0xffff).append(" t:").append(getTimeStampAsDate());
         } else {
             if (getPayLoadSize()>0) {
-                s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 20)));
+                s.append(Hexdump.bytesToHex(getPayLoad(), Math.min(getPayLoadSize(), 10)));
             }
         }
         return s.toString();

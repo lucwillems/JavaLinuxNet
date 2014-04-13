@@ -261,41 +261,46 @@ public class TCPPacket extends IpPacket {
 
     @Override
     public String toString() {
+        //incase we have a truncated packet from pcap file we should prepare for this
         final StringBuilder s = new StringBuilder(128);
         s.append(super.toString());
-        s.append("TCP[");
-        s.append("h:").append(getHeaderSize()).append(',');
-        s.append("p:").append(getPayLoadSize()).append(',');
-        s.append("sport:").append((int) (getSourcePort()) & 0xffff).append(',');
-        s.append("dport:").append((int) (getDestinationPort()) & 0xffff).append(',');
-        s.append("seq:").append((long) (getSequenceNumber()) & 0xffffffffL).append(',');
-        s.append("ack:").append((long) (getAckNumber()) & 0xffffffffL).append(',');
-        if (isSYN()) {
-            s.append('S');
-        }
-        if (isACK()) {
-            s.append('A');
-        }
-        if (isRST()) {
-            s.append('R');
-        }
-        if (isFIN()) {
-            s.append('F');
-        }
-        s.append(',');
-        s.append("wnd:").append((int)getWindowSize()&0xffff).append(',');
-        s.append("urg:").append((int)getUrgentPointer()&0xffff).append(',');
-        //TCP options
-        int x = 0;
-        TCPOption o;
-        while ((o = getOption(x)) != null) {
-            x++;
-            s.append(o.toString()).append(',');
-        }
-        s.setLength(s.length()-1);
-        s.append(']');
-        if (getPayLoadSize()>0) {
-            s.append("\n payload:").append(Hexdump.bytesToHex(getPayLoad(),Math.min(getPayLoadSize(),500)));
+        try {
+            s.append("TCP[");
+            s.append("h:").append(getHeaderSize()).append(',');
+            s.append("p:").append(getPayLoadSize()).append(',');
+            s.append("sport:").append((int) (getSourcePort()) & 0xffff).append(',');
+            s.append("dport:").append((int) (getDestinationPort()) & 0xffff).append(',');
+            s.append("seq:").append((long) (getSequenceNumber()) & 0xffffffffL).append(',');
+            s.append("ack:").append((long) (getAckNumber()) & 0xffffffffL).append(',');
+            if (isSYN()) {
+                s.append('S');
+            }
+            if (isACK()) {
+                s.append('A');
+            }
+            if (isRST()) {
+                s.append('R');
+            }
+            if (isFIN()) {
+                s.append('F');
+            }
+            s.append(',');
+            s.append("wnd:").append((int)getWindowSize()&0xffff).append(',');
+            s.append("urg:").append((int)getUrgentPointer()&0xffff).append(',');
+            //TCP options
+            int x = 0;
+            TCPOption o;
+            while ((o = getOption(x)) != null) {
+                x++;
+                s.append(o.toString()).append(',');
+            }
+            s.setLength(s.length()-1);
+            s.append(']');
+            if (getPayLoadSize()>0) {
+                s.append("\n payload:").append(Hexdump.bytesToHex(getPayLoad(),Math.min(getPayLoadSize(),10)));
+            }
+        } catch (IndexOutOfBoundsException ignore){
+            s.append("...(truncated)");
         }
         return s.toString();
     }
