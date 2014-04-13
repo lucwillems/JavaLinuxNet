@@ -62,4 +62,45 @@ public class TCPStreamtest {
             }
         }
     }
+
+    @Test
+    public void testTCPStreamWithDupAck() throws IOException {
+        long firstAck=0;
+        long firstSeqNr=0;
+        long lastAck=0;
+        long dupAckcount=0;
+        int port=0;
+        PCAPFileReader reader = new PCAPFileReader("src/test/pcap/http-dupack.pcap");
+        IpPacket ipPacket;
+        while((ipPacket=reader.readPacket())!=null) {
+            TCPPacket tcpPacket = (TCPPacket)ipPacket;
+            long ack=((long)tcpPacket.getAckNumber()) & 0xffffffff;
+            long seqnr=((long)tcpPacket.getSequenceNumber()) & 0xffffffff;
+            if (tcpPacket.isSYN() & !tcpPacket.isACK()) {
+                port=tcpPacket.getDestinationPort();
+            }
+            if (tcpPacket.isSYN() & tcpPacket.isACK()) {
+                firstSeqNr=ack;
+                firstAck=seqnr;
+                lastAck=seqnr;
+                logger.info("First SYNC ACK {} {}",firstAck,firstSeqNr);
+            }
+            if (tcpPacket.getDestinationPort()==port) {
+                if (lastAck == ack) {
+                    dupAckcount++;
+                    if (dupAckcount > 1) {
+                        logger.info("dup ack : {} cnt={}", ack, dupAckcount);
+                    }
+                } else {
+                    dupAckcount = 0;
+                    lastAck = ack;
+                }
+                double ratio=1;
+                if (seqnr!=firstSeqNr && ack != firstAck) {
+                    ratio=(ack-firstAck)/(seqnr-firstSeqNr);
+                }
+                logger.info("{} {} {} {} {} {} {} {}",ratio,(seqnr-firstSeqNr),(ack-firstAck),tcpPacket.getRawSize(),tcpPacket.getPayLoadSize(),((TCPPacket) ipPacket).isSYN(),((TCPPacket) ipPacket).isACK(),((TCPPacket) ipPacket).isFIN());
+            }
+        }
+    }
 }
