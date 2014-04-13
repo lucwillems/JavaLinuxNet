@@ -107,7 +107,9 @@ public class PCAPFileReader {
             int captureLength = packetHeader.getInt(8);
             logger.debug("packet Size: {}", captureLength);
             if (captureLength < dataLinkHeaderSize + 30) {  //we need atleast ip header + some extra data
-                logger.warn("captured packet to small");
+                if (captureLength!=0) { //size=0 means end of stream
+                    logger.warn("captured packet to small: {}", captureLength);
+                }
                 return null;
             }
 
