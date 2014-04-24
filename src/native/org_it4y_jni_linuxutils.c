@@ -40,36 +40,33 @@
 #define ERR_BUFFER_TO_SMALL -6;
 #define ERR_EXCEPTION -7;
 
+// Cached Object,Field,Method ID's needed
+jclass ctcp_inf;
+jmethodID tcp_info_setdataID;
 
-void tostring(JNIEnv *env, jobject obj) {
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    initlib
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_initlib(JNIEnv *env, jclass this) {
+  fprintf(stderr,"libjnilinuxutils init...\n");
 
-  if ( obj > 0) {
-   jclass cls = (*env)->GetObjectClass(env,obj);
 
-   // First get the class object
-   jmethodID mid = (*env)->GetMethodID(env,cls, "getClass", "()Ljava/lang/Class;");
-   jobject clsObj = (*env)->CallObjectMethod(env,obj, mid);
+  jclass ctcp_inf = (*env)->FindClass(env,"org/it4y/jni/libc$tcp_info");
+  if((*env)->ExceptionOccurred(env)) {
+      fprintf(stderr,"initlibError3");
+      return ERR_GET_METHOD_FAILED;
+  }
 
-   // Now get the class object's class descriptor
-   cls = (*env)->GetObjectClass(env,clsObj);
+  tcp_info_setdataID = (*env)->GetMethodID(env, ctcp_inf, "setdata","(BBBBBBBBIIIIIIIIIIIIIIIIIIIIIIII)V");
+  if((*env)->ExceptionOccurred(env)) {
+     fprintf(stderr,"initlibError4");
+     return ERR_GET_METHOD_FAILED;
+  }
 
-   // Find the getName() method on the class object
-   mid = (*env)->GetMethodID(env,cls, "getName", "()Ljava/lang/String;");
-
-   // Call the getName() to get a jstring object back
-   jstring strObj = (jstring)(*env)->CallObjectMethod(env,clsObj, mid);
-
-    // Now get the c string from the java jstring object
-    const char* str = (*env)->GetStringUTFChars(env,strObj, NULL);
-
-   // Print the class name
-   fprintf(stderr,"Calling class is: %s %x\n", str,(u_int)obj);
-
-   // Release the memory pinned char array
-   (*env)->ReleaseStringUTFChars(env,strObj, str);
-   } else {
-     fprintf(stderr,"Calling class is: null\n");
-   }
+  fprintf(stderr,"libjnilinuxutils ok\n");
+  return OK;
 }
 
 /*
@@ -77,19 +74,36 @@ void tostring(JNIEnv *env, jobject obj) {
  *
  */
 jint throwErrnoExceptionError(JNIEnv *env, int error) {
+   fprintf(stderr,"libc.errnoexception: %d\n",error);
+   // Somehow preloading the jclass & jmethodId doesn work with this exception
+   // as this is exception, we should not see alot of them so it doesn't really matter if it takes some time.
 
-   jclass errnoexception_class = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
-   if((*env)->ExceptionOccurred(env)) { return -1;}
-   jmethodID errnoexception_ctorID  = (*env)->GetMethodID(env, errnoexception_class, "<init>","(Ljava/lang/String;I)V");
-   if((*env)->ExceptionOccurred(env)) { return -1;}
    jstring jmessage = (*env)->NewStringUTF(env,strerror(error));
-   if((*env)->ExceptionOccurred(env)) { return -1;}
-   jobject errnoexception_obj = (*env)->NewObject(env, errnoexception_class, errnoexception_ctorID,jmessage,error);
-   if((*env)->ExceptionOccurred(env)) { return -1;}
+   if((*env)->ExceptionOccurred(env)) {
+     fprintf(stderr,"throwErrnoExceptionError1 %d",error);
+     return ERR_JNI_ERROR;
+   }
 
+   jclass errnoexception_class  = (*env)->FindClass( env, "org/it4y/jni/libc$ErrnoException");
+   if((*env)->ExceptionOccurred(env)) {
+     fprintf(stderr,"throwErrnoExceptionError2  %d",error);
+     return ERR_FIND_CLASS_FAILED;
+   }
+
+   jmethodID errnoexception_ctorID = (*env)->GetMethodID(env, errnoexception_class, "<init>","(Ljava/lang/String;I)V");
+   if((*env)->ExceptionOccurred(env)) {
+     fprintf(stderr,"throwErrnoExceptionError3  %d",error);
+     return ERR_FIND_CLASS_FAILED;
+   }
+
+   jobject errnoexception_obj = (*env)->NewObject(env, errnoexception_class, errnoexception_ctorID,jmessage,error);
+   if((*env)->ExceptionOccurred(env)) {
+     fprintf(stderr,"throwErrnoExceptionError4  %d",error);
+     return ERR_FIND_CLASS_FAILED;
+   }
    //yes it did ;-)
    (*env)->Throw( env, errnoexception_obj );
-   return 0;
+   return OK;
 }
 
 /*
@@ -99,7 +113,6 @@ jint throwErrnoExceptionError(JNIEnv *env, int error) {
  */
 JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setbooleanSockOption(JNIEnv *env, jclass this, jint fd, jint level , jint option , jboolean x) {
 
- //fprintf(stderr,"setbooleanSockOption %d %d %d %d\n",fd,level,option,x);
  int value=0;
  if (x) { value = 1;}
  //set socket boolean option
@@ -154,7 +167,6 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption(JNIEnv *
  * Signature: (III)B
  */
 JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption(JNIEnv *env, jclass this , jint fd, jint level , jint option) {
-  //fprintf(stderr,"getbooleanSockOption %d %d %d\n",fd,level,option);
 
   jboolean value=0;
   socklen_t len=sizeof(value);
@@ -174,7 +186,6 @@ JNIEXPORT jboolean JNICALL Java_org_it4y_jni_linuxutils_getbooleanSockOption(JNI
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getintSockOption(JNIEnv *env, jclass this, jint fd, jint level, jint option) {
-  fprintf(stderr,"getuint16SockOption %d %d %d\n",fd,level,option);
   int value=0;
   socklen_t len=sizeof(value);
 
@@ -193,7 +204,6 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_getintSockOption(JNIEnv *env
  * Signature: (III)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_it4y_jni_linuxutils_getstringSockOption (JNIEnv *env, jclass this, jint fd, jint level , jint option) {
-  fprintf(stderr,"getstringSockOption %d %d %d\n",fd,level,option);
   //we should limit buffer size here so we stick to 255 for now
   char value[255];
   socklen_t len=sizeof(value)+1;
@@ -275,12 +285,7 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_gettcpinfo (JNIEnv *env, jcl
      throwErrnoExceptionError(env,errno);
      return 0;
   }
-  //fprintf(stderr,"retrieved tcp_info from %d size %d",fd,len);
-  //we need to push data to tcp_info java class. we have 1 big setdata method with 32 parameters (if i counted correctly)
-  jclass ctcp_inf = (*env)->FindClass(env,"org/it4y/jni/libc$tcp_info");
-  if((*env)->ExceptionOccurred(env)) { return -1;}
-  jmethodID tcp_info_setdataID = (*env)->GetMethodID(env, ctcp_inf, "setdata","(BBBBBBBBIIIIIIIIIIIIIIIIIIIIIIII)V");
-  if((*env)->ExceptionOccurred(env)) { return -1;}
+
   //callback
   if (len==104) {
        (*env)->CallVoidMethod(env, tcpInfo_Obj,tcp_info_setdataID,
@@ -319,58 +324,6 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_gettcpinfo (JNIEnv *env, jcl
        );
   }
   return len;
-}
-
-/*
- * Class:     org_it4y_jni_linuxutils
- * Method:    getLocalHost
- * Signature: ()Ljava/net/InetSocketAddress;
- */
-JNIEXPORT jobject JNICALL Java_org_it4y_jni_linuxutils_getLocalHost  (JNIEnv *env, jclass this) {
-
-  int port=22;
-
-  jclass cholder = (*env)->FindClass(env,"java/net/InetAddress$InetAddressHolder");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jclass ia_holderclass = (*env)->NewGlobalRef(env, cholder);
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jfieldID ia_addressID = (*env)->GetFieldID(env, ia_holderclass, "address", "I");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  //jfieldID ia_familyID = (*env)->GetFieldID(env, ia_holderclass, "family", "I");
-  //if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-
-  jclass cia = (*env)->FindClass(env,"java/net/Inet4Address");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jclass ia_class = (*env)->NewGlobalRef(env, cia);
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jfieldID ia_holderID = (*env)->GetFieldID(env, ia_class, "holder", "Ljava/net/InetAddress$InetAddressHolder;");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jmethodID ia_ctrID = (*env)->GetMethodID(env, ia_class, "<init>", "()V");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-
-  //create new Inet4Address with correct address
-  jobject iaObj = (*env)->NewObject(env, ia_class, ia_ctrID);
-  //get access to holder object
-  jobject iaholder=(*env)->GetObjectField(env,iaObj,ia_holderID);
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  //set address of holder
-  (*env)->SetIntField(env, iaholder, ia_addressID,0x7f000001);
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-
-  //Create new InetSocketAddress
-  jclass c_isa = (*env)->FindClass(env, "java/net/InetSocketAddress");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jclass isa_class = (*env)->NewGlobalRef(env, c_isa);
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jmethodID isa_ctorID = (*env)->GetMethodID(env, c_isa, "<init>","(Ljava/net/InetAddress;I)V");
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-  jobject isa = (*env)->NewObject(env, isa_class, isa_ctorID, iaObj, port);
-  if((*env)->ExceptionOccurred(env)) { return (jobject)0;}
-
-
-  return isa;
-  //return null
-  //return (*env)->NewGlobalRef(env,NULL);
 }
 
 /*

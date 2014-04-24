@@ -18,18 +18,34 @@ package org.it4y.jni;
 
 import org.it4y.net.SocketUtils;
 
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 public class linuxutils {
+    //some errorcodes from our jni methods
+    public static final int JNI_OK = 0;
+    public static final int JNI_ERROR = -1;
+    public static final int JNI_ERR_FIND_CLASS_FAILED = -2;
+    public static final int JNI_ERR_GET_METHOD_FAILED = -3;
+    public static final int JNI_ERR_CALL_METHOD_FAILED = -4;
+    public static final int JNI_ERR_BUFFER_TO_SMALL = -5;
+    public static final int JNI_ERR_EXCEPTION = -6;
+
     //Load our native JNI lib
     static {
         //THIS requires libnl3 !!!!
         JNILoader.loadLibrary("libjnilinuxutils");
+        final int initResult = initlib();
+        if (initResult != JNI_OK) {
+            throw new RuntimeException("Failed to initialize libpcap jni interface : " + initResult);
+        }
     }
+
+    //This method should be called first before using the library
+    //it's used to initialize internal jni structure to speedup jni lookups
+    private static native int initlib();
 
     public static native void setbooleanSockOption(int fd, int level, int option, boolean booleanValue) throws libc.ErrnoException;
 
@@ -191,7 +207,7 @@ public class linuxutils {
         return gettcpinfo(fd, info);
     }
 
-    public static native InetSocketAddress getLocalHost();
+    //public static native InetSocketAddress getLocalHost();
 
     public static native short ioctl_SIOCGIFFLAGS(String  device) throws libc.ErrnoException;
     public static native int ioctl_SIOCSIFFLAGS(String  device,short flags) throws libc.ErrnoException;
