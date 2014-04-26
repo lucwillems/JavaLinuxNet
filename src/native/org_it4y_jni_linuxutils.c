@@ -149,7 +149,7 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_linuxutils_setstringSockOption(JNIEnv *
 
 
    // use your string
-  fprintf(stderr,"setStringSockOption %d %d %d [%s]\n",fd,level,option,value);
+  //fprintf(stderr,"setStringSockOption %d %d %d [%s]\n",fd,level,option,value);
 
    //set socket int option
    if (setsockopt(fd, level,option, value, sizeof(value)+1) != 0) {
