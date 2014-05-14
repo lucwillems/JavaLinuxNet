@@ -236,4 +236,10 @@ public class linuxutils {
     public static native int ioctl_SIOCGIFMTU(String device) throws libc.ErrnoException;
     public static native int ioctl_SIOCSIFMTU(String device,int mtu) throws libc.ErrnoException;
 
+    public static native long[] clock_gettime(int clockId);
+    public static long clock_getTime(int clockId) {
+        long[] timespec=clock_gettime(clockId);
+        return timespec[0]*1000000000L+timespec[1];
+    }
+
 }

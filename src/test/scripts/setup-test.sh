@@ -16,6 +16,9 @@ ip tuntap add dev $TUNDEV mode tun user $USER group $GROUP
 ip addr add 127.0.0.2/32 dev $TUNDEV
 ip link set dev $TUNDEV up
 ip route add $TESTNET dev $TUNDEV
+echo "1" > /proc/sys/net/ipv4/conf/$TUNDEV/log_martians
+echo "0" > /proc/sys/net/ipv4/conf/$TUNDEV/rp_filter
+
 
 ip tuntap del dev $TUNDEV2 mode tun
 ip tuntap add dev $TUNDEV2 mode tun user $USER group $GROUP

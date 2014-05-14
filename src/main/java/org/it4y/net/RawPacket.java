@@ -52,7 +52,7 @@ public abstract class RawPacket {
     public abstract int getReverseFlowHash();
 
     public void release() {
-        rawPacket =null;
+        rawPacket=null;
         rawSize =-1;
         rawLimit =-1;
     }

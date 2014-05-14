@@ -207,7 +207,8 @@ JNIEXPORT int JNICALL Java_org_it4y_jni_tuntap_writeByteBuffer(JNIEnv *env, jobj
     fd = getFd(env, this);
     int size=write(fd, b, len);
     if (size != len) {
-        perror("write: ");
+        fprintf(stderr,"Write error: len=%d writen=%d  errno=%d",len,size,errno);
+        //perror("write: ");
         throwErrnoExceptionError(env,errno);
         return size;
     }

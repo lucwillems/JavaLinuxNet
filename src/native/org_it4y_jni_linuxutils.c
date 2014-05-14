@@ -25,7 +25,8 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <arpa/inet.h>
-
+//time
+#include <time.h>
 
 #include "org_it4y_jni_linuxutils.h"
  /* Amount of characters in the error message buffer */
@@ -671,4 +672,29 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_linuxutils_ioctl_1SIOCSIFMTU(JNIEnv *en
          return 0;
     }
     return OK;
+}
+
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    clock_gettime
+ * Signature: (I)[J
+ */
+JNIEXPORT jlongArray JNICALL Java_org_it4y_jni_linuxutils_clock_1gettime(JNIEnv *env , jclass this, jint clockid) {
+
+    struct timespec now;
+    if(clock_gettime(clockid, &now)<0) {
+         perror("clock_gettime: ");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+
+    //convert to long[2] array to return timespec
+    jlongArray x = (*env)->NewLongArray(env,2);
+    if (x != NULL) {
+      jlong *xr = (*env)->GetLongArrayElements(env,x,0);
+      xr[0]=now.tv_sec;
+      xr[1]=now.tv_nsec;
+      (*env)->ReleaseLongArrayElements(env,x,xr,0);
+    }
+    return x;
 }
