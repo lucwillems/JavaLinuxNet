@@ -19,6 +19,19 @@
     <groupId>org.it4y</groupId>
     <artifactId>linux-net</artifactId>
     <version>0.0.3-SNAPSHOT</version>
+    <scm>
+      <connection>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</connection>
+      <developerConnection>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</developerConnection>
+      <url>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</url>
+      <tag>HEAD</tag>
+    </scm>
+    <distributionManagement>
+      <repository>
+	<id>internal.repo</id>
+	<name>Temporary Staging Repository</name>
+	<url>file://${project.build.directory}/released</url>
+      </repository>
+    </distributionManagement>
     <properties>
         <slf4j.version>1.7.4</slf4j.version>
         <netty.version>5.0.0.Alpha1</netty.version>
