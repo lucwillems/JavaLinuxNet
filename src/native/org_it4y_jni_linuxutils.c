@@ -698,3 +698,25 @@ JNIEXPORT jlongArray JNICALL Java_org_it4y_jni_linuxutils_clock_1gettime(JNIEnv 
     }
     return x;
 }
+
+JNIEXPORT jlong JNICALL Java_org_it4y_jni_linuxutils_usecTime(JNIEnv *env, jclass this) {
+
+    struct timespec now;
+    if(clock_gettime(CLOCK_BOOTTIME, &now)<0) {
+         perror("clock_gettime: ");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+    return (jlong)(now.tv_sec*1000000+(now.tv_nsec/1000));
+}
+
+JNIEXPORT jlong JNICALL Java_org_it4y_jni_linuxutils_clock_1getres(JNIEnv *env, jclass this , jint clockid) {
+    struct timespec now;
+    if(clock_getres(clockid, &now)<0) {
+         perror("clock_getres: ");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+    return (jlong)(now.tv_nsec);
+}
+

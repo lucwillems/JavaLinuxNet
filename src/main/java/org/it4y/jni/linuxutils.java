@@ -252,4 +252,6 @@ public class linuxutils {
         return timespec[0]*1000000000L+timespec[1];
     }
 
+    public static native long usecTime();
+    public static native long clock_getres(int clockId);
 }
