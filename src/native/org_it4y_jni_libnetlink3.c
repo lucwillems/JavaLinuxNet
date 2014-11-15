@@ -19,7 +19,6 @@
 #include <netinet/in.h>
 #include <jni.h>
 #include <string.h>
-#include <linux/tcp.h>
 //libnet
 #include <libnetlink.h>
 #include <netlink/cache.h>

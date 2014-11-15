@@ -20,6 +20,7 @@ import org.it4y.net.SocketUtils;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
@@ -91,6 +92,10 @@ public class linuxutils {
         final int fd = SocketUtils.getFd(sc.socket());
         setintSockOption(fd, level, option, intvalue);
     }
+    public static void setintSockOption(final DatagramChannel dc, final int level, final int option, final int intvalue) throws libc.ErrnoException  {
+        final int fd = SocketUtils.getFd(dc);
+        setintSockOption(fd, level, option, intvalue);
+    }
 
     public static native void setstringSockOption(int fd, int level, int option, String s) throws libc.ErrnoException;
 
@@ -136,6 +141,11 @@ public class linuxutils {
 
     public static int getintSockOption(final ServerSocketChannel sc, final int level, final int option) throws libc.ErrnoException  {
         final int fd = SocketUtils.getFd(sc.socket());
+        return getintSockOption(fd, level, option);
+    }
+
+    public static int getintSockOption(final DatagramChannel dc, final int level, final int option) throws libc.ErrnoException  {
+        final int fd = SocketUtils.getFd(dc);
         return getintSockOption(fd, level, option);
     }
 

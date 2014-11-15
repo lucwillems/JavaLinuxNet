@@ -14,7 +14,7 @@ CLASSPATH=../../target/classes
 
 all: javah build maven
 
-javah: tproxy.h tuntap.h linuxutils.h libnetlink3.h libpcap.h
+javah: tproxy.h tuntap.h linuxutils.h libnetlink3.h libpcap.h ntp.h
 
 tproxy.h: org_it4y_jni_tproxy.c
 	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.tproxy
@@ -30,6 +30,9 @@ libnetlink3.h: org_it4y_jni_libnetlink3.c
 
 libpcap.h: org_it4y_jni_libpcap.c
 	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.libpcap
+
+ntp.h: org_it4y_jni_ntp.c
+	$(JAVAH) -classpath $(CLASSPATH) org.it4y.jni.ntp
 
 libjnitproxy.so: org_it4y_jni_tproxy.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnitproxy-$(ARCH).so org_it4y_jni_tproxy.c
@@ -48,13 +51,16 @@ libjnipcap.so: org_it4y_jni_libpcap.c
 	$(CC)   $(INCLUDES) `pcap-config --cflags ` $(LFLAGS) \
 	org_it4y_jni_libpcap.c -lpcap -o libjnipcap-$(ARCH).so
 
+libjnintp.so: org_it4y_jni_ntp.c
+	$(CC)   $(INCLUDES) $(LFLAGS) org_it4y_jni_ntp.c -o libjnintp-$(ARCH).so
+
 testjhash: testjhash.c
 	$(CC) $(CFLAGS) $(INCLUDES) testjhash.c -o testjhash
 
 bpf_compile: bpf_compile.c
 	$(CC) $(CFLAGS) $(INCLUDES) `pcap-config --cflags ` bpf_compile.c -lpcap -o bpf_compile
 
-build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so testjhash bpf_compile
+build:  libjnitproxy.so libjnituntap.so libjnilinuxutils.so libjninetlink3.so libjnipcap.so libjnintp.so testjhash bpf_compile
 
 maven:
 	cp *.so $(CLASSPATH)

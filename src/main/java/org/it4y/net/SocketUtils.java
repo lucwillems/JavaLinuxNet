@@ -26,9 +26,8 @@ import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketImpl;
+import java.net.*;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
@@ -37,8 +36,10 @@ public class SocketUtils {
 
     private static final Method ServerSocketGetImpl;
     private static final Method SocketGetImpl;
+    private static final Method DatagramSocketGetImpl;
     private static Method SocketGetFileDescriptor;
     private static Method ServerSocketGetFileDescriptor;
+    private static Method DatagramChannelImplGetFileDescriptor;
     private static final Method SocketImplGetFileDescriptor;
     private static Method ServerSocketImplGetFileDescriptor;
     private static final Field  FileOutputStreamFileDescriptor;
@@ -59,14 +60,19 @@ public class SocketUtils {
              */
             ServerSocketGetImpl = ServerSocket.class.getDeclaredMethod("getImpl");
             SocketGetImpl = Socket.class.getDeclaredMethod("getImpl");
+            DatagramSocketGetImpl=DatagramSocket.class.getDeclaredMethod("getImpl");
             SocketImplGetFileDescriptor = SocketImpl.class.getDeclaredMethod("getFileDescriptor");
+//            DatagramChannelImplGetFileDescriptor = sun.nio.ch.DaDatagramChannelImpl.class.getDeclaredMethod("getFD");
             FileOutputStreamFileDescriptor=FileOutputStream.class.getDeclaredField("fd");
             FileInputStreamFileDescriptor=FileInputStream.class.getDeclaredField("fd");
             RandomAccessFileDescriptor=RandomAccessFile.class.getDeclaredField("fd");
+//            DatagramChannelFileDescriptor =DatagramChannelImpl.getDeclaredField("fd");
             privateFd=FileDescriptor.class.getDeclaredField("fd");
             ServerSocketGetImpl.setAccessible(true);
             SocketGetImpl.setAccessible(true);
+            DatagramSocketGetImpl.setAccessible(true);
             SocketImplGetFileDescriptor.setAccessible(true);
+ //           DatagramSocketImplGetFileDescriptor.setAccessible(true);
             FileOutputStreamFileDescriptor.setAccessible(true);
             FileInputStreamFileDescriptor.setAccessible(true);
             RandomAccessFileDescriptor.setAccessible(true);
@@ -98,6 +104,17 @@ public class SocketUtils {
             return (FileDescriptor) SocketImplGetFileDescriptor.invoke(impl);
     }
 
+    public static FileDescriptor getFileDescriptor(final DatagramChannel socket) throws InvocationTargetException, IllegalAccessException {
+        try {
+            final Field fd=socket.getClass().getDeclaredField("fd");
+            fd.setAccessible(true);
+            return (FileDescriptor)fd.get(socket);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static FileDescriptor getFileDescriptor(final FileOutputStream stream) throws IllegalAccessException {
            return (FileDescriptor) FileOutputStreamFileDescriptor.get(stream);
     }
@@ -116,6 +133,15 @@ public class SocketUtils {
     }
 
     public static int getFd(final ServerSocket socket) {
+        try {
+            final FileDescriptor fd = getFileDescriptor(socket);
+            return getFileHandle(fd);
+        } catch (final Exception shoutNotHappen) {
+            throw new JVMException(shoutNotHappen);
+        }
+    }
+
+    public static int getFd(final DatagramChannel socket) {
         try {
             final FileDescriptor fd = getFileDescriptor(socket);
             return getFileHandle(fd);

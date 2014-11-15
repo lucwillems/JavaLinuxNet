@@ -301,10 +301,10 @@ public class LinkManager extends Thread {
                         log.debug("set address");
                         x.setIpv4Address(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
                     }
-                    //a P2P link store other Peer address in IFA_BROADCAST so get it
-                    if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_BROADCAST) != null)  {
+                    //a P2P link store other Peer address in IFA_LOCAL so get it
+                    if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_LOCAL) != null)  {
                         log.debug("set P2P address");
-                        x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_BROADCAST).getInt());
+                        x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_LOCAL).getInt());
                     }
                     sendLinkNotification(LinkNotification.EventAction.Update, LinkNotification.EventType.Address, x);
                 } else {
