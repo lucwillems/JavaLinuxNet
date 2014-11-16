@@ -20,6 +20,8 @@ import org.it4y.jni.linux.time;
 import org.it4y.jni.linuxutils;
 import org.openjdk.jmh.annotations.*;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by luc on 11/16/14.
  */
@@ -27,7 +29,10 @@ import org.openjdk.jmh.annotations.*;
 @Warmup(iterations = 10)
 @Fork(1)
 @Threads(4)
-@BenchmarkMode(Mode.Throughput)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@Measurement(time = 1000,timeUnit = TimeUnit.MILLISECONDS)
+
 public class TimeBenchmark {
 
     @Benchmark
@@ -57,4 +62,15 @@ public class TimeBenchmark {
         System.nanoTime();
     }
 
+    @Benchmark
+    public void benchmarkusecCLOCK_MONOTONIC_COARSE_TimeAccurancy() {
+        long t=0;
+        while(linuxutils.usecTime(time.CLOCK_MONOTONIC_COARSE)==t && t !=0) {}
+    }
+
+    @Benchmark
+    public void benchmarkgetTimeCLOCK_MONOTONIC_COARSE_TimeAccurancy() {
+        long t=0;
+        while(linuxutils.clock_getTime(time.CLOCK_MONOTONIC_COARSE)==t && t!=0) {}
+    }
 }
