@@ -710,6 +710,21 @@ JNIEXPORT jlong JNICALL Java_org_it4y_jni_linuxutils_usecTime(JNIEnv *env, jclas
     return (jlong)(now.tv_sec*1000000+(now.tv_nsec/1000));
 }
 
+/*
+ * Class:     org_it4y_jni_linuxutils
+ * Method:    usecTime
+ * Signature: (I)J
+ */
+JNIEXPORT jlong JNICALL Java_org_it4y_jni_linuxutils_usecTime__I (JNIEnv *env , jclass this , jint clockId) {
+    struct timespec now;
+    if(clock_gettime(clockId, &now)<0) {
+         perror("clock_gettime: ");
+         throwErrnoExceptionError(env,errno);
+         return 0;
+    }
+    return (jlong)(now.tv_sec*1000000+(now.tv_nsec/1000));
+}
+
 JNIEXPORT jlong JNICALL Java_org_it4y_jni_linuxutils_clock_1getres(JNIEnv *env, jclass this , jint clockid) {
     struct timespec now;
     if(clock_getres(clockid, &now)<0) {

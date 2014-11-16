@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -O3
 ARCH=$(shell uname -i)
 
 #search JDK if not set

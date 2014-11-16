@@ -246,12 +246,15 @@ public class linuxutils {
     public static native int ioctl_SIOCGIFMTU(String device) throws libc.ErrnoException;
     public static native int ioctl_SIOCSIFMTU(String device,int mtu) throws libc.ErrnoException;
 
+    /* This is a bit slow , use usecTime(id) for double fast access */
     public static native long[] clock_gettime(int clockId);
     public static long clock_getTime(int clockId) {
         long[] timespec=clock_gettime(clockId);
         return timespec[0]*1000000000L+timespec[1];
     }
 
+    /* Faster access to internal clocks but limited to usec*/
     public static native long usecTime();
+    public static native long usecTime(int clockId);
     public static native long clock_getres(int clockId);
 }
