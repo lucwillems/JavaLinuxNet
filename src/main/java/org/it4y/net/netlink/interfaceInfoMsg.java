@@ -70,7 +70,7 @@ public class interfaceInfoMsg extends NlMessage {
         s.append('\n');
         //dump rta messages
         for (final RTAMessage r : rtaMessages.values()) {
-            if (r.getType() == 3) {
+            if (r.getType() == 3 || r.getType() == 6) {
                 s.append(' ').append(r.toString()).append(' ').append(r.getString()).append('\n');
             } else {
                 s.append(' ').append(r.toString()).append('\n');
