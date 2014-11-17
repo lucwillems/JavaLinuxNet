@@ -274,6 +274,7 @@ public class IT_TProxyListenerTest {
             linkManager = startLinkManager();
             //get interface with default gateway. this will be our source IP
             final NetworkInterface defaultGW = linkManager.getDefaultGateway();
+            log.info("Default GW: {}",defaultGW);
 
 
             //Run a proxy to intercept port 80 . this requires setup-test.sh to setup iptables and routing
