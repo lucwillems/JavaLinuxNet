@@ -30,14 +30,6 @@ Testing it:
 IPV6 :
 ======
 currently IPV6 is not supported. IPv6 addresses will be ignored.
-You can disable IPv6 by adding following lines in
-/etc/sysctl.d/20-noipv6.conf
-
-```
- net.ipv6.conf.all.disable_ipv6 = 1
- net.ipv6.conf.default.disable_ipv6 = 1
- net.ipv6.conf.lo.disable_ipv6 = 1
-```
 
 Required permissions :
 ======================
