@@ -321,4 +321,21 @@ public class LinkManagerTest {
         }
     }
 
+    @Test
+    /**
+     * use this test to view network interfaces
+     */
+    public void testInterfaceInformation() throws Exception {
+        final LinkManager lm=startLinkManager();
+        try {
+            for (String x : lm.getInterfaceList()) {
+                NetworkInterface networkInterface = lm.findByInterfaceName(x);
+                log.info("{}", networkInterface);
+            }
+        } finally {
+            stopLinkManager(lm);
+
+        }
+    }
+
 }

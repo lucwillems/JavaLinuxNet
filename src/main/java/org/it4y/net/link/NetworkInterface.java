@@ -38,6 +38,7 @@ public class NetworkInterface {
     private int netmask;
     private int interfaceFlag;
     private final int interfaceType;
+    private int txlen;
 
     public NetworkInterface(final String name, final int index, final int interfaceFlag, final int interfaceType) {
         this.name = name;
@@ -133,6 +134,14 @@ public class NetworkInterface {
         return libc.toInetAddress(libc.ntohi(ipv4Gateway));
     }
 
+    /***
+     * return TX queue size of the interface
+     * @return
+     */
+    public int getTxLen() {
+        return txlen;
+    }
+
     /**
      * return kernel interface flags , see man rtnetlink(7) ifi_flags
      * @return
@@ -196,12 +205,13 @@ public class NetworkInterface {
     }
 
     protected void setInterfaceFlags(final int flags) {
-        interfaceFlag =flags;
+        this.interfaceFlag = flags;
     }
     protected void setMacAddress(final String macAddress) {
         this.macAddress = macAddress;
     }
 
+    protected void setTxLen(final int size) {this.txlen=size;};
     public String toString() {
         final StringBuilder s = new StringBuilder(128);
         s.append(name).append('[');
@@ -213,6 +223,7 @@ public class NetworkInterface {
         if (ipv4Gateway != 0) {
             s.append("g:").append(getIpv4GatewayAsInetAddress().toString().substring(1)).append(',');
         }
+        s.append("txlen:").append(txlen).append(',');
         s.append("mtu:").append(mtu).append(',');
         s.append("state:").append(state).append(',');
         s.append("flags:0x").append(Integer.toHexString(interfaceFlag)).append(' ');

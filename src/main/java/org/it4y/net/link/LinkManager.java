@@ -247,6 +247,9 @@ public class LinkManager extends Thread {
                     if (msg.getRTAMessage(if_link.IFLA_OPERSTATE) != null) {
                         x.setState((int) msg.getRTAMessage(if_link.IFLA_OPERSTATE).getByte() & 0xff);
                     }
+                    if (msg.getRTAMessage(if_link.IFLA_TXQLEN) !=null) {
+                        x.setTxLen(msg.getRTAMessage(if_link.IFLA_TXQLEN).getInt() & 0xffff);
+                    }
                     interfaceList.put(name, x);
                     log.info("new interface {}", x);
                     sendLinkNotification(LinkNotification.EventAction.New, LinkNotification.EventType.Link, x);
@@ -297,14 +300,14 @@ public class LinkManager extends Thread {
             case rtnetlink.RTM_NEWADDR: //add or update interface to list
                 //IPV4 address ?
                 if ( msg.getAddresFamily() == socket.AF_INET) {
-                    if (msg.getRTAMessage(if_address.IFA_ADDRESS) != null) {
+                    if (msg.getRTAMessage(if_address.IFA_LOCAL) != null) {
                         log.debug("set address");
-                        x.setIpv4Address(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
+                        x.setIpv4Address(msg.getRTAMessage(if_address.IFA_LOCAL).getInt());
                     }
                     //a P2P link store other Peer address in IFA_LOCAL so get it
-                    if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_LOCAL) != null)  {
+                    if (x.isPoint2Point() & msg.getRTAMessage(if_address.IFA_ADDRESS) != null)  {
                         log.debug("set P2P address");
-                        x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_LOCAL).getInt());
+                        x.setIpv4P2Paddress(msg.getRTAMessage(if_address.IFA_ADDRESS).getInt());
                     }
                     sendLinkNotification(LinkNotification.EventAction.Update, LinkNotification.EventType.Address, x);
                 } else {
