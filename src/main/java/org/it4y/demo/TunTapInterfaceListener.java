@@ -160,7 +160,7 @@ public class TunTapInterfaceListener extends TestRunner {
     public void dumpSpeed() {
         if (bytes.intValue()>0) {
             final long v=bytes.getAndSet(0);
-            System.out.println("goodput: " + String.format("%.3f mbit/sec", (double) (v * 8) / (1024 * 1024)) + " bytes: "+ v + ' ' + cnt + " pkts: " + pktcnt);
+            log.info("goodput: " + String.format("%.3f mbit/sec", (double) (v * 8) / (1024 * 1024)) + " bytes: "+ v + ' ' + cnt + " pkts: " + pktcnt);
         }
         cnt = 0;
     }

@@ -104,13 +104,13 @@ public class SocketUtils {
             return (FileDescriptor) SocketImplGetFileDescriptor.invoke(impl);
     }
 
-    public static FileDescriptor getFileDescriptor(final DatagramChannel socket) throws InvocationTargetException, IllegalAccessException {
+    public static FileDescriptor getFileDescriptor(final DatagramChannel socket) throws  IllegalAccessException {
         try {
             final Field fd=socket.getClass().getDeclaredField("fd");
             fd.setAccessible(true);
             return (FileDescriptor)fd.get(socket);
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            log.error("Oeps: {}",e);
         }
         return null;
     }

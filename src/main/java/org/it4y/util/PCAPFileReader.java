@@ -34,7 +34,7 @@ import java.nio.ByteOrder;
  * Created by luc on 4/12/14.
  */
 public class PCAPFileReader {
-    private Logger logger=LoggerFactory.getLogger(PCAPFileReader.class);
+    private final Logger logger=LoggerFactory.getLogger(PCAPFileReader.class);
     public static final int PCAP_HEADER_SIZE=24;
     public static final int PCAP_PACKETHEADER_SIZE=16;
     public static final int PCAP_MAGIC=0xa1b2c3d4;
