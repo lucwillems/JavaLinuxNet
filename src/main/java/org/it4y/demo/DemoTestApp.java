@@ -32,7 +32,6 @@ public class DemoTestApp {
     private final static Logger log= LoggerFactory.getLogger("Demo");
 
     public static void main(String[] args) throws Exception {
-        System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
         TProxyListener tproxy = new TProxyListener();
         tproxy.start();
         log.info("tproxy server running");
