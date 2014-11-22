@@ -21,10 +21,11 @@ note that the JAR produced by the maven build only include native .so libraries 
 on the platform of your build/dev environment.
 
 The java runtime will search for this libraries in following order (by default)
+```
  - /usr/lib/<library name>-<platform>.so
  - /usr/lib/jlinux-net/<library name>-<platform>.so
  - in jar under /<library name>-<platform>.so
-
+```
 by default you should just compile the jar for your platform and use that.
 
 Building it
