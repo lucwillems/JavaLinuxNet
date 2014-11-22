@@ -10,7 +10,7 @@ supported features :
 * libnet3 integration to get network link events and information
 * Basic raw packet handling
 
-Platform support:
+Platform support
 =================
 the code and units tests have been tested on 32/64 bit systems on
  * Ubuntu 12.04 (32 bit)
@@ -21,7 +21,7 @@ note that the JAR produced by the maven build only include native .so libraries 
 on the platform of your build/dev environment.
 
 
-Building it:
+Building it
 ============
 * java stuf : just run mvn clean install
 * to build native code , you need to install some dev packages. on ubuntu this is
@@ -63,19 +63,19 @@ and run following commands to build it
      mvn clean install
 ```
 
-Testing it:
-============
+Testing it
+===========
 * Unit test can run on any system without changes.
 * Integration test under /org/it4y/integration requires
   * Linux with kernel 3.5 or better
   * run the src/test/scripts/setup-test.sh before running the test.
 
-IPV6 :
-======
+IPV6
+=====
 currently IPV6 is not supported. IPv6 addresses will be ignored.
 
-Required permissions :
-======================
+Required permissions
+=====================
 The integration test require additional capabilities or be run as root (which i would not do !!!)
 
 To run the script as normal user, you require to
@@ -94,7 +94,7 @@ You MUST read following link to understand the issues :
 
    http://bugs.sun.com/view_bug.do?bug_id=7076745
 
-Security note:
+Security note
 ==============
 When setting capabilities on the java JVM, this JVM can also be used by other java application and will
 have the same capabilities. This could be security risk because capabilities are given to
@@ -104,7 +104,6 @@ when using this , you should install your jre into a seperated JAVA_HOME and set
 and directories so execution is limited to he user which run's your application.
 
 
-TODO:
+TODO
 =====
-* release it
 * allot , linux is big...
