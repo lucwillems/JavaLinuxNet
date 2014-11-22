@@ -322,9 +322,12 @@ public class IT_TProxyListenerTest {
                         //close when connected
                         if (future.isSuccess()) {
                             future.channel().disconnect();
+                        } else {
+                            log.error("ooeps:",future.cause());
                         }
                     }
                 });
+                Thread.sleep(0,2000); //sleep a small bit else we see issues in VM's
             }
 
             //log.info("Started: {} msec", System.currentTimeMillis() - start);
