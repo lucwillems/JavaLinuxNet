@@ -45,9 +45,11 @@ centos x:
 after you have installed the packages you can use git to clone the source repository
 and run following commands to build it
 ```
+     git clone <url of git repository>
+     cd  JavaLinixNet
+     sudo src/test/scripts/setup-test.sh
      mvn clean install
 ```
-Test will fail because some network dummy interface do not exist, see next chapter
 
 Testing it:
 ============
