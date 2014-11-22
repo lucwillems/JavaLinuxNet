@@ -15,10 +15,28 @@ Building it:
 * java stuf : just run mvn clean install
 * to build native code , you need to install some dev packages. on ubuntu this is
 
+for ubuntu 12.04
 ```
-    apt-get install pkg-config build-essential iproute-dev libpcap0.8-dev libnl-3-dev libcap2-bin openjdk-7-jdk maven2
+    sudo apt-get install pkg-config build-essential iproute-dev libpcap0.8-dev libnl-3-dev libcap2-bin openjdk-7-jdk maven2 git
 ``` 
-    
+for ubuntu 14.04
+Trusty is missing iproute-dev. iproute is replaced by iproute2 but doesn't provide
+the iproute2-dev packages. this is required because it includes /usr/lib/libnetlink.a which is required. I have created a update iproute2 packages in my lauchpad repository for trusty.
+this is only required for building.
+```
+    sudo apt-get install software-properties-common
+    sudo add-apt-repository ppa:luc-willems/backport
+    sudo apt-get update
+    sudo apt-get install pkg-config build-essential git maven2 openjdk-7-jdk 
+    sudo apt-get iproute2-dev libpcap0.8-dev libnl-3-dev libcap2-bin
+``` 
+
+after you have installed the packages you can use git to clone the source repository
+and run following commands to build it
+```
+     mvn clean install
+```
+Test will fail because some network dummy interface do not exist, see next chapter
 
 Testing it:
 ============
