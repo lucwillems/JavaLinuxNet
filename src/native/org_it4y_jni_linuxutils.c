@@ -250,7 +250,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_it4y_jni_linuxutils__1getsockname(JNIEnv *
            //Convert MAPPED IPV4 in IPV6 to IPV4
            struct sockaddr_in ipv4;
            //get last 4 bytes=ipv4 address
-           ipv4.sin_addr = *((struct in_addr *)&(sa6->sin6_addr.s6_addr[12]));
+       	   memcpy(&ipv4.sin_addr, &sa6->sin6_addr.s6_addr[12],sizeof(ipv4.sin_addr));
            ipv4.sin_port=sa6->sin6_port;
            ipv4.sin_family=AF_INET;
 
