@@ -10,29 +10,79 @@ supported features :
 * libnet3 integration to get network link events and information
 * Basic raw packet handling
 
-Building it:
+Platform support
+=================
+the code and units tests have been tested on 32/64 bit systems on
+ * Ubuntu 12.04 (32 bit)
+ * Ubuntu 14.04 (32 & 64 bit)
+ * OpenSuSE 13.2 (32 bit)
+
+note that the JAR produced by the maven build only include native .so libraries based
+on the platform of your build/dev environment.
+
+The java runtime will search for this libraries in following order (by default)
+```
+ - /usr/lib/<library name>-<platform>.so
+ - /usr/lib/jlinux-net/<library name>-<platform>.so
+ - in jar under /<library name>-<platform>.so
+```
+by default you should just compile the jar for your platform and use that.
+
+Building it
 ============
 * java stuf : just run mvn clean install
 * to build native code , you need to install some dev packages. on ubuntu this is
 
+ubuntu 12.04:
 ```
-    apt-get install pkg-config build-essential iproute-dev libpcap0.8-dev libnl-3-dev libcap2-bin openjdk-7-jdk maven2
+    sudo apt-get install pkg-config build-essential openjdk-7-jdk maven2 git
+    sudo apt-get iproute-dev libpcap0.8-dev libnl-3-dev libcap2-bin 
 ``` 
-    
 
-Testing it:
-============
+ubuntu 14.04:
+
+Trusty is missing iproute-dev. iproute is replaced by iproute2 but doesn't provide
+the iproute2-dev packages. this is required because it includes /usr/lib/libnetlink.a which is required. I have created a update iproute2 packages in my lauchpad repository for trusty.
+this is only required for building.
+```
+    sudo apt-get install software-properties-common
+    sudo add-apt-repository ppa:luc-willems/backport
+    sudo apt-get update
+    sudo apt-get install pkg-config build-essential git maven2 openjdk-7-jdk 
+    sudo apt-get install iproute2-dev libpcap0.8-dev libnl-3-dev libcap2-bin
+``` 
+
+opensuse 13.2:
+```
+    TODO
+```
+centos x:
+```
+    TODO
+```
+after you have installed the packages you can use git to clone the source repository
+and run following commands to build it
+```
+     sudo setcap "cap_net_raw=+eip cap_net_admin=+eip" <path to your java 7 executable>
+     git clone <url of git repository>
+     cd  JavaLinixNet
+     sudo src/test/scripts/setup-test.sh
+     mvn clean install
+```
+
+Testing it
+===========
 * Unit test can run on any system without changes.
 * Integration test under /org/it4y/integration requires
   * Linux with kernel 3.5 or better
   * run the src/test/scripts/setup-test.sh before running the test.
 
-IPV6 :
-======
+IPV6
+=====
 currently IPV6 is not supported. IPv6 addresses will be ignored.
 
-Required permissions :
-======================
+Required permissions
+=====================
 The integration test require additional capabilities or be run as root (which i would not do !!!)
 
 To run the script as normal user, you require to
@@ -43,12 +93,15 @@ To run the script as normal user, you require to
 run following command on your JDK java command
 ```
  setcap "cap_net_raw=+eip cap_net_admin=+eip" <path to your java executable>
-```
+``` 
+note that the <path to your java executable> must not be any symlink. it must be the
+final binary file.
+
 You MUST read following link to understand the issues :
 
    http://bugs.sun.com/view_bug.do?bug_id=7076745
 
-Security note:
+Security note
 ==============
 When setting capabilities on the java JVM, this JVM can also be used by other java application and will
 have the same capabilities. This could be security risk because capabilities are given to
@@ -58,7 +111,6 @@ when using this , you should install your jre into a seperated JAVA_HOME and set
 and directories so execution is limited to he user which run's your application.
 
 
-TODO:
+TODO
 =====
-* release it
 * allot , linux is big...
