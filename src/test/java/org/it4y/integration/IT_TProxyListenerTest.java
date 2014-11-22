@@ -330,7 +330,7 @@ public class IT_TProxyListenerTest {
             //log.info("Started: {} msec", System.currentTimeMillis() - start);
             //wait until all are closed
             while (msgcnt.getCount() < nrOfConnections & retry < nrOfConnections) {
-                Thread.sleep(10);
+                Thread.sleep(100); //on vm's this can be slow
                 retry++;
             }
 
