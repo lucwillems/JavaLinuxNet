@@ -30,7 +30,10 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+//TODO : libnetlink , witch is greatly used by this class, is not packaged anymoure in ubunty 14.04 and higher.
+// also from iproute2 (debian) version 3.7 , this can not be build anymore
+// we need to implement this using libmnl , see https://git.netfilter.org/libmnl/tree/examples/rtnl for examples
+//
 public class LinkManager extends Thread {
 
     /**
