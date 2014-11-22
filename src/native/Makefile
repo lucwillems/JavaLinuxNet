@@ -41,7 +41,7 @@ libjnituntap.so: org_it4y_jni_tuntap.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnituntap-$(ARCH).so org_it4y_jni_tuntap.c
 
 libjnilinuxutils.so: org_it4y_jni_linuxutils.c
-	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnilinuxutils-$(ARCH).so org_it4y_jni_linuxutils.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(LFLAGS) -o libjnilinuxutils-$(ARCH).so org_it4y_jni_linuxutils.c -lrt
 
 libjninetlink3.so: org_it4y_jni_libnetlink3.c
 	$(CC) $(CFLAGS)  $(INCLUDES) `pkg-config --cflags --libs libnl-3.0` $(LFLAGS) \

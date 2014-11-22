@@ -19,8 +19,6 @@
 #include <jni.h>
 #include <string.h>
 #include <linux/tcp.h>
-//libnet
-#include <libnetlink.h>
 //ioctl
 #include <sys/ioctl.h>
 #include <net/if.h>

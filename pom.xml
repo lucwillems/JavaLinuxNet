@@ -27,14 +27,23 @@
     </scm>
     <distributionManagement>
       <repository>
-	<id>internal.repo</id>
-	<name>Temporary Staging Repository</name>
-	<url>file://${project.build.directory}/released</url>
+	     <id>internal.repo</id>
+         <name>Temporary Staging Repository</name>
+	     <url>file://${project.build.directory}/released</url>
       </repository>
     </distributionManagement>
+    <repositories>
+            <repository>
+                <id>netty-nightly</id>
+                <name>netty-nightly</name>
+                <url>http://clinker.netty.io/nexus/content/repositories/snapshots</url>
+                <snapshots><enabled>true</enabled></snapshots>
+            </repository>
+    </repositories>
     <properties>
         <slf4j.version>1.7.4</slf4j.version>
-        <netty.version>5.0.0.Alpha1</netty.version>
+        <netty.version>5.0.0.Alpha2-SNAPSHOT</netty.version>
+        <jdk.version>1.7</jdk.version>
     </properties>
     <dependencies>
         <dependency>
@@ -90,8 +99,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
             </plugin>
             <plugin>
