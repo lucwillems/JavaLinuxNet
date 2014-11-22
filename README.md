@@ -20,6 +20,12 @@ the code and units tests have been tested on 32/64 bit systems on
 note that the JAR produced by the maven build only include native .so libraries based
 on the platform of your build/dev environment.
 
+The java runtime will search for this libraries in following order (by default)
+ - /usr/lib/<library name>-<platform>.so
+ - /usr/lib/jlinux-net/<library name>-<platform>.so
+ - in jar under /<library name>-<platform>.so
+
+by default you should just compile the jar for your platform and use that.
 
 Building it
 ============
