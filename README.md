@@ -75,7 +75,10 @@ To run the script as normal user, you require to
 run following command on your JDK java command
 ```
  setcap "cap_net_raw=+eip cap_net_admin=+eip" <path to your java executable>
-```
+``` 
+note that the <path to your java executable> must not be any symlink. it must be the
+final binary file.
+
 You MUST read following link to understand the issues :
 
    http://bugs.sun.com/view_bug.do?bug_id=7076745
