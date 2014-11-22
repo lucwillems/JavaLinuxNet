@@ -17,7 +17,8 @@ Building it:
 
 for ubuntu 12.04
 ```
-    sudo apt-get install pkg-config build-essential iproute-dev libpcap0.8-dev libnl-3-dev libcap2-bin openjdk-7-jdk maven2 git
+    sudo apt-get install pkg-config build-essential openjdk-7-jdk maven2 git
+    sudo apt-get iproute-dev libpcap0.8-dev libnl-3-dev libcap2-bin 
 ``` 
 for ubuntu 14.04
 Trusty is missing iproute-dev. iproute is replaced by iproute2 but doesn't provide
