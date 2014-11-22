@@ -45,6 +45,7 @@ centos x:
 after you have installed the packages you can use git to clone the source repository
 and run following commands to build it
 ```
+     sudo setcap "cap_net_raw=+eip cap_net_admin=+eip" <path to your java 7 executable>
      git clone <url of git repository>
      cd  JavaLinixNet
      sudo src/test/scripts/setup-test.sh
