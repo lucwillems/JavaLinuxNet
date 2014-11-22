@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -O3
-ARCH=$(shell uname -i)
+ARCH=$(shell ./java_arch.sh)
 
 #search JDK if not set
 ifndef JDK_HOME
