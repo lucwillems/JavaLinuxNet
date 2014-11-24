@@ -149,7 +149,7 @@ public class IT_TProxyListenerTest {
             //Run a proxy to intercept port 80 . this requires setup-test.sh to setup iptables and routing
             proxy = startTProxyListener(new TProxyListener(InetAddress.getByName(bind), port, backlog) {
                 public void newClient(TProxyInterceptedSocket client) {
-                    log.info("intercept client connection: {}", client);
+                    log.debug("intercept client connection: {}", client);
                     //check client connection parameters
                     Assert.assertNotNull(client);
                     //we should check local and remote address are unchanged (thats transparent proxy)
@@ -310,7 +310,7 @@ public class IT_TProxyListenerTest {
             });
 
             // Start the client.
-            int nrOfConnections = 2000;
+            int nrOfConnections = 3000; //going to high here will cause TO MANY FILES open, you should see man page ulimit ;-)
             log.info("Starting {} connections ....", nrOfConnections);
             long start = System.currentTimeMillis();
             int retry = 0;

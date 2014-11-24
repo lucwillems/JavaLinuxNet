@@ -17,6 +17,7 @@
 package org.it4y.jni;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,20 @@ import java.io.File;
  */
 public class JNILoaderTest {
     Logger logger = LoggerFactory.getLogger(JNILoader.class);
+    private File tmpDir;
+
+    @Before
+    public void initTest() {
+        //Setup System properties for this test.
+        //As we could run both test into 1 VM, we should "try" to cleanup before test
+        tmpDir=new File("/tmp/luc/test");
+        //Setup System properties
+        System.getProperties().remove(JNILoader.customPathKEY); //remove any "old" stuff
+        System.setProperty(JNILoader.customPathKEY,tmpDir.getAbsolutePath());
+    }
 
     @Test
     public void testJNILoaderWithCustomPath() {
-
-        File tmpDir=new File("/tmp/luc/test");
-        System.setProperty(JNILoader.customPathKEY,tmpDir.getAbsolutePath());
         JNILoader.loadLibrary("libjnituntap");
         //Directory must exist
         Assert.assertTrue(tmpDir.exists());
@@ -44,9 +53,6 @@ public class JNILoaderTest {
 
     @Test
     public void testJNILoaderLoadNonExisting() {
-
-        File tmpDir=new File("/tmp/luc/test");
-        System.getProperties().put(JNILoader.customPathKEY,tmpDir.getAbsoluteFile());
         try {
             JNILoader.loadLibrary("shithappens");
         } catch (RuntimeException re) {
