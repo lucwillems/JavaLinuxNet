@@ -42,7 +42,7 @@
     </repositories>
     <properties>
         <slf4j.version>1.7.4</slf4j.version>
-        <netty.version>5.0.0.Alpha2-SNAPSHOT</netty.version>
+        <netty.version>5.0.0.Alpha1</netty.version>
         <jdk.version>1.7</jdk.version>
     </properties>
     <dependencies>
