@@ -53,8 +53,9 @@ this is only required for building.
 ``` 
 
 opensuse 13.2:
-```
-    TODO
+``` sudo zypper in -t pattern devel_C_C++
+    sudo zypper in libcap-progs git
+    sudo zypper in libnl3-devel libnl-tools libnetlink-devel libpcap-devel
 ```
 centos x:
 ```
