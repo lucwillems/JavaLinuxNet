@@ -60,13 +60,15 @@ install following packages
     sudo zypper in libcap-progs git
     sudo zypper in libnl3-devel libnl-tools libnetlink-devel libpcap-devel
 ```
-centos 7.0 64 bit:
+centos 7.0 32/64 bit:
 
 ```
    sudo yum group install "Development Tools"
    sudo yum install java-1.7.0-openjdk-devel
    sudo yum install libnl3-devel iproute-devel libpcap-devel
 ```
+Note : test are still failing on 64bit centos.
+
 after you have installed the packages you can use git to clone the source repository
 and run following commands to build it
 ```
