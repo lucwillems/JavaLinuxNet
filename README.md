@@ -42,8 +42,9 @@ ubuntu 12.04:
 ubuntu 14.04:
 
 Trusty is missing iproute-dev. iproute is replaced by iproute2 but doesn't provide
-the iproute2-dev packages. this is required because it includes /usr/lib/libnetlink.a which is required. I have created a update iproute2 packages in my lauchpad repository for trusty (https://launchpad.net/~luc-willems/+archive/ubuntu/backport) .
+the iproute2-dev packages. this is required because it includes /usr/lib/libnetlink.a which is required. I have created a update iproute2 packages in my lauchpad repository for trusty (https://launchpad.net/~luc-willems/+archive/ubuntu/backport)
 this is only required for building.
+
 ```
     sudo apt-get install software-properties-common
     sudo add-apt-repository ppa:luc-willems/backport
@@ -51,9 +52,11 @@ this is only required for building.
     sudo apt-get install pkg-config build-essential git maven2 openjdk-7-jdk 
     sudo apt-get install iproute2-dev libpcap0.8-dev libnl-3-dev libcap2-bin
 ``` 
-
 opensuse 13.2:
-``` sudo zypper in -t pattern devel_C_C++
+install following packages
+
+``` 
+    sudo zypper in -t pattern devel_C_C++
     sudo zypper in libcap-progs git
     sudo zypper in libnl3-devel libnl-tools libnetlink-devel libpcap-devel
 ```
