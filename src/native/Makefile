@@ -7,6 +7,17 @@ ifndef JDK_HOME
   JDK_HOME=$(shell readlink -f `which javac` | sed "s:/bin/javac::")
 endif
 
+#64Bit support
+LBITS := $(shell getconf LONG_BIT)
+ifeq ($(LBITS),64)
+   # do 64 bit stuff here, like set some CFLAGS
+   LIBNETLINKDIR=/usr/lib64
+else
+   # do 32 bit stuff here
+   LIBNETLINKDIR=/usr/lib
+endif
+
+
 INCLUDES = -I$(JDK_HOME)/include/linux -I$(JDK_HOME)/include
 LFLAGS = -shared -fPIC
 JAVAH=javah
@@ -45,7 +56,7 @@ libjnilinuxutils.so: org_it4y_jni_linuxutils.c
 
 libjninetlink3.so: org_it4y_jni_libnetlink3.c
 	$(CC) $(CFLAGS)  $(INCLUDES) `pkg-config --cflags --libs libnl-3.0` $(LFLAGS) \
-	 -o libjninetlink3-$(ARCH).so -Wl,-whole-archive /usr/lib/libnetlink.a -Wl,-no-whole-archive org_it4y_jni_libnetlink3.c
+	 -o libjninetlink3-$(ARCH).so -Wl,-whole-archive $(LIBNETLINKDIR)/libnetlink.a -Wl,-no-whole-archive org_it4y_jni_libnetlink3.c
 
 libjnipcap.so: org_it4y_jni_libpcap.c
 	$(CC)   $(INCLUDES) `pcap-config --cflags ` $(LFLAGS) \
