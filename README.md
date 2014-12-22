@@ -15,7 +15,7 @@ Platform support
 the code and units tests have been tested on 32/64 bit systems on
  * Ubuntu 12.04 (32 bit)
  * Ubuntu 14.04 (32 & 64 bit)
- * OpenSuSE 13.2 (32 bit)
+ * OpenSuSE 13.2 & 13.3 (32 bit)
 
 note that the JAR produced by the maven build only include native .so libraries based
 on the platform of your build/dev environment.
@@ -42,7 +42,7 @@ ubuntu 12.04:
 ubuntu 14.04:
 
 Trusty is missing iproute-dev. iproute is replaced by iproute2 but doesn't provide
-the iproute2-dev packages. this is required because it includes /usr/lib/libnetlink.a which is required. I have created a update iproute2 packages in my lauchpad repository for trusty.
+the iproute2-dev packages. this is required because it includes /usr/lib/libnetlink.a which is required. I have created a update iproute2 packages in my lauchpad repository for trusty (https://launchpad.net/~luc-willems/+archive/ubuntu/backport) .
 this is only required for building.
 ```
     sudo apt-get install software-properties-common
