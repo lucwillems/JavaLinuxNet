@@ -57,7 +57,7 @@ install following packages
 
 ``` 
     sudo zypper in -t pattern devel_C_C++
-    sudo zypper in libcap-progs git
+    sudo zypper in libcap-progs git java-1_7_0-openjdk-devel
     sudo zypper in libnl3-devel libnl-tools libnetlink-devel libpcap-devel
 ```
 centos 7.0 32/64 bit:
