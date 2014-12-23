@@ -67,7 +67,8 @@ centos 7.0 32/64 bit:
    sudo yum install java-1.7.0-openjdk-devel
    sudo yum install libnl3-devel iproute-devel libpcap-devel
 ```
-Note : test are still failing on 64bit centos.
+WARNING about centos/redhat java : the normal java executable jre/bin/java is replaced with a rapper script which detects if abrt-java-connector is installed or not. the real location of java 7 binary is
+jre-abr/jre/bin/java
 
 after you have installed the packages you can use git to clone the source repository
 and run following commands to build it
