@@ -14,8 +14,9 @@ Platform support
 =================
 the code and units tests have been tested on 32/64 bit systems on
  * Ubuntu 12.04 (32 bit)
- * Ubuntu 14.04 (32 & 64 bit)
- * OpenSuSE 13.2 & 13.3 (32 bit)
+ * Ubuntu 14.04 (32/64 bit)
+ * OpenSuSE 13.2 & 13.3 (32/64 bit)
+ * CentOS/Redhat 7.0 (64 bit)
 
 note that the JAR produced by the maven build only include native .so libraries based
 on the platform of your build/dev environment.
