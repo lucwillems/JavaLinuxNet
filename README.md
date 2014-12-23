@@ -115,10 +115,11 @@ Java home: /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.71-2.5.3.1.el7_0.x86_64/jre
 Default locale: en_US, platform encoding: UTF-8
 OS name: "linux", version: "3.10.0-123.13.2.el7.x86_64", arch: "amd64", family: "unix"
 ```
-
 You MUST read following link to understand the issues :
 
    http://bugs.sun.com/view_bug.do?bug_id=7076745
+
+after upgrading java you have to repeat the setcap as this capability could get lost
 
 Security note
 ==============
