@@ -114,8 +114,9 @@ public class IT_tuntapReadTest {
             tun.open();
             Assert.assertTrue(tun.getFd() > 0);
             log.info("device: {} fd: {}",tun.getDevice(),tun.getFd());
+            Thread.sleep(100);
             //we need to send data so it will be routed into the tunnel
-            //todo : make it route into tunnel withouth setup script
+            //todo : make it route into tunnel without setup script
             int size=1000;
             utils.sendTestUDP(size);
 
@@ -130,8 +131,8 @@ public class IT_tuntapReadTest {
             }
             long delta=System.currentTimeMillis()-start;
             log.info("data after {} msec",delta);
-            //we should less than 2msec
-            Assert.assertTrue(delta<10);
+            //we should less than 100msec
+            Assert.assertTrue(delta<200);
             int result=tun.readByteBuffer(buf,true);
             //We should not have any result here
             log.info("read result: {}", result);

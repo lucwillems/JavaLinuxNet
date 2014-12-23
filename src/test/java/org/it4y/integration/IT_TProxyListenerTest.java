@@ -83,7 +83,7 @@ public class IT_TProxyListenerTest {
         lm.start();
         //do something here
         while (!lm.isReady() & retry < 10) {
-            Thread.sleep(10);
+            Thread.sleep(100);
             retry++;
         }
         Assert.assertTrue(lm.isReady());
@@ -310,7 +310,7 @@ public class IT_TProxyListenerTest {
             });
 
             // Start the client.
-            int nrOfConnections = 3000; //going to high here will cause TO MANY FILES open, you should see man page ulimit ;-)
+            int nrOfConnections = 1000; //going to high here will cause TO MANY FILES open, you should see man page ulimit ;-)
             log.info("Starting {} connections ....", nrOfConnections);
             long start = System.currentTimeMillis();
             int retry = 0;
