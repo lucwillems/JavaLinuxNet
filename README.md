@@ -105,6 +105,16 @@ run following command on your JDK java command
 ``` 
 note that the <path to your java executable> must not be any symlink. it must be the
 final binary file.
+you can find this by using mvn -v command
+```
+[luc@centos7 JLinux-net]$ mvn -v 
+Apache Maven 3.2.5 (12a6b3acb947671f09b81f49094c53f426d8cea1; 2014-12-14T18:29:23+01:00)
+Maven home: /home/luc/tools/maven/current
+Java version: 1.7.0_71, vendor: Oracle Corporation
+Java home: /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.71-2.5.3.1.el7_0.x86_64/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "3.10.0-123.13.2.el7.x86_64", arch: "amd64", family: "unix"
+```
 
 You MUST read following link to understand the issues :
 
