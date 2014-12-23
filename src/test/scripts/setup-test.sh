@@ -1,15 +1,24 @@
 #!/bin/bash
 # run this script to setup lowlevel linux environment for testing
 #
+if [ -z "$SUDO_USER" ];then
+   echo "Please use sudo $0"
+   exit 0
+fi
+
+#get user & primary group
+TUN_USER=$SUDO_USER
+TUN_GROUP=`groups $SUDO_USER | awk '{print $3}'`
+
 # Note we abuse 8.8.4.4 as test IP
 TESTIP=8.8.4.4
 TESTNET=8.8.4.0/24
 TUNDEV=test
-USER=$USER
-GROUP=users
+USER=$TUN_USER
+GROUP=$TUN_GROUP
 TUNDEV2=testnotused
-USER=$USER
-GROUP=users
+USER=$TUN_USER
+GROUP=$TUN_GROUP
 
 ip tuntap del dev $TUNDEV mode tun
 ip tuntap add dev $TUNDEV mode tun user $USER group $GROUP
