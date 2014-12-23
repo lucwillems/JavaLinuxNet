@@ -14,8 +14,9 @@ Platform support
 =================
 the code and units tests have been tested on 32/64 bit systems on
  * Ubuntu 12.04 (32 bit)
- * Ubuntu 14.04 (32 & 64 bit)
- * OpenSuSE 13.2 & 13.3 (32 bit)
+ * Ubuntu 14.04 (32/64 bit)
+ * OpenSuSE 13.2 & 13.3 (32/64 bit)
+ * CentOS/Redhat 7.0 (64 bit)
 
 note that the JAR produced by the maven build only include native .so libraries based
 on the platform of your build/dev environment.
@@ -67,7 +68,8 @@ centos 7.0 32/64 bit:
    sudo yum install java-1.7.0-openjdk-devel
    sudo yum install libnl3-devel iproute-devel libpcap-devel
 ```
-Note : test are still failing on 64bit centos.
+WARNING about centos/redhat java : the normal java executable jre/bin/java is replaced with a rapper script which detects if abrt-java-connector is installed or not. the real location of java 7 binary is
+jre-abr/jre/bin/java
 
 after you have installed the packages you can use git to clone the source repository
 and run following commands to build it
