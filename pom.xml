@@ -14,31 +14,51 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.it4y</groupId>
     <artifactId>linux-net</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <scm>
-      <connection>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</connection>
-      <developerConnection>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</developerConnection>
-      <url>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</url>
-      <tag>HEAD</tag>
+        <connection>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</connection>
+        <developerConnection>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</developerConnection>
+        <url>scm:git:https://github.com/lucwillems/JavaLinuxNet.git</url>
+        <tag>HEAD</tag>
     </scm>
-    <distributionManagement>
-      <repository>
-	     <id>internal.repo</id>
-         <name>Temporary Staging Repository</name>
-	     <url>file://${project.build.directory}/released</url>
-      </repository>
-    </distributionManagement>
+    <profiles>
+        <profile>
+            <id>tmm-deploy</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>tmm</id>
+                    <url>http://atomic01.home.t-m-m.be:8081/repository/tmm-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>tmm</id>
+                    <url>http://atomic01.home.t-m-m.be:8081/repository/tmm-released/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>noTest</id>
+            <properties>
+              <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
     <repositories>
-            <repository>
-                <id>netty-nightly</id>
-                <name>netty-nightly</name>
-                <url>http://clinker.netty.io/nexus/content/repositories/snapshots</url>
-                <snapshots><enabled>true</enabled></snapshots>
-            </repository>
+        <repository>
+            <id>netty-nightly</id>
+            <name>netty-nightly</name>
+            <url>http://clinker.netty.io/nexus/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
     <properties>
         <slf4j.version>1.7.4</slf4j.version>
@@ -51,6 +71,11 @@
             <artifactId>netty-all</artifactId>
             <version>${netty.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
