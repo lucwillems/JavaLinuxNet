@@ -109,7 +109,7 @@ public class TunTapInterfaceListener extends TestRunner {
                 //we must clear else we get issues
                 bbuffer.clear();
                 final int size = tundev.readByteBuffer(bbuffer); //this will block until a packet is available
-                Commonlimiter.acquire(size);
+                //Commonlimiter.acquire(size);
                 pktcnt++;
                 final IpPacket ip = IPFactory.processRawPacket(bbuffer, size);
                 if (ip != null) {
@@ -117,7 +117,7 @@ public class TunTapInterfaceListener extends TestRunner {
                     bytes.addAndGet(size);
                     cnt++;
                     if (ip.getProtocol() == ICMPPacket.PROTOCOL) {
-                        icmplimiter.acquire(size);
+                        //icmplimiter.acquire(size);
                         //log.info("{}",ip);
                         if (((ICMPPacket) ip).isEchoRequest()) {
                         //if (virtualMachine.execute(program,ip.getRawPacket(),ip.getRawSize(),ip.getRawSize()) == 0xffff) {

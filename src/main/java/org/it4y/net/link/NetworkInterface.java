@@ -211,7 +211,8 @@ public class NetworkInterface {
         this.macAddress = macAddress;
     }
 
-    protected void setTxLen(final int size) {this.txlen=size;};
+    protected void setTxLen(final int size) {this.txlen=size;}
+
     public String toString() {
         final StringBuilder s = new StringBuilder(128);
         s.append(name).append('[');

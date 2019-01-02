@@ -73,7 +73,8 @@ public class libnetlink3 {
     //};
 
     public static class rtnl_handle {
-        public static final int SIZE = 36;
+        //public static final int SIZE = 36;
+        public static final int SIZE = 56;//on 64 netlink 4.4
         public final byte[] handle = new byte[SIZE];
 
         public int getFd() {

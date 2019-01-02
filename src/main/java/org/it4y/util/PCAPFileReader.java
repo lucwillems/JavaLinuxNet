@@ -123,7 +123,7 @@ public class PCAPFileReader {
         }finally {
             packetHeader=null;
         }
-    };
+    }
 
     public int getMagic() {
         return magic;

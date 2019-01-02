@@ -82,30 +82,30 @@ public class ICMPPacketTest {
         log.info("Dump: {}",Hexdump.bytesToHex(packet.getRawPacket(),packet.getRawSize()));
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REQUEST);
         Assert.assertEquals(((ICMPPacket) packet).getCode(), 0);
-        Assert.assertEquals(((ICMPPacket) packet).getChecksum(),0x7E6D);
+        Assert.assertEquals(packet.getChecksum(),0x7E6D);
         Assert.assertEquals(((ICMPPacket) packet).getSequenceNumber(),35);
         Assert.assertEquals(((ICMPPacket) packet).getTimeStamp(),2257196573525937152L);
-        Assert.assertEquals(((ICMPPacket) packet).getSourceAddress(),0xc0a80090);
-        Assert.assertEquals(((ICMPPacket) packet).getDestinationAddress(),0x08080808);
-        Assert.assertEquals(((ICMPPacket) packet).getHeaderSize(),ICMPPacket.ICMP_HEADER_SIZE);
-        Assert.assertEquals(((ICMPPacket) packet).getIpHeaderSize(),20);
-        Assert.assertEquals(((ICMPPacket) packet).getTOS(),0);
-        Assert.assertEquals(((ICMPPacket) packet).getTTL(),64);
-        Assert.assertEquals(((ICMPPacket) packet).getProtocol(),1);
-        Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),56);
+        Assert.assertEquals(packet.getSourceAddress(),0xc0a80090);
+        Assert.assertEquals(packet.getDestinationAddress(),0x08080808);
+        Assert.assertEquals(packet.getHeaderSize(),ICMPPacket.ICMP_HEADER_SIZE);
+        Assert.assertEquals(packet.getIpHeaderSize(),20);
+        Assert.assertEquals(packet.getTOS(),0);
+        Assert.assertEquals(packet.getTTL(),64);
+        Assert.assertEquals(packet.getProtocol(),1);
+        Assert.assertEquals(packet.getPayLoadSize(),56);
         //check payload
-        ByteBuffer payload=(((ICMPPacket)packet).getPayLoad());
-        Assert.assertEquals(((ICMPPacket)packet).getPayLoadSize(),payload.limit());
+        ByteBuffer payload=(packet.getPayLoad());
+        Assert.assertEquals(packet.getPayLoadSize(),payload.limit());
         Assert.assertEquals(packet.getRawPacket().get(packet.getIpHeaderSize()+ICMPPacket.ICMP_HEADER_SIZE),payload.get(0));
 
         //check ICMP header
-        ByteBuffer header=(((ICMPPacket)packet).getHeader());
-        Assert.assertEquals(((ICMPPacket)packet).getHeaderSize(),header.limit());
+        ByteBuffer header=(packet.getHeader());
+        Assert.assertEquals(packet.getHeaderSize(),header.limit());
         Assert.assertEquals(packet.getRawPacket().getInt(packet.getIpHeaderSize()),header.getInt(0));
 
         //Check IP Header
-        ByteBuffer Ipheader=(((ICMPPacket)packet).getIpHeader());
-        Assert.assertEquals(((ICMPPacket)packet).getIpHeaderSize(),Ipheader.limit());
+        ByteBuffer Ipheader=(packet.getIpHeader());
+        Assert.assertEquals(packet.getIpHeaderSize(),Ipheader.limit());
         Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
 
         ICMPPacket packet1 = (ICMPPacket)packet;
@@ -116,10 +116,10 @@ public class ICMPPacketTest {
 
         //Convert to reply
         ((ICMPPacket) packet).convertToEchoReply();
-        Assert.assertEquals(((ICMPPacket) packet).getDestinationAddress(),0xc0a80090);
-        Assert.assertEquals(((ICMPPacket) packet).getSourceAddress(),0x08080808);
+        Assert.assertEquals(packet.getDestinationAddress(),0xc0a80090);
+        Assert.assertEquals(packet.getSourceAddress(),0x08080808);
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REPLY);
-        Assert.assertEquals(((ICMPPacket) packet).getChecksum(),0x7E6D);
+        Assert.assertEquals(packet.getChecksum(),0x7E6D);
 
     }
 
@@ -135,17 +135,17 @@ public class ICMPPacketTest {
         log.info("ICMP: {}", packet.toString());
         Assert.assertEquals(((ICMPPacket) packet).getType(), ICMPPacket.ECHO_REPLY);
         Assert.assertEquals(((ICMPPacket) packet).getCode(), 0);
-        Assert.assertEquals(((ICMPPacket) packet).getChecksum(),(short)0xb961);
+        Assert.assertEquals(packet.getChecksum(),(short)0xb961);
         Assert.assertEquals(((ICMPPacket) packet).getSequenceNumber(),35);
         Assert.assertEquals(((ICMPPacket) packet).getTimeStamp(),2257196573525937152L);
-        Assert.assertEquals(((ICMPPacket) packet).getDestinationAddress(),0xc0a80090);
-        Assert.assertEquals(((ICMPPacket) packet).getSourceAddress(),0x08080808);
-        Assert.assertEquals(((ICMPPacket) packet).getHeaderSize(),ICMPPacket.ICMP_HEADER_SIZE);
-        Assert.assertEquals(((ICMPPacket) packet).getIpHeaderSize(),20);
-        Assert.assertEquals(((ICMPPacket) packet).getTOS(),0);
-        Assert.assertEquals(((ICMPPacket) packet).getTTL(),48);
-        Assert.assertEquals(((ICMPPacket) packet).getProtocol(),1);
-        Assert.assertEquals(((ICMPPacket) packet).getPayLoadSize(),56);
+        Assert.assertEquals(packet.getDestinationAddress(),0xc0a80090);
+        Assert.assertEquals(packet.getSourceAddress(),0x08080808);
+        Assert.assertEquals(packet.getHeaderSize(),ICMPPacket.ICMP_HEADER_SIZE);
+        Assert.assertEquals(packet.getIpHeaderSize(),20);
+        Assert.assertEquals(packet.getTOS(),0);
+        Assert.assertEquals(packet.getTTL(),48);
+        Assert.assertEquals(packet.getProtocol(),1);
+        Assert.assertEquals(packet.getPayLoadSize(),56);
         ICMPPacket packet2 = (ICMPPacket)packet;
         log.info("flow: {}",Integer.toHexString(packet2.getFlowHash()));
         log.info("reverse flow: {}",Integer.toHexString(packet2.getReverseFlowHash()));

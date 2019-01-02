@@ -63,11 +63,12 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_initlib  (JNIEnv *env, jcla
       return ERR_FIND_CLASS_FAILED;
 
    //rtl_accept.accept(ByteBuffer) method
-   rtnl_accept_acceptID = (*env)->GetMethodID(env,rtnl_accept_class, "accept", "(Ljava/nio/ByteBuffer;)I");
+      rtnl_accept_acceptID = (*env)->GetMethodID(env,rtnl_accept_class, "accept", "(Ljava/nio/ByteBuffer;)I");
    if((*env)->ExceptionOccurred(env))
       return ERR_GET_METHOD_FAILED;
 
   //init ok
+  fprintf(stderr,"init ok\n");
   return OK;
 }
 
@@ -94,13 +95,18 @@ jint throwErrnoExceptionfError(JNIEnv *env, int error) {
 JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open(JNIEnv *env, jclass this, jbyteArray handle, jint subscriptions) {
   struct rtnl_handle *rth;
   jbyte *b;
+  jboolean isCopy;
+
+  //fprintf(stderr,"size rtnl_handle %d\n",(int)sizeof(struct rtnl_handle));
+
 
 //  struct nl_cache_mngr *mngr;
 //  int len=sizeof(mngr);
 //  fprintf(stderr,"cache manager: %d\n",len);
 
   //get pointer to handler byte[] structure
-  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  b = (*env)->GetByteArrayElements(env, handle,  &isCopy);
+
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open(rth,subscriptions);
 
@@ -123,14 +129,15 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open(JNIEnv *env, jcl
 JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1open_1byproto(JNIEnv *env, jclass this , jbyteArray handle , jint subscriptions , jint protocol) {
   struct rtnl_handle *rth;
   jbyte *b;
+  jboolean isCopy;
 
   //get pointer to handler byte[] structure
-  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  b = (*env)->GetByteArrayElements(env, handle, &isCopy);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_open_byproto(rth,subscriptions,protocol);
 
   //release it before it leaks ...
-  (*env)->ReleaseByteArrayElements(env, handle, b, 0);
+  (*env)->ReleaseByteArrayElements(env, handle, b,0);
 
   //exception handling
   if ((*env)->ExceptionCheck(env))
@@ -149,9 +156,10 @@ JNIEXPORT void JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1close(JNIEnv *env , j
 
   struct rtnl_handle *rth;
   jbyte *b;
+  jboolean isCopy;
 
   //get pointer to handler byte[] structure
-  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  b = (*env)->GetByteArrayElements(env, handle, &isCopy);
   rth = (struct rtnl_handle *)b;
   rtnl_close(rth);
 
@@ -171,9 +179,11 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1wilddump_1request(JNI
 
   struct rtnl_handle *rth;
   jbyte *b;
+  jboolean isCopy;
+
 
   //get pointer to handler byte[] structure
-  b = (*env)->GetByteArrayElements(env, handle, NULL);
+  b = (*env)->GetByteArrayElements(env, handle, &isCopy);
   rth = (struct rtnl_handle *)b;
   int result=rtnl_wilddump_request(rth,family,type);
 
@@ -220,7 +230,7 @@ struct listen_jni_callback
 /*
  * callback function for listen
  */
-static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *arg) {
+static int accept_msg(const struct sockaddr_nl *who,struct rtnl_ctrl_data *ctrl,struct nlmsghdr *n, void *arg) {
 
    //get access to jni environment to implement callback to java
    struct listen_jni_callback* jni=(struct listen_jni_callback*)arg;
@@ -253,6 +263,8 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
  JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_rtnl_1listen(JNIEnv *env, jclass this, jbyteArray handle, jobject messageBuffer, jobject listener) {
    struct rtnl_handle *rth;
    struct listen_jni_callback callback;
+   jboolean isCopy;
+
 
    //check buffer
    if (messageBuffer == 0) {
@@ -267,7 +279,7 @@ static int accept_msg(const struct sockaddr_nl *who,struct nlmsghdr *n, void *ar
    }
 
    //get pointer to handler byte[] structure
-   jbyte *b = (*env)->GetByteArrayElements(env, handle, NULL);
+   jbyte *b = (*env)->GetByteArrayElements(env, handle, &isCopy);
    rth = (struct rtnl_handle *)b;
 
    //java listener callback stuff

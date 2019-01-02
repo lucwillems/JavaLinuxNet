@@ -72,28 +72,28 @@ public class UDPPacketTest {
         IpPacket packet = IPFactory.processRawPacket(rawData, DNSrequest.length);
         Assert.assertNotNull(packet);
         Assert.assertTrue(packet instanceof UDPPacket);
-        Assert.assertEquals(((UDPPacket) packet).getSourceAddress(),0xc0a80090);
-        Assert.assertEquals(((UDPPacket) packet).getDestinationAddress(),0x08080808);
-        Assert.assertEquals(((UDPPacket) packet).getHeaderSize(),UDPPacket.UDP_HEADER_SIZE);
-        Assert.assertEquals(((UDPPacket) packet).getIpHeaderSize(),20);
-        Assert.assertEquals(((UDPPacket) packet).getTOS(),0);
-        Assert.assertEquals(((UDPPacket) packet).getTTL(),64);
-        Assert.assertEquals(((UDPPacket) packet).getProtocol(),17);
+        Assert.assertEquals(packet.getSourceAddress(),0xc0a80090);
+        Assert.assertEquals(packet.getDestinationAddress(),0x08080808);
+        Assert.assertEquals(packet.getHeaderSize(),UDPPacket.UDP_HEADER_SIZE);
+        Assert.assertEquals(packet.getIpHeaderSize(),20);
+        Assert.assertEquals(packet.getTOS(),0);
+        Assert.assertEquals(packet.getTTL(),64);
+        Assert.assertEquals(packet.getProtocol(),17);
         //Test payload
         ByteBuffer payload=packet.getPayLoad();
-        Assert.assertEquals(8,((UDPPacket)packet).getHeaderSize());
-        Assert.assertEquals(29,((UDPPacket) packet).getPayLoadSize());
-        Assert.assertEquals(((UDPPacket)packet).getPayLoadSize(),payload.limit());
+        Assert.assertEquals(8, packet.getHeaderSize());
+        Assert.assertEquals(29, packet.getPayLoadSize());
+        Assert.assertEquals(packet.getPayLoadSize(),payload.limit());
         Assert.assertEquals(packet.getRawPacket().get(packet.getIpHeaderSize() + UDPPacket.UDP_HEADER_SIZE), payload.get(0));
 
         //check ICMP header
-        ByteBuffer header=(((UDPPacket)packet).getHeader());
-        Assert.assertEquals(((UDPPacket)packet).getHeaderSize(),header.limit());
+        ByteBuffer header=(packet.getHeader());
+        Assert.assertEquals(packet.getHeaderSize(),header.limit());
         Assert.assertEquals(packet.getRawPacket().getInt(packet.getIpHeaderSize()),header.getInt(0));
 
         //Check IP Header
-        ByteBuffer Ipheader=(((UDPPacket)packet).getIpHeader());
-        Assert.assertEquals(((UDPPacket)packet).getIpHeaderSize(),Ipheader.limit());
+        ByteBuffer Ipheader=(packet.getIpHeader());
+        Assert.assertEquals(packet.getIpHeaderSize(),Ipheader.limit());
         Assert.assertEquals(packet.getRawPacket().getInt(0),Ipheader.getInt(0));
 
         //Check flow hash
@@ -104,12 +104,12 @@ public class UDPPacketTest {
 
         //replay
         ((UDPPacket)packet).swapSourceDestinationPort();
-        ((UDPPacket)packet).swapSourceDestination();
-        ((UDPPacket)packet).updateChecksum();
-        ((UDPPacket)packet).getDstRoutingHash();
-        ((UDPPacket)packet).getFlowHash();
+        packet.swapSourceDestination();
+        packet.updateChecksum();
+        packet.getDstRoutingHash();
+        packet.getFlowHash();
 
-        Assert.assertNotNull(((UDPPacket)packet).toString());
+        Assert.assertNotNull(packet.toString());
     }
 
     @Test

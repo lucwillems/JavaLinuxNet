@@ -208,7 +208,7 @@ public class libpcapTest {
         ipPacket.putShort((short) 0x00);  //identification=0
         ipPacket.putShort((short) 0x00);  //flags/fragment
         ipPacket.put((byte) 0x40);  //TTL=64
-        ipPacket.put((byte) protocol);  //protocol
+        ipPacket.put(protocol);  //protocol
         ipPacket.putShort((short) 0x00);  //checksum
         return ipPacket;
     }
@@ -272,15 +272,15 @@ public class libpcapTest {
         pingPacket.put((byte) 0x9f);
         pingPacket.put((byte) 0x03);
         byte[] src=toBytes(srcIp);
-        pingPacket.put((byte) src[0]);//src[0]
-        pingPacket.put((byte) src[1]);//src[1]
-        pingPacket.put((byte) src[2]);//src[2]
-        pingPacket.put((byte) src[3]);//src[3]
+        pingPacket.put(src[0]);//src[0]
+        pingPacket.put(src[1]);//src[1]
+        pingPacket.put(src[2]);//src[2]
+        pingPacket.put(src[3]);//src[3]
         byte[] dst=toBytes(dstIp);
-        pingPacket.put((byte) dst[0]);//dst[0]
-        pingPacket.put((byte) dst[1]);//dst[1]
-        pingPacket.put((byte) dst[2]);//dst[2]
-        pingPacket.put((byte) dst[3]);//dst[3]
+        pingPacket.put(dst[0]);//dst[0]
+        pingPacket.put(dst[1]);//dst[1]
+        pingPacket.put(dst[2]);//dst[2]
+        pingPacket.put(dst[3]);//dst[3]
 
         //ICMP header
         pingPacket.put((byte) 0x00); //type
