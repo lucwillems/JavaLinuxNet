@@ -29,6 +29,7 @@ public class libnetlink3 {
     public static final int JNI_ERR_CALL_METHOD_FAILED=-4;
     public static final int JNI_ERR_BUFFER_TO_SMALL=-5;
     public static final int JNI_ERR_EXCEPTION=-6;
+    public static final int JNI_ERR_RTNL_HANDLE_SIZE_MISMATCH=-7;
 
 
     //Load our native JNI lib
@@ -73,8 +74,7 @@ public class libnetlink3 {
     //};
 
     public static class rtnl_handle {
-        //public static final int SIZE = 36;
-        public static final int SIZE = 56;//on 64 netlink 4.4
+        public static final int SIZE = 56;//will be validated in initlib, if not match: error -7 will be returned !
         public final byte[] handle = new byte[SIZE];
 
         public int getFd() {

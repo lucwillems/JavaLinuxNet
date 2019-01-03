@@ -23,6 +23,7 @@
 #include <libnetlink.h>
 #include <netlink/cache.h>
 #include "org_it4y_jni_libnetlink3.h"
+#include "org_it4y_jni_libnetlink3_rtnl_handle.h"
  /* Amount of characters in the error message buffer */
 #define ERROR_SIZE 254
 
@@ -34,6 +35,7 @@
 #define ERR_CALL_METHOD_FAILED -4;
 #define ERR_BUFFER_TO_SMALL -5;
 #define ERR_EXCEPTION -6;
+#define ERR_RTNL_HANDLE_SIZE_MISMATCH -7;
 
 
 
@@ -66,6 +68,10 @@ JNIEXPORT jint JNICALL Java_org_it4y_jni_libnetlink3_initlib  (JNIEnv *env, jcla
       rtnl_accept_acceptID = (*env)->GetMethodID(env,rtnl_accept_class, "accept", "(Ljava/nio/ByteBuffer;)I");
    if((*env)->ExceptionOccurred(env))
       return ERR_GET_METHOD_FAILED;
+
+  //make sure size of rtnl_handle matches the java buffer size for this object
+  if (sizeof(struct rtnl_handle) !=  org_it4y_jni_libnetlink3_rtnl_handle_SIZE)
+     return ERR_RTNL_HANDLE_SIZE_MISMATCH;
 
   //init ok
   fprintf(stderr,"init ok\n");
