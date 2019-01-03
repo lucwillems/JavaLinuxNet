@@ -74,8 +74,8 @@ public class HttpProxyThread extends Thread {
             }
             //end get request from client
             ///////////////////////////////////
-            //urlToCall="http://www.google.com"+urlToCall;
-            urlToCall = "http://noc.21net.com/traintest/100m-random.dat";
+            urlToCall="http://www.google.com";
+            //urlToCall = "http://noc.21net.com/traintest/100m-random.dat";
             log.info("Request for : {}", urlToCall);
 
             libc.tcp_info info = new libc.tcp_info();
